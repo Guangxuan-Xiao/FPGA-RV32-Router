@@ -222,12 +222,9 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-<<<<<<< HEAD
-=======
         <CompFileExtendedInfo CompFileName="axi_ethernet_0.xci" FileRelPathName="ip/ip_0/bd_5d9f_mac_0.xci">
           <Proxy FileSetName="bd_5d9f_mac_0"/>
         </CompFileExtendedInfo>
->>>>>>> 1fa80289fed534d58d32f3caa52ff417b6b70646
         <CompFileExtendedInfo CompFileName="axi_ethernet_0.xci" FileRelPathName="ip/ip_5/bd_5d9f_c_shift_ram_0_0.xci">
           <Proxy FileSetName="bd_5d9f_c_shift_ram_0_0"/>
         </CompFileExtendedInfo>
@@ -246,12 +243,9 @@
         <CompFileExtendedInfo CompFileName="axi_ethernet_0.xci" FileRelPathName="ip/ip_9/bd_5d9f_reset_inv_0.xci">
           <Proxy FileSetName="bd_5d9f_reset_inv_0"/>
         </CompFileExtendedInfo>
-<<<<<<< HEAD
-=======
         <CompFileExtendedInfo CompFileName="axi_ethernet_0.xci" FileRelPathName="ip/ip_1/bd_5d9f_pcs_pma_0.xci">
           <Proxy FileSetName="bd_5d9f_pcs_pma_0"/>
         </CompFileExtendedInfo>
->>>>>>> 1fa80289fed534d58d32f3caa52ff417b6b70646
       </File>
       <Config>
         <Option Name="TopModule" Val="axi_ethernet_0"/>
