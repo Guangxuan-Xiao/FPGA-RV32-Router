@@ -1038,6 +1038,7 @@
           "mac/s_axis_tx"
         ]
       },
+<<<<<<< HEAD
       "mgt_clk_1": {
         "interface_ports": [
           "mgt_clk",
@@ -1045,21 +1046,37 @@
         ]
       },
       "s_axi_1": {
+=======
+      "mac_gmii": {
+>>>>>>> 73441091f10b701625f299758c425ecf5144d46b
         "interface_ports": [
           "s_axi",
           "mac/s_axi"
         ]
       },
+<<<<<<< HEAD
       "pcs_pma_sfp": {
         "interface_ports": [
           "sfp",
           "pcs_pma/sfp"
+=======
+      "s_axi_1": {
+        "interface_ports": [
+          "s_axi",
+          "mac/s_axi"
+>>>>>>> 73441091f10b701625f299758c425ecf5144d46b
         ]
       },
       "mac_tx_statistics": {
         "interface_ports": [
           "tx_statistics",
           "mac/tx_statistics"
+        ]
+      },
+      "s_axis_tx_1": {
+        "interface_ports": [
+          "s_axis_tx",
+          "mac/s_axis_tx"
         ]
       },
       "mac_rx_statistics": {
@@ -1074,10 +1091,16 @@
           "mac/s_axis_pause"
         ]
       },
-      "mac_gmii": {
+      "mac_m_axis_rx": {
         "interface_ports": [
-          "mac/gmii",
-          "pcs_pma/gmii_pcs_pma"
+          "m_axis_rx",
+          "mac/m_axis_rx"
+        ]
+      },
+      "mgt_clk_1": {
+        "interface_ports": [
+          "mgt_clk",
+          "pcs_pma/gtrefclk_in"
         ]
       }
     },

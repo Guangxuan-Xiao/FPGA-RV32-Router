@@ -35,7 +35,7 @@ module frame_datapath
 
     // README: Here, we use a width upsizer to change the width to 48 bytes
     // (MAC 14 + ARP 28 + round up 6) to ensure that L2 (MAC) and L3 (IPv4 or ARP) headers appear
-    // in one beat facilitating our processing.
+    // in one beat (the first beat) facilitating our processing.
     // You can remove this.
     axis_dwidth_converter_up axis_dwidth_converter_up_i(
         .aclk(eth_clk),
@@ -80,8 +80,14 @@ module frame_datapath
     // README: Your code here.
     // See the guide to figure out what you need to do with frames.
 
-    assign in.dest = 0;  // All frames are forwarded to interface 0!
-    frame_data out = in;
+    frame_data out;
+
+    always @ (*)
+    begin
+        out = in;
+        out.dest = 0;  // All frames are forwarded to interface 0!
+    end
+
     wire out_ready;
     assign in_ready = out_ready || !out.valid;
 
