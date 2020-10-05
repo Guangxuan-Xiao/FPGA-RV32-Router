@@ -97,7 +97,6 @@ module frame_datapath_useless
             if (in.valid && in.is_first && !in.drop && !in.dont_touch)
             begin
                 // We only process the first beat of each frame.
-
                 // Useless feature 1: Swap MAC addresses.
                 s1.data[`MAC_DST] <= in.data[`MAC_SRC];
                 s1.data[`MAC_SRC] <= in.data[`MAC_DST];
