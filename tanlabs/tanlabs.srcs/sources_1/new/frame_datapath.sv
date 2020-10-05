@@ -80,36 +80,13 @@ module frame_datapath
     // README: Your code here.
     // See the guide to figure out what you need to do with frames.
 
-    // Our code start.
-    frame_data s1;
-    wire s1_ready;
-    assign in_ready = s1_ready || !in.valid;
-    always @ (posedge eth_clk or posedge reset)
-    begin
-        if (reset)
-        begin
-            s1 <= 0;
-        end
-        else if (s1_ready)
-        begin
-            s1 <= in;
-            if (in.valid && in.is_first && !in.drop && !in.dont_touch)
-            begin
-                // We only process the first beat of each frame.
-                // Useless feature 1: Swap MAC addresses.
-                s1.data[`MAC_DST] <= in.data[`MAC_SRC];
-                s1.data[`MAC_SRC] <= in.data[`MAC_DST];
-                s1.dest <= s1.id;
-            end
-        end
-    end
-    // Our code end.
-
     frame_data out;
     always @ (*)
     begin
-        out = s1;
-        // out.dest = 0;  // All frames are forwarded to interface 0!
+        out = in;
+        out.data[`MAC_DST] <= in.data[`MAC_SRC];
+        out.data[`MAC_SRC] <= in.data[`MAC_DST];
+        out.dest = in.id;  // Loopback
     end
 
     wire out_ready;
