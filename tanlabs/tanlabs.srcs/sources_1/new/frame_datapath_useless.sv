@@ -1,8 +1,9 @@
 `timescale 1ns / 1ps
 
-// Example Frame Data Path.
+// Example Pipeline Frame Data Path.
+// It provides useless features, but lets you be familiar with tanlabs. 
 
-module frame_datapath
+module frame_datapath_useless
 #(
     parameter DATA_WIDTH = 64,
     parameter ID_WIDTH = 3
@@ -60,6 +61,8 @@ module frame_datapath
 
     assign in.drop = 1'b0;
     assign in.drop_next = 1'b0;
+    assign in.dont_touch = 1'b0;
+    assign in.dest = 0;
 
     // Track frames and figure out when it is the first beat.
     always @ (posedge eth_clk or posedge reset)
@@ -77,10 +80,8 @@ module frame_datapath
         end
     end
 
-    // README: Your code here.
-    // See the guide to figure out what you need to do with frames.
+    // README: USELESS features :-)
 
-    // Our code start.
     frame_data s1;
     wire s1_ready;
     assign in_ready = s1_ready || !in.valid;
@@ -99,21 +100,142 @@ module frame_datapath
                 // Useless feature 1: Swap MAC addresses.
                 s1.data[`MAC_DST] <= in.data[`MAC_SRC];
                 s1.data[`MAC_SRC] <= in.data[`MAC_DST];
-                s1.dest <= s1.id;
             end
         end
     end
-    // Our code end.
 
-    frame_data out;
-    always @ (*)
+    frame_data s2;
+    wire s2_ready;
+    assign s1_ready = s2_ready || !s1.valid;
+    always @ (posedge eth_clk or posedge reset)
     begin
-        out = s1;
-        // out.dest = 0;  // All frames are forwarded to interface 0!
+        if (reset)
+        begin
+            s2 <= 0;
+        end
+        else if (s2_ready)
+        begin
+            s2 <= s1;
+            if (s1.valid && s1.is_first && !s1.drop && !s1.dont_touch)
+            begin
+                // Useless feature 2: Drop IP packets whose TTL values are odd.
+                if (s1.data[`MAC_TYPE] == ETHERTYPE_IP4 && s1.data[((14 + 8) * 8)] == 1'b1)
+                begin
+                    s2.drop <= 1'b1;
+                end
+            end
+        end
     end
 
+    localparam ST_SENDRECV = 0;
+    localparam ST_FOO = 1;
+    localparam ST_BAR = 2;
+    localparam ST_BAZ = 3;
+
+    frame_data s3_reg, s3;
+    integer s3_state;
+    wire s3_ready;
+    assign s2_ready = (s3_ready && s3_state == ST_SENDRECV) || !s2.valid;
+
+    always @ (*)
+    begin
+        s3 = s3_reg;
+        s3.valid = s3_reg.valid && s3_state == ST_SENDRECV;
+    end
+
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s3_reg <= 0;
+            s3_state <= ST_SENDRECV;
+        end
+        else
+        begin
+            // Useless feature 3: Take 3 cycles to do nothing.
+            case (s3_state)
+            ST_SENDRECV:
+            begin
+                if (s3_ready)
+                begin
+                    s3_reg <= s2;
+                    if (s2.valid && s2.is_first && !s2.drop && !s2.dont_touch)
+                    begin
+                        s3_state <= ST_FOO;
+                    end
+                end
+            end
+            ST_FOO:
+            begin
+                s3_reg.data <= s3_reg.data ^ 1;  // Pretend to do something.
+                s3_state <= ST_BAR;
+            end
+            ST_BAR:
+            begin
+                s3_reg.data <= s3_reg.data ^ 2;  // Pretend to do something.
+                s3_state <= ST_BAZ;
+            end
+            ST_BAZ:
+            begin
+                s3_reg.data <= s3_reg.data ^ 3;  // Pretend to do something.
+                s3_state <= ST_SENDRECV;
+            end
+            default:
+            begin
+                s3_state <= ST_SENDRECV;
+            end
+            endcase
+        end
+    end
+
+    frame_data s4;
+    wire s4_ready;
+    assign s3_ready = s4_ready || !s3.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s4 <= 0;
+        end
+        else if (s4_ready)
+        begin
+            s4 <= s3;
+            if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
+            begin
+                // Useless feature 4: Decrease TTL of IP packets without updating the checksums.
+                if (s3.data[`MAC_TYPE] == ETHERTYPE_IP4)
+                begin
+                    s4.data[`IP4_TTL] <= s3.data[`IP4_TTL] - 1;
+                end
+            end
+        end
+    end
+
+    frame_data s5;
+    wire s5_ready;
+    assign s4_ready = s5_ready || !s4.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s5 <= 0;
+        end
+        else if (s5_ready)
+        begin
+            s5 <= s4;
+            if (s4.valid && s4.is_first && !s4.drop && !s4.dont_touch)
+            begin
+                // Useless feature 5: Let all packets go back to their ingress interfaces.
+                s5.dest <= s4.id;
+            end
+        end
+    end
+
+    frame_data out;
+    assign out = s5;
+
     wire out_ready;
-    assign in_ready = out_ready || !out.valid;
+    assign s5_ready = out_ready || !out.valid;
 
     reg out_is_first;
     always @ (posedge eth_clk or posedge reset)
