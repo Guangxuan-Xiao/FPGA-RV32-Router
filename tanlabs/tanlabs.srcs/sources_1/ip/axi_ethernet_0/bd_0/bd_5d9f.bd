@@ -1038,33 +1038,16 @@
           "mac/s_axis_tx"
         ]
       },
-<<<<<<< HEAD
-      "mgt_clk_1": {
-        "interface_ports": [
-          "mgt_clk",
-          "pcs_pma/gtrefclk_in"
-        ]
-      },
-      "s_axi_1": {
-=======
       "mac_gmii": {
->>>>>>> 73441091f10b701625f299758c425ecf5144d46b
         "interface_ports": [
           "s_axi",
           "mac/s_axi"
         ]
       },
-<<<<<<< HEAD
-      "pcs_pma_sfp": {
-        "interface_ports": [
-          "sfp",
-          "pcs_pma/sfp"
-=======
       "s_axi_1": {
         "interface_ports": [
           "s_axi",
           "mac/s_axi"
->>>>>>> 73441091f10b701625f299758c425ecf5144d46b
         ]
       },
       "mac_tx_statistics": {
