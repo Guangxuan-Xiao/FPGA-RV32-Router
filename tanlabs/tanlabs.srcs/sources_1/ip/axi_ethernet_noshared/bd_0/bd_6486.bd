@@ -1083,34 +1083,16 @@
       }
     },
     "interface_nets": {
-      "pcs_pma_sfp": {
+      "mac_m_axis_rx": {
         "interface_ports": [
-          "sfp",
-          "pcs_pma/sfp"
-        ]
-      },
-      "mac_gmii": {
-        "interface_ports": [
-          "mac/gmii",
-          "pcs_pma/gmii_pcs_pma"
+          "m_axis_rx",
+          "mac/m_axis_rx"
         ]
       },
       "pcs_pma_sfp": {
         "interface_ports": [
           "sfp",
           "pcs_pma/sfp"
-        ]
-      },
-      "s_axis_pause_1": {
-        "interface_ports": [
-          "s_axis_pause",
-          "mac/s_axis_pause"
-        ]
-      },
-      "mac_tx_statistics": {
-        "interface_ports": [
-          "tx_statistics",
-          "mac/tx_statistics"
         ]
       },
       "mac_rx_statistics": {
@@ -1119,22 +1101,22 @@
           "mac/rx_statistics"
         ]
       },
-      "mac_m_axis_rx": {
+      "mac_gmii": {
         "interface_ports": [
-          "m_axis_rx",
-          "mac/m_axis_rx"
+          "mac/gmii",
+          "pcs_pma/gmii_pcs_pma"
+        ]
+      },
+      "mac_tx_statistics": {
+        "interface_ports": [
+          "tx_statistics",
+          "mac/tx_statistics"
         ]
       },
       "s_axis_tx_1": {
         "interface_ports": [
           "s_axis_tx",
           "mac/s_axis_tx"
-        ]
-      },
-      "mac_m_axis_rx": {
-        "interface_ports": [
-          "m_axis_rx",
-          "mac/m_axis_rx"
         ]
       },
       "s_axis_pause_1": {
@@ -1147,12 +1129,6 @@
         "interface_ports": [
           "s_axi",
           "mac/s_axi"
-        ]
-      },
-      "mac_tx_statistics": {
-        "interface_ports": [
-          "tx_statistics",
-          "mac/tx_statistics"
         ]
       }
     },
