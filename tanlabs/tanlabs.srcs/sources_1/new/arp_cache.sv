@@ -25,7 +25,7 @@ module arp_cache #(parameter CACHE_ADDR_WIDTH = 8)
         if (rst) begin
             for (ptr = 0; ptr<(2**CACHE_ADDR_WIDTH); ptr = ptr +1)
                 cache[ptr].valid <= 1'b0;
-                next             <= CACHE_ADDR_WIDTH'h0;
+                next             <= 0;
                 found            <= 1'b0;
                 r_mac            <= 48'h0;
         end
@@ -42,7 +42,7 @@ module arp_cache #(parameter CACHE_ADDR_WIDTH = 8)
                     r_mac <= 48'h0;
                     for (ptr = 0; ptr < (2**CACHE_ADDR_WIDTH); ptr = ptr+1) begin
                         if (cache[ptr].valid && cache[ptr].ip == r_ip) begin
-                            r_mac <= cache[i].mac;
+                            r_mac <= cache[ptr].mac;
                         end
                     end
                 end
