@@ -60,8 +60,6 @@ module frame_datapath
 
     assign in.drop       = 1'b0;
     assign in.drop_next  = 1'b0;
-    assign in.dont_touch = 1'b0;
-    assign in.dest       = 0;
 
     // Track frames and figure out when it is the first beat.
     always @ (posedge eth_clk or posedge reset)
@@ -94,7 +92,7 @@ module frame_datapath
         else if (s1_ready)
         begin
             s1 <= in;
-            if (in.valid && in.is_first && !in.drop && !in.dont_touch)
+            if (in.valid && in.is_first && !in.drop)
             begin
                 s1.data[`MAC_DST] <= in.data[`MAC_SRC];
                 s1.data[`MAC_SRC] <= in.data[`MAC_DST];
@@ -114,7 +112,7 @@ module frame_datapath
                 else if (s2_ready)
                 begin
                     s2 <= s1;
-                    if (s1.valid && s1.is_first && !s1.drop && !s1.dont_touch)
+                    if (s1.valid && s1.is_first && !s1.drop)
                     begin
                         if ( s1.data[`MAC_TYPE] != ETHERTYPE_ARP )
                         begin
@@ -136,7 +134,7 @@ module frame_datapath
                 else if (s3_ready)
                 begin
                     s3 <= s2;
-                    if (s2.valid && s2.is_first && !s2.drop && !s2.dont_touch)
+                    if (s2.valid && s2.is_first && !s2.drop)
                     begin
                         op <= s3.data[`OP];
                     end
@@ -157,7 +155,7 @@ module frame_datapath
                         else if (s4_ready)
                         begin
                             s4 <= s3;
-                            if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
+                            if (s3.valid && s3.is_first && !s3.drop)
                             begin
                                 if(op == REQUEST)
                                 begin
@@ -187,7 +185,7 @@ module frame_datapath
                                 else if (s5_ready)
                                 begin
                                     s5 <= s4;
-                                    if (s4.valid && s4.is_first && !s4.drop && !s4.dont_touch)
+                                    if (s4.valid && s4.is_first && !s4.drop)
                                     begin
                                         s5.dest <= s4.id;
                                     end
