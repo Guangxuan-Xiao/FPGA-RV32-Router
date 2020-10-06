@@ -25,7 +25,9 @@ module frame_datapath
     output wire [DATA_WIDTH / 8 - 1:0] m_user,
     output wire [ID_WIDTH - 1:0] m_dest,
     output wire m_valid,
-    input m_ready
+    input m_ready,
+    output wire [383 : 0] out_data,
+    output wire [383: 0] in_data
 );
 
     `include "frame_datapath.vh"
@@ -71,7 +73,7 @@ module frame_datapath
     reg [15:0] op;
 
     arp_cache #(
-        .CACHE_ADDR_WIDTH = 8
+        .CACHE_ADDR_WIDTH(CACHE_ADDR_WIDTH)
     ) arp_cache_module(
         .clk(eth_clk),
         .rst(reset),
@@ -228,6 +230,8 @@ module frame_datapath
                                     
     frame_data out;
     assign out = s5;
+    assign out_data = s1.data;
+    assign in_data = in.data;
 
     wire out_ready;
     assign s5_ready = out_ready || !out.valid;
