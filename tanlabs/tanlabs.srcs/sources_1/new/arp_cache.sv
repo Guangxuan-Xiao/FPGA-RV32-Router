@@ -1,4 +1,4 @@
-`timescale 1ps/1ps
+`timescale 1ns/1ps
 typedef struct packed
 {
 reg valid;
@@ -16,10 +16,10 @@ module arp_cache #(parameter CACHE_ADDR_WIDTH = 8)
                    output reg[47:0] r_mac,
                    input wire r_en);
     // cache data
-    arp_entry [(2**CACHE_ADDR_WIDTH)-1:0] cache;
-    reg [CACHE_ADDR_WIDTH-1:0] next;
-    reg found;
-    reg [CACHE_ADDR_WIDTH:0] ptr;
+    arp_entry [(2**CACHE_ADDR_WIDTH)-1:0] cache = 0;
+    reg [CACHE_ADDR_WIDTH-1:0] next = 0;
+    reg found = 0;
+    reg [CACHE_ADDR_WIDTH:0] ptr = 0;
     
     always @(posedge clk) begin
         if (rst) begin
