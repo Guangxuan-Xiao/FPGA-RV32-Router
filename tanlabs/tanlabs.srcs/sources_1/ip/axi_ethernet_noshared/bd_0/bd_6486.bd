@@ -1085,14 +1085,14 @@
     "interface_nets": {
       "mac_m_axis_rx": {
         "interface_ports": [
-          "m_axis_rx",
-          "mac/m_axis_rx"
+          "rx_statistics",
+          "mac/rx_statistics"
         ]
       },
       "pcs_pma_sfp": {
         "interface_ports": [
-          "sfp",
-          "pcs_pma/sfp"
+          "s_axi",
+          "mac/s_axi"
         ]
       },
       "mac_rx_statistics": {
