@@ -60,6 +60,7 @@ module frame_datapath
 
     assign in.drop       = 1'b0;
     assign in.drop_next  = 1'b0;
+    assign in.dont_touch = 1'b0;
 
     reg [31:0] src_ip_addr;
     reg [31:0] trg_ip_addr;
@@ -113,7 +114,7 @@ module frame_datapath
         else if (s1_ready)
         begin
             s1 <= in;
-            if (in.valid && in.is_first && !in.drop)
+            if (in.valid && in.is_first && !in.drop && !in.dont_touch)
             begin
             // Swap the MAC address in ethernet frame, since the source and target will change.
                 s1.data[`MAC_DST] <= in.data[`MAC_SRC];
@@ -134,7 +135,7 @@ module frame_datapath
         else if (s2_ready)
         begin
             s2 <= s1;
-            if (s1.valid && s1.is_first && !s1.drop)
+            if (s1.valid && s1.is_first && !s1.drop && !s1.dont_touch)
             begin
                 // Judge if current protocol is ARP. If not, drop it.
                 if ( s1.data[`MAC_TYPE] != ETHERTYPE_ARP )
@@ -157,10 +158,10 @@ module frame_datapath
         else if (s3_ready)
         begin
             s3 <= s2;
-            if (s2.valid && s2.is_first && !s2.drop)
+            if (s2.valid && s2.is_first && !s2.drop && !s2.dont_touch)
             // Get the operation type of the ARP protocol.
             begin
-                op <= s3.data[`OP];
+                op <= s2.data[`OP];
             end
         end
     end
@@ -177,7 +178,7 @@ module frame_datapath
         else if (s4_ready)
         begin
             s4 <= s3;
-            if (s3.valid && s3.is_first && !s3.drop)
+            if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
             begin
                 if(op == REQUEST)
                 // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
@@ -217,7 +218,7 @@ module frame_datapath
         else if (s5_ready)
         begin
             s5 <= s4;
-            if (s4.valid && s4.is_first && !s4.drop)
+            if (s4.valid && s4.is_first && !s4.drop && !s4.dont_touch)
             // Loopback.
             begin
                 s5.dest <= s4.id;
@@ -229,7 +230,7 @@ module frame_datapath
     assign out = s5;
 
     wire out_ready;
-    assign in_ready = out_ready || !out.valid;
+    assign s5_ready = out_ready || !out.valid;
 
     reg out_is_first;
     always @ (posedge eth_clk or posedge reset)
