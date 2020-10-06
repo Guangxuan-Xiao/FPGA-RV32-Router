@@ -81,11 +81,12 @@ module frame_datapath
     // See the guide to figure out what you need to do with frames.
 
     frame_data out;
-
     always @ (*)
     begin
         out = in;
-        out.dest = 0;  // All frames are forwarded to interface 0!
+        out.data[`MAC_DST] <= in.data[`MAC_SRC];
+        out.data[`MAC_SRC] <= in.data[`MAC_DST];
+        out.dest = in.id;  // Loopback
     end
 
     wire out_ready;
