@@ -40,10 +40,10 @@ module arp_cache #(parameter CACHE_ADDR_WIDTH = 8)
                     end
                 end
                 if (!found) begin
-                    cache[next].valid    <= 1'b1;
-                    cache[next].ip       <= w_ip;
-                    cache[next].mac_addr <= w_mac;
-                    next                 <= next + 1;
+                    cache[next].valid <= 1'b1;
+                    cache[next].ip    <= w_ip;
+                    cache[next].mac   <= w_mac;
+                    next              <= next + 1;
                 end
             end
                 if (r_en) begin
