@@ -35,7 +35,7 @@ module frame_datapath
 
     // README: Here, we use a width upsizer to change the width to 48 bytes
     // (MAC 14 + ARP 28 + round up 6) to ensure that L2 (MAC) and L3 (IPv4 or ARP) headers appear
-    // in one beat facilitating our processing.
+    // in one beat (the first beat) facilitating our processing.
     // You can remove this.
     axis_dwidth_converter_up axis_dwidth_converter_up_i(
         .aclk(eth_clk),
@@ -58,8 +58,30 @@ module frame_datapath
         .m_axis_tuser(in.user)
     );
 
-    assign in.drop = 1'b0;
-    assign in.drop_next = 1'b0;
+    assign in.drop       = 1'b0;
+    assign in.drop_next  = 1'b0;
+    assign in.dont_touch = 1'b0;
+
+    reg [31:0] src_ip_addr;
+    reg [31:0] trg_ip_addr;
+    reg [47:0] src_mac_addr;
+    reg [47:0] trg_mac_addr;
+    reg arp_cache_w_en = 0;
+    reg arp_cache_r_en = 0;
+    reg [15:0] op;
+
+    arp_cache #(
+        .CACHE_ADDR_WIDTH = 8
+    ) arp_cache_module(
+        .clk(eth_clk),
+        .rst(reset),
+        .w_ip(src_ip_addr),
+        .w_mac(src_mac_addr),
+        .w_en(arp_cache_w_en),
+        .r_ip(trg_ip_addr),
+        .r_mac(trg_mac_addr),
+        .r_en(arp_cache_r_en)
+    );
 
     // Track frames and figure out when it is the first beat.
     always @ (posedge eth_clk or posedge reset)
@@ -80,10 +102,135 @@ module frame_datapath
     // README: Your code here.
     // See the guide to figure out what you need to do with frames.
 
-    assign in.dest = 0;  // All frames are forwarded to interface 0!
-    frame_data out = in;
+    frame_data s1;
+    wire s1_ready;
+    assign in_ready = s1_ready || !in.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s1 <= 0;
+        end
+        else if (s1_ready)
+        begin
+            s1 <= in;
+            if (in.valid && in.is_first && !in.drop && !in.dont_touch)
+            begin
+            // Swap the MAC address in ethernet frame, since the source and target will change.
+                s1.data[`MAC_DST] <= in.data[`MAC_SRC];
+                s1.data[`MAC_SRC] <= in.data[`MAC_DST];
+            end
+        end
+    end
+            
+    frame_data s2;
+    wire s2_ready;
+    assign s1_ready = s2_ready || !s1.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s2 <= 0;
+        end
+        else if (s2_ready)
+        begin
+            s2 <= s1;
+            if (s1.valid && s1.is_first && !s1.drop && !s1.dont_touch)
+            begin
+                // Judge if current protocol is ARP. If not, drop it.
+                if ( s1.data[`MAC_TYPE] != ETHERTYPE_ARP )
+                begin
+                    s2.drop <= 1'b1;
+                end
+            end
+        end
+    end
+
+    frame_data s3;
+    wire s3_ready;
+    assign s2_ready = s3_ready || !s2.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if(reset)
+        begin
+            s3 <= 0;
+        end
+        else if (s3_ready)
+        begin
+            s3 <= s2;
+            if (s2.valid && s2.is_first && !s2.drop && !s2.dont_touch)
+            // Get the operation type of the ARP protocol.
+            begin
+                op <= s2.data[`OP];
+            end
+        end
+    end
+                                      
+    frame_data s4;
+    wire s4_ready;
+    assign s3_ready = s4_ready || !s3.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s4 <= 0;
+        end
+        else if (s4_ready)
+        begin
+            s4 <= s3;
+            if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
+            begin
+                if(op == REQUEST)
+                // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
+                begin
+                    s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
+                    s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
+                    s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
+                    s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
+                end
+                else if(op == REPLY)
+                // Store the replier's IP address and MAC address for cache process.
+                begin
+                    src_ip_addr <= s3.data[`SRC_IP_ADDR];
+                    src_mac_addr <= s3.data[`SRC_MAC_ADDR];
+                    arp_cache_w_en <= 1'b1;
+                end
+            end
+        end
+    end
+    
+    always @ (posedge eth_clk or posedge reset) 
+    begin
+        if (arp_cache_w_en) begin
+            arp_cache_w_en <= 1'b0;
+        end
+    end
+
+    frame_data s5;
+    wire s5_ready;
+    assign s4_ready = s5_ready || !s4.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s5 <= 0;
+        end
+        else if (s5_ready)
+        begin
+            s5 <= s4;
+            if (s4.valid && s4.is_first && !s4.drop && !s4.dont_touch)
+            // Loopback.
+            begin
+                s5.dest <= s4.id;
+            end
+        end
+    end
+                                    
+    frame_data out;
+    assign out = s5;
+
     wire out_ready;
-    assign in_ready = out_ready || !out.valid;
+    assign s5_ready = out_ready || !out.valid;
 
     reg out_is_first;
     always @ (posedge eth_clk or posedge reset)
