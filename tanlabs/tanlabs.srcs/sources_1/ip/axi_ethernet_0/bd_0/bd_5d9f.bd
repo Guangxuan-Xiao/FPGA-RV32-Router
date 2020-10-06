@@ -1052,14 +1052,14 @@
       },
       "s_axis_tx_1": {
         "interface_ports": [
-          "s_axis_tx",
-          "mac/s_axis_tx"
+          "s_axis_pause",
+          "mac/s_axis_pause"
         ]
       },
-      "s_axi_1": {
+      "mac_gmii": {
         "interface_ports": [
-          "s_axi",
-          "mac/s_axi"
+          "mac/gmii",
+          "pcs_pma/gmii_pcs_pma"
         ]
       },
       "pcs_pma_sfp": {
