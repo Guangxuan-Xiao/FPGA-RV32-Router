@@ -35,6 +35,7 @@ typedef struct packed
 `define MAC_DST (0 * 8) +: 48
 `define MAC_SRC (6 * 8) +: 48
 `define MAC_TYPE (12 * 8) +:16
+`define MAC_TYPE1 (12 * 8) +:32
 `define IP4_TTL ((14 + 8) * 8) +: 8
 `define SRC_MAC_ADDR (22 * 8) +: 48
 `define TRG_MAC_ADDR (32 * 8) +: 48
@@ -45,10 +46,10 @@ typedef struct packed
 localparam ID_CPU = 3'd4;  // The interface ID of CPU is 4.
 
 localparam ETHERTYPE_IP4 = 16'h0008;
-localparam ETHERTYPE_ARP = 16'h0806;
+localparam ETHERTYPE_ARP = 16'h0608;
 
-localparam REQUEST = 16'h0001;
-localparam REPLY   = 16'h0002;
+localparam REQUEST = 16'h0100;
+localparam REPLY   = 16'h0200;
 
 localparam LOCAL_MAC = 48'h114514191981; 
 
