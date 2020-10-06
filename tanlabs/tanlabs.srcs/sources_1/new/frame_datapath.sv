@@ -61,6 +61,12 @@ module frame_datapath
     assign in.drop       = 1'b0;
     assign in.drop_next  = 1'b0;
 
+    reg [15:0] src_ip_addr;
+    reg [15:0] trg_ip_addr;
+    reg [47:0] src_mac_addr;
+    reg [47:0] trg_mac_addr;
+    reg [15:0] op;
+
     // Track frames and figure out when it is the first beat.
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -98,99 +104,97 @@ module frame_datapath
                 s1.data[`MAC_SRC] <= in.data[`MAC_DST];
             end
         end
-            end
+    end
             
-            frame_data s2;
-            wire s2_ready;
-            assign s1_ready = s2_ready || !s1.valid;
-            always @ (posedge eth_clk or posedge reset)
+    frame_data s2;
+    wire s2_ready;
+    assign s1_ready = s2_ready || !s1.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s2 <= 0;
+        end
+        else if (s2_ready)
+        begin
+            s2 <= s1;
+            if (s1.valid && s1.is_first && !s1.drop)
             begin
-                if (reset)
+                if ( s1.data[`MAC_TYPE] != ETHERTYPE_ARP )
                 begin
-                    s2 <= 0;
-                end
-                else if (s2_ready)
-                begin
-                    s2 <= s1;
-                    if (s1.valid && s1.is_first && !s1.drop)
-                    begin
-                        if ( s1.data[`MAC_TYPE] != ETHERTYPE_ARP )
-                        begin
-                            s2.drop <= 1'b1;
-                        end
-                    end
-                end
-                    end
-
-            frame_data s3;
-            wire s3_ready;
-            assign s2_ready = s3_ready || !s2.valid;
-            always @ (posedge eth_clk or posedge reset)
-            begin
-                if(reset)
-                begin
-                    s3 <= 0;
-                end
-                else if (s3_ready)
-                begin
-                    s3 <= s2;
-                    if (s2.valid && s2.is_first && !s2.drop)
-                    begin
-                        op <= s3.data[`OP];
-                    end
+                    s2.drop <= 1'b1;
                 end
             end
-                    
-                    
-                    
-                    frame_data s4;
-                    wire s4_ready;
-                    assign s3_ready = s4_ready || !s3.valid;
-                    always @ (posedge eth_clk or posedge reset)
-                    begin
-                        if (reset)
-                        begin
-                            s4 <= 0;
-                        end
-                        else if (s4_ready)
-                        begin
-                            s4 <= s3;
-                            if (s3.valid && s3.is_first && !s3.drop)
-                            begin
-                                if(op == REQUEST)
-                                begin
-                                    s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
-                                    s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
-                                    s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
-                                    s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
-                                end
-                                else if(op == REPLY)
-                                begin
-                                    src_ip_addr <= s3.data[`SRC_IP_ADDR];
-                                    src_mac_addr <= s3.data[`SRC_MAC_ADDR];
-                                end
-                            end
-                        end
-                    end
+        end
+    end
+
+    frame_data s3;
+    wire s3_ready;
+    assign s2_ready = s3_ready || !s2.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if(reset)
+        begin
+            s3 <= 0;
+        end
+        else if (s3_ready)
+        begin
+            s3 <= s2;
+            if (s2.valid && s2.is_first && !s2.drop)
+            begin
+                op <= s3.data[`OP];
+            end
+        end
+    end
+                                      
+    frame_data s4;
+    wire s4_ready;
+    assign s3_ready = s4_ready || !s3.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s4 <= 0;
+        end
+        else if (s4_ready)
+        begin
+            s4 <= s3;
+            if (s3.valid && s3.is_first && !s3.drop)
+            begin
+                if(op == REQUEST)
+                begin
+                    s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
+                    s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
+                    s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
+                    s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
+                end
+                else if(op == REPLY)
+                begin
+                    src_ip_addr <= s3.data[`SRC_IP_ADDR];
+                    src_mac_addr <= s3.data[`SRC_MAC_ADDR];
+                end
+            end
+        end
+    end
                             
-                            frame_data s5;
-                            wire s5_ready;
-                            assign s4_ready = s5_ready || !s4.valid;
-                            always @ (posedge eth_clk or posedge reset)
-                            begin
-                                if (reset)
-                                begin
-                                    s5 <= 0;
-                                end
-                                else if (s5_ready)
-                                begin
-                                    s5 <= s4;
-                                    if (s4.valid && s4.is_first && !s4.drop)
-                                    begin
-                                        s5.dest <= s4.id;
-                                    end
-                                end
-                                    end
+    frame_data s5;
+    wire s5_ready;
+    assign s4_ready = s5_ready || !s4.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            s5 <= 0;
+        end
+        else if (s5_ready)
+        begin
+            s5 <= s4;
+            if (s4.valid && s4.is_first && !s4.drop)
+            begin
+                s5.dest <= s4.id;
+            end
+        end
+    end
                                     
     frame_data out;
     assign out = s5;
