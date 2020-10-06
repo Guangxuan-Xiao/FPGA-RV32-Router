@@ -100,6 +100,7 @@ module frame_datapath
             s1 <= in;
             if (in.valid && in.is_first && !in.drop)
             begin
+            // Swap the MAC address in ethernet frame, since the source and target will change.
                 s1.data[`MAC_DST] <= in.data[`MAC_SRC];
                 s1.data[`MAC_SRC] <= in.data[`MAC_DST];
             end
@@ -120,6 +121,7 @@ module frame_datapath
             s2 <= s1;
             if (s1.valid && s1.is_first && !s1.drop)
             begin
+                // Judge if current protocol is ARP. If not, drop it.
                 if ( s1.data[`MAC_TYPE] != ETHERTYPE_ARP )
                 begin
                     s2.drop <= 1'b1;
@@ -141,6 +143,7 @@ module frame_datapath
         begin
             s3 <= s2;
             if (s2.valid && s2.is_first && !s2.drop)
+            // Get the operation type of the ARP protocol.
             begin
                 op <= s3.data[`OP];
             end
@@ -162,6 +165,7 @@ module frame_datapath
             if (s3.valid && s3.is_first && !s3.drop)
             begin
                 if(op == REQUEST)
+                // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
                 begin
                     s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
                     s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
@@ -169,6 +173,7 @@ module frame_datapath
                     s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
                 end
                 else if(op == REPLY)
+                // Store the replier's IP address and MAC address for cache process.
                 begin
                     src_ip_addr <= s3.data[`SRC_IP_ADDR];
                     src_mac_addr <= s3.data[`SRC_MAC_ADDR];
@@ -190,6 +195,7 @@ module frame_datapath
         begin
             s5 <= s4;
             if (s4.valid && s4.is_first && !s4.drop)
+            // Loopback.
             begin
                 s5.dest <= s4.id;
             end
