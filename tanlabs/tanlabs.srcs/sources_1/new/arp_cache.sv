@@ -23,11 +23,12 @@ module arp_cache #(parameter CACHE_ADDR_WIDTH = 8)
     
     always @(posedge clk) begin
         if (rst) begin
-            for (ptr = 0; ptr<(2**CACHE_ADDR_WIDTH); ptr = ptr +1)
+            for (ptr = 0; ptr<(2**CACHE_ADDR_WIDTH); ptr = ptr +1) begin
                 cache[ptr].valid <= 1'b0;
                 next             <= 0;
                 found            <= 1'b0;
                 r_mac            <= 48'h0;
+            end
         end
         else begin
             if (w_en) begin
@@ -35,7 +36,14 @@ module arp_cache #(parameter CACHE_ADDR_WIDTH = 8)
                 for(ptr = 0; ptr < (2**CACHE_ADDR_WIDTH); ptr = ptr+1) begin
                     if (cache[ptr].valid && cache[ptr].ip == w_ip) begin
                         cache[ptr].mac <= w_mac;
+                        found = 1'b1;
                     end
+                end
+                if (!found) begin
+                    cache[next].valid    <= 1'b1;
+                    cache[next].ip       <= w_ip;
+                    cache[next].mac_addr <= w_mac;
+                    next                 <= next + 1;
                 end
             end
                 if (r_en) begin
