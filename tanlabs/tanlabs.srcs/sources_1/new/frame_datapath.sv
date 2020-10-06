@@ -61,11 +61,26 @@ module frame_datapath
     assign in.drop       = 1'b0;
     assign in.drop_next  = 1'b0;
 
-    reg [15:0] src_ip_addr;
-    reg [15:0] trg_ip_addr;
+    reg [31:0] src_ip_addr;
+    reg [31:0] trg_ip_addr;
     reg [47:0] src_mac_addr;
     reg [47:0] trg_mac_addr;
+    reg arp_cache_w_en = 0;
+    reg arp_cache_r_en = 0;
     reg [15:0] op;
+
+    arp_cache #(
+        .CACHE_ADDR_WIDTH = 8
+    ) arp_cache_module(
+        .clk(eth_clk),
+        .rst(reset),
+        .w_ip(src_ip_addr),
+        .w_mac(src_mac_addr),
+        .w_en(arp_cache_w_en),
+        .r_ip(trg_ip_addr),
+        .r_mac(trg_mac_addr),
+        .r_en(arp_cache_r_en)
+    );
 
     // Track frames and figure out when it is the first beat.
     always @ (posedge eth_clk or posedge reset)
@@ -177,11 +192,19 @@ module frame_datapath
                 begin
                     src_ip_addr <= s3.data[`SRC_IP_ADDR];
                     src_mac_addr <= s3.data[`SRC_MAC_ADDR];
+                    arp_cache_w_en <= 1'b1;
                 end
             end
         end
     end
-                            
+    
+    always @ (posedge eth_clk or posedge reset) 
+    begin
+        if (arp_cache_w_en) begin
+            arp_cache_w_en <= 1'b0;
+        end
+    end
+
     frame_data s5;
     wire s5_ready;
     assign s4_ready = s5_ready || !s4.valid;
