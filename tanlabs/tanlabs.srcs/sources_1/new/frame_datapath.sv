@@ -163,7 +163,7 @@ module frame_datapath
             if (s2.valid && s2.is_first && !s2.drop && !s2.dont_touch)
             // Get the operation type of the ARP protocol.
             begin
-                op <= s2.data[`OP];
+                op <= s3.data[`OP];
             end
         end
     end
@@ -230,7 +230,7 @@ module frame_datapath
                                     
     frame_data out;
     assign out = s5;
-    assign out_data = s1.data;
+    assign out_data = s5.data;
     assign in_data = in.data;
 
     wire out_ready;
