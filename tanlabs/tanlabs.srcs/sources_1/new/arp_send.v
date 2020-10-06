@@ -1,20 +1,20 @@
 `define REQUEST 16'h0001
 `define REPLY   16'h0002
 
-module arp_send (input clk,
-                 input reset,
-                 input [31:0] send_ip_addr_reply,
-                 input [47:0] send_mac_addr_reply,
-                 input [31:0] send_ip_addr_request,
-                 input [31:0] spa,
-                 input [47:0] sha,
-                 input request_en,
-                 input reply_en,
-                 input send_buffer_ready,
+module arp_send (input wire clk,
+                 input wire reset,
+                 input wire [31:0] send_ip_addr_reply,
+                 input wire [47:0] send_mac_addr_reply,
+                 input wire [31:0] send_ip_addr_request,
+                 input wire [31:0] spa,
+                 input wire [47:0] sha,
+                 input wire request_en,
+                 input wire reply_en,
+                 input wire send_buffer_ready,
                  output reg arp_valid,
                  output reg [31:0] arp_data,
-                 output reply_ready,
-                 output request_ready,
+                 output reg reply_ready,
+                 output reg request_ready,
                  output reg [47:0] arp_mac_addr);
     
     reg [2:0] word_counter;
@@ -60,7 +60,6 @@ module arp_send (input clk,
         else
         begin
             case({request_en, reply_en})
-                
                 2'b00:
                 begin
                     if ((send_buffer_ready) && (!clear_to_send) && (!arp_valid))
@@ -165,66 +164,63 @@ module arp_send (input clk,
                             begin
                                 arp_mac_addr <= 48'hFFFFFFFFFFFF;
                             end
-                            
-                            else
-                            begin
-                            arp_mac_addr <= tha;
+                            else begin
+                                arp_mac_addr <= tha;
+                            end
+                        end
+                        else begin
+                            arp_valid <= 1'b0;
                         end
                     end
-                    else
+                    
+                    3'd1:
                     begin
-                        arp_valid <= 1'b0;
+                        arp_data     <= {hard_len, prot_len, op};
+                        arp_valid    <= 1'b1;
+                        word_counter <= word_counter + 1;
                     end
-                end
-                
-                3'd1:
-                begin
-                    arp_data     <= {hard_len, prot_len, op};
-                    arp_valid    <= 1'b1;
-                    word_counter <= word_counter + 1;
-                end
-                
-                3'd2:
-                begin
-                    arp_data     <= sha[47:16];
-                    arp_valid    <= 1'b1;
-                    word_counter <= word_counter + 1;
-                end
-                
-                3'd3:
-                begin
-                    arp_data     <= {sha[15:0], spa[31:16]};
-                    arp_valid    <= 1'b1;
-                    word_counter <= word_counter + 1;
-                end
-                
-                3'd4:
-                begin
-                    arp_data     <= {spa[15:0], tha[47:32]};
-                    arp_valid    <= 1'b1;
-                    word_counter <= word_counter + 1;
-                end
-                
-                3'd5:
-                begin
-                    arp_data     <= tha[31:0];
-                    arp_valid    <= 1'b1;
-                    word_counter <= word_counter + 1;
-                end
-                
-                3'd6:
-                begin
-                    arp_data     <= tpa;
-                    arp_valid    <= 1'b1;
-                    word_counter <= 3'd0;
-                end
-                
-                default:
-                begin
-                    arp_data     <= 32'b0;
-                    arp_valid    <= 1'b0;
-                    word_counter <= 3'b0;
-                end
+                    
+                    3'd2:
+                    begin
+                        arp_data     <= sha[47:16];
+                        arp_valid    <= 1'b1;
+                        word_counter <= word_counter + 1;
+                    end
+                    
+                    3'd3:
+                    begin
+                        arp_data     <= {sha[15:0], spa[31:16]};
+                        arp_valid    <= 1'b1;
+                        word_counter <= word_counter + 1;
+                    end
+                    
+                    3'd4:
+                    begin
+                        arp_data     <= {spa[15:0], tha[47:32]};
+                        arp_valid    <= 1'b1;
+                        word_counter <= word_counter + 1;
+                    end
+                    
+                    3'd5:
+                    begin
+                        arp_data     <= tha[31:0];
+                        arp_valid    <= 1'b1;
+                        word_counter <= word_counter + 1;
+                    end
+                    
+                    3'd6:
+                    begin
+                        arp_data     <= tpa;
+                        arp_valid    <= 1'b1;
+                        word_counter <= 3'd0;
+                    end
+                    
+                    default:
+                    begin
+                        arp_data     <= 32'b0;
+                        arp_valid    <= 1'b0;
+                        word_counter <= 3'b0;
+                    end
                 endcase
             end
             else

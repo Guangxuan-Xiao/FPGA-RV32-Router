@@ -1,11 +1,11 @@
 `timescale 1ps/1ps
 typedef struct packed
 {
-// AXI-Stream signals.
 reg valid;
 reg [31:0] ip;
 reg [47:0] mac;
 } arp_entry;
+
 module arp_cache #(parameter CACHE_ADDR_WIDTH = 8)
                   (input wire clk,
                    input wire rst,
@@ -14,12 +14,12 @@ module arp_cache #(parameter CACHE_ADDR_WIDTH = 8)
                    input wire w_en,
                    input wire[31:0] r_ip,
                    output reg[47:0] r_mac,
-                   input r_en);
+                   input wire r_en);
     // cache data
     arp_entry [(2**CACHE_ADDR_WIDTH)-1:0] cache;
     reg [CACHE_ADDR_WIDTH-1:0] next;
     reg found;
-    reg [CACHE_ADDR_WIDTH-1:0] ptr;
+    reg [CACHE_ADDR_WIDTH:0] ptr;
     
     always @(posedge clk) begin
         if (rst) begin
