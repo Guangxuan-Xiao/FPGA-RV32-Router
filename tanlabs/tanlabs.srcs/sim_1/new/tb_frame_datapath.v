@@ -50,6 +50,8 @@ module tb_frame_datapath
     wire [ID_WIDTH - 1:0] out_dest;
     wire out_valid;
     wire out_ready;
+    wire [383:0] out_data_real;
+    wire [383:0] in_data_real;
 
     // README: Instantiate your datapath.
     frame_datapath dut(
@@ -70,7 +72,9 @@ module tb_frame_datapath
         .m_user(out_user),
         .m_dest(out_dest),
         .m_valid(out_valid),
-        .m_ready(out_ready)
+        .m_ready(out_ready),
+        .out_data(out_data_real),
+        .in_data(in_data_real)
     );
 
     axis_receiver axis_receiver_i(
