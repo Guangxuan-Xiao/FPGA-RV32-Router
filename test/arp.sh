@@ -1,0 +1,3 @@
+INTERFACE=enx00e04c68114b
+BOARD_IP=10.0.0.1
+sudo arping -I ${INTERFACE} ${BOARD_IP}
