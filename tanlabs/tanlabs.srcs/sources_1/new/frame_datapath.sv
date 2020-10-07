@@ -185,18 +185,20 @@ module frame_datapath
                 if(op == REQUEST)
                 // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
                 begin
-                    s4.data[`SRC_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
-                    s4.data[`SRC_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
-                    s4.data[`TRG_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
-                    s4.data[`TRG_MAC_ADDR] <= 48'hffffffffffff;
+                    s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
+                    if (s3.data[`TRG_IP_ADDR] == LOCAL_IP) begin
+                        s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
+                    end
+                    else begin
+                        s4.data[`SRC_MAC_ADDR] <= s3.data[`TRG_IP_ADDR];
+                    end
+                    s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
+                    s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
+                    s4.data[`OP] <= REPLY;
                 end
                 else if(op == REPLY)
                 // Store the replier's IP address and MAC address for cache process.
                 begin
-                    s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
-                    s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
-                    s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
-                    s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
                     src_ip_addr <= s3.data[`SRC_IP_ADDR];
                     src_mac_addr <= s3.data[`SRC_MAC_ADDR];
                     arp_cache_w_en <= 1'b1;
@@ -204,7 +206,7 @@ module frame_datapath
             end
         end
     end
-    
+
     always @ (posedge eth_clk or posedge reset) 
     begin
         if (arp_cache_w_en) begin
