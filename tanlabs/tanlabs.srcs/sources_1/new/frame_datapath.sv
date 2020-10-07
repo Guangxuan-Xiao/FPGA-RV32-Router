@@ -163,7 +163,7 @@ module frame_datapath
             if (s2.valid && s2.is_first && !s2.drop && !s2.dont_touch)
             // Get the operation type of the ARP protocol.
             begin
-                op <= s2.data[`OP];
+                op <= s3.data[`OP];
             end
         end
     end
@@ -185,14 +185,18 @@ module frame_datapath
                 if(op == REQUEST)
                 // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
                 begin
-                    s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
-                    s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
-                    s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
-                    s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
+                    s4.data[`SRC_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
+                    s4.data[`SRC_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
+                    s4.data[`TRG_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
+                    s4.data[`TRG_MAC_ADDR] <= 48'hffffffffffff;
                 end
                 else if(op == REPLY)
                 // Store the replier's IP address and MAC address for cache process.
                 begin
+                    s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
+                    s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
+                    s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
+                    s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
                     src_ip_addr <= s3.data[`SRC_IP_ADDR];
                     src_mac_addr <= s3.data[`SRC_MAC_ADDR];
                     arp_cache_w_en <= 1'b1;
