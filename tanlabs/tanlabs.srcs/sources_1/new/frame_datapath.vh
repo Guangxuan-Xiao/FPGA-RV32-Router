@@ -52,7 +52,7 @@ localparam REQUEST = 16'h0100;
 localparam REPLY   = 16'h0200;
 
 localparam LOCAL_MAC = 48'h104514191981;
-localparam LOCAL_IP  = 32'habababab;
+localparam LOCAL_IP  = 32'h0100000a;
 
 
 // Incrementally update the checksum in an IPv4 header
