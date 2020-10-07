@@ -163,7 +163,7 @@ module frame_datapath
             if (s2.valid && s2.is_first && !s2.drop && !s2.dont_touch)
             // Get the operation type of the ARP protocol.
             begin
-                op <= s3.data[`OP];
+                op <= s2.data[`OP];
             end
         end
     end
