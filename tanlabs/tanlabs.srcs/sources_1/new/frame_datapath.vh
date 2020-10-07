@@ -1,6 +1,6 @@
 // 'w' means wide.
 localparam DATAW_WIDTH      = 8 * 48;
-localparam CACHE_ADDR_WIDTH = 8;
+localparam CACHE_ADDR_WIDTH = 4;
 
 // README: Your code here.
 
@@ -51,7 +51,7 @@ localparam ETHERTYPE_ARP = 16'h0608;
 localparam REQUEST = 16'h0100;
 localparam REPLY   = 16'h0200;
 
-localparam LOCAL_MAC = 48'h104514191981;
+localparam LOCAL_MAC = 48'h104514191980;
 localparam LOCAL_IP  = 32'habababab;
 
 
