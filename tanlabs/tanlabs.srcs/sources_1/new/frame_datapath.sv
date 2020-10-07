@@ -207,7 +207,7 @@ module frame_datapath
         end
     end
 
-    always @ (posedge eth_clk or posedge reset) 
+    always @ (posedge eth_clk) 
     begin
         if (arp_cache_w_en) begin
             arp_cache_w_en <= 1'b0;

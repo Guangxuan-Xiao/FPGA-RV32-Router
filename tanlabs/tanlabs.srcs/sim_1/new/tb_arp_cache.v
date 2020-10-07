@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module tb_arp_cache #(parameter CACHE_ADDR_WIDTH = 4)
+module tb_arp_cache #(parameter CACHE_ADDR_WIDTH = 2)
                      ();
     reg reset;
     initial begin
@@ -22,6 +22,7 @@ module tb_arp_cache #(parameter CACHE_ADDR_WIDTH = 4)
     reg arp_cache_r_en = 0;
     
     initial begin
+        // write abcdabcd, 114514191981
         #20
         src_ip_addr    = 32'habcdabcd;
         src_mac_addr   = 48'h114514191981;
@@ -29,19 +30,39 @@ module tb_arp_cache #(parameter CACHE_ADDR_WIDTH = 4)
         #20
         arp_cache_w_en = 0;
         #20
+
+        // write dcbadcba, 114514191981
         src_ip_addr    = 32'hdcbadcba;
         src_mac_addr   = 48'h114514191981;
         arp_cache_w_en = 1;
         #20
         arp_cache_w_en = 0;
+
+        // overwrite abcdabcd, 110110110110
         #20
         src_ip_addr    = 32'habcdabcd;
         src_mac_addr   = 48'h110110110110;
         arp_cache_w_en = 1;
         #20
         arp_cache_w_en = 0;
+
+        // query abcdabcd
         #20
         trg_ip_addr    = 32'habcdabcd;
+        arp_cache_r_en = 1;
+        #20
+        arp_cache_r_en = 0;
+
+        // query dcbadcba
+        #20
+        trg_ip_addr    = 32'hdcbadcba;
+        arp_cache_r_en = 1;
+        #20
+        arp_cache_r_en = 0;
+
+        // query aaaaaaaa
+        #20
+        trg_ip_addr    = 32'haaaaaaaa;
         arp_cache_r_en = 1;
         #20
         arp_cache_r_en = 0;
