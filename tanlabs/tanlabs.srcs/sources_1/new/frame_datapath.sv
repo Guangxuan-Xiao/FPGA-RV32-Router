@@ -176,41 +176,36 @@ module frame_datapath
         if (reset)
         begin
             s4 <= 0;
+            src_ip_addr <= 0;
+            src_mac_addr <= 0;
+            arp_cache_w_en <= 0;
         end
         else if (s4_ready)
         begin
             s4 <= s3;
-            if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
+            src_ip_addr <= s3.data[`SRC_IP_ADDR];
+            src_mac_addr <= s3.data[`SRC_MAC_ADDR];
+            arp_cache_w_en <= 1'b1;
+            if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch && op == REQUEST)
             begin
                 if(op == REQUEST)
                 // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
-                begin
-                    s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
-                    if (s3.data[`TRG_IP_ADDR] == LOCAL_IP) begin
-                        s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
-                    end
-                    else begin
-                        s4.data[`SRC_MAC_ADDR] <= s3.data[`TRG_IP_ADDR];
-                    end
-                    s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
-                    s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
-                    s4.data[`OP] <= REPLY;
+                s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
+                if (s3.data[`TRG_IP_ADDR] == LOCAL_IP) begin
+                    s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
                 end
-                else if(op == REPLY)
-                // Store the replier's IP address and MAC address for cache process.
-                begin
-                    src_ip_addr <= s3.data[`SRC_IP_ADDR];
-                    src_mac_addr <= s3.data[`SRC_MAC_ADDR];
-                    arp_cache_w_en <= 1'b1;
+                else begin
+                    s4.data[`SRC_MAC_ADDR] <= s3.data[`TRG_MAC_ADDR];
                 end
+                s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
+                s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
+                s4.data[`OP] <= REPLY;
             end
         end
-    end
-
-    always @ (posedge eth_clk) 
-    begin
-        if (arp_cache_w_en) begin
-            arp_cache_w_en <= 1'b0;
+        else begin
+            src_ip_addr <= 0;
+            src_mac_addr <= 0;
+            arp_cache_w_en <= 0;
         end
     end
 
