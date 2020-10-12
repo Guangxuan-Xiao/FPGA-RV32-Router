@@ -34,6 +34,14 @@ module frame_datapath
 
     frame_data in;
     wire in_ready;
+    (*keep = "TRUE"*) reg [1023:0] data;
+    assign data[1023:256] = {out_data, in_data};
+    ila_0 ila_0_test (
+	.clk(eth_clk), // input wire clk
+
+
+	.probe0(data) // input wire [1023:0] probe0
+);
 
     // README: Here, we use a width upsizer to change the width to 48 bytes
     // (MAC 14 + ARP 28 + round up 6) to ensure that L2 (MAC) and L3 (IPv4 or ARP) headers appear
