@@ -6,7 +6,7 @@ reg [31:0] ip;
 reg [47:0] mac;
 } arp_entry;
 
-module arp_cache #(parameter CACHE_ADDR_WIDTH = 8)
+module arp_cache #(parameter CACHE_ADDR_WIDTH = 4)
                   (input wire clk,
                    input wire rst,
                    input wire[31:0] w_ip,
