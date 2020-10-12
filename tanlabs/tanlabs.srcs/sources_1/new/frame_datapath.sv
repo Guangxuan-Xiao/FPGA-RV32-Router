@@ -3,14 +3,14 @@
 // Example Frame Data Path.
 
 module frame_datapath
-#(
+    #(
     parameter DATA_WIDTH = 64,
     parameter ID_WIDTH = 3
-)
-(
+    )
+    (
     input eth_clk,
     input reset,
-
+    
     input [DATA_WIDTH - 1:0] s_data,
     input [DATA_WIDTH / 8 - 1:0] s_keep,
     input s_last,
@@ -18,7 +18,7 @@ module frame_datapath
     input [ID_WIDTH - 1:0] s_id,
     input s_valid,
     output wire s_ready,
-
+    
     output wire [DATA_WIDTH - 1:0] m_data,
     output wire [DATA_WIDTH / 8 - 1:0] m_keep,
     output wire m_last,
@@ -28,42 +28,42 @@ module frame_datapath
     input m_ready,
     output wire [383 : 0] out_data,
     output wire [383: 0] in_data
-);
-
+    );
+    
     `include "frame_datapath.vh"
-
+    
     frame_data in;
     wire in_ready;
-
+    
     // README: Here, we use a width upsizer to change the width to 48 bytes
     // (MAC 14 + ARP 28 + round up 6) to ensure that L2 (MAC) and L3 (IPv4 or ARP) headers appear
     // in one beat (the first beat) facilitating our processing.
     // You can remove this.
     axis_dwidth_converter_up axis_dwidth_converter_up_i(
-        .aclk(eth_clk),
-        .aresetn(~reset),
-
-        .s_axis_tvalid(s_valid),
-        .s_axis_tready(s_ready),
-        .s_axis_tdata(s_data),
-        .s_axis_tkeep(s_keep),
-        .s_axis_tlast(s_last),
-        .s_axis_tid(s_id),
-        .s_axis_tuser(s_user),
-
-        .m_axis_tvalid(in.valid),
-        .m_axis_tready(in_ready),
-        .m_axis_tdata(in.data),
-        .m_axis_tkeep(in.keep),
-        .m_axis_tlast(in.last),
-        .m_axis_tid(in.id),
-        .m_axis_tuser(in.user)
+    .aclk(eth_clk),
+    .aresetn(~reset),
+    
+    .s_axis_tvalid(s_valid),
+    .s_axis_tready(s_ready),
+    .s_axis_tdata(s_data),
+    .s_axis_tkeep(s_keep),
+    .s_axis_tlast(s_last),
+    .s_axis_tid(s_id),
+    .s_axis_tuser(s_user),
+    
+    .m_axis_tvalid(in.valid),
+    .m_axis_tready(in_ready),
+    .m_axis_tdata(in.data),
+    .m_axis_tkeep(in.keep),
+    .m_axis_tlast(in.last),
+    .m_axis_tid(in.id),
+    .m_axis_tuser(in.user)
     );
-
+    
     assign in.drop       = 1'b0;
     assign in.drop_next  = 1'b0;
     assign in.dont_touch = 1'b0;
-
+    
     reg [31:0] src_ip_addr;
     reg [31:0] trg_ip_addr;
     reg [47:0] src_mac_addr;
@@ -71,20 +71,20 @@ module frame_datapath
     reg arp_cache_w_en = 0;
     reg arp_cache_r_en = 0;
     reg [15:0] op;
-
+    
     arp_cache #(
-        .CACHE_ADDR_WIDTH(CACHE_ADDR_WIDTH)
+    .CACHE_ADDR_WIDTH(CACHE_ADDR_WIDTH)
     ) arp_cache_module(
-        .clk(eth_clk),
-        .rst(reset),
-        .w_ip(src_ip_addr),
-        .w_mac(src_mac_addr),
-        .w_en(arp_cache_w_en),
-        .r_ip(trg_ip_addr),
-        .r_mac(trg_mac_addr),
-        .r_en(arp_cache_r_en)
+    .clk(eth_clk),
+    .rst(reset),
+    .w_ip(src_ip_addr),
+    .w_mac(src_mac_addr),
+    .w_en(arp_cache_w_en),
+    .r_ip(trg_ip_addr),
+    .r_mac(trg_mac_addr),
+    .r_en(arp_cache_r_en)
     );
-
+    
     // Track frames and figure out when it is the first beat.
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -100,10 +100,10 @@ module frame_datapath
             end
         end
     end
-
+    
     // README: Your code here.
     // See the guide to figure out what you need to do with frames.
-
+    
     frame_data s1;
     wire s1_ready;
     assign in_ready = s1_ready || !in.valid;
@@ -118,13 +118,13 @@ module frame_datapath
             s1 <= in;
             if (in.valid && in.is_first && !in.drop && !in.dont_touch)
             begin
-            // Swap the MAC address in ethernet frame, since the source and target will change.
+                // Swap the MAC address in ethernet frame, since the source and target will change.
                 s1.data[`MAC_DST] <= in.data[`MAC_SRC];
                 s1.data[`MAC_SRC] <= LOCAL_MAC;
             end
         end
     end
-            
+    
     frame_data s2;
     wire s2_ready;
     assign s1_ready = s2_ready || !s1.valid;
@@ -147,7 +147,7 @@ module frame_datapath
             end
         end
     end
-
+    
     frame_data s3;
     wire s3_ready;
     assign s2_ready = s3_ready || !s2.valid;
@@ -167,7 +167,7 @@ module frame_datapath
             end
         end
     end
-                                      
+    
     frame_data s4;
     wire s4_ready;
     assign s3_ready = s4_ready || !s3.valid;
@@ -213,7 +213,7 @@ module frame_datapath
             arp_cache_w_en <= 0;
         end
     end
-
+    
     frame_data s5;
     wire s5_ready;
     assign s4_ready = s5_ready || !s4.valid;
@@ -233,15 +233,15 @@ module frame_datapath
             end
         end
     end
-                                    
+    
     frame_data out;
     assign out = s5;
     assign out_data = s5.data;
     assign in_data = in.data;
-
+    
     wire out_ready;
     assign s5_ready = out_ready || !out.valid;
-
+    
     reg out_is_first;
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -257,7 +257,7 @@ module frame_datapath
             end
         end
     end
-
+    
     reg [ID_WIDTH - 1:0] dest;
     reg drop_by_prev;  // Dropped by the previous frame?
     always @ (posedge eth_clk or posedge reset)
@@ -276,60 +276,60 @@ module frame_datapath
             end
         end
     end
-
+    
     // Rewrite dest.
     wire [ID_WIDTH - 1:0] dest_current = out_is_first ? out.dest : dest;
-
+    
     frame_data filtered;
     wire filtered_ready;
-
+    
     frame_filter
     #(
-        .DATA_WIDTH(DATAW_WIDTH),
-        .ID_WIDTH(ID_WIDTH)
+    .DATA_WIDTH(DATAW_WIDTH),
+    .ID_WIDTH(ID_WIDTH)
     )
     frame_filter_i(
-        .eth_clk(eth_clk),
-        .reset(reset),
-
-        .s_data(out.data),
-        .s_keep(out.keep),
-        .s_last(out.last),
-        .s_user(out.user),
-        .s_id(dest_current),
-        .s_valid(out.valid),
-        .s_ready(out_ready),
-
-        .drop(out.drop || drop_by_prev),
-
-        .m_data(filtered.data),
-        .m_keep(filtered.keep),
-        .m_last(filtered.last),
-        .m_user(filtered.user),
-        .m_id(filtered.dest),
-        .m_valid(filtered.valid),
-        .m_ready(filtered_ready)
+    .eth_clk(eth_clk),
+    .reset(reset),
+    
+    .s_data(out.data),
+    .s_keep(out.keep),
+    .s_last(out.last),
+    .s_user(out.user),
+    .s_id(dest_current),
+    .s_valid(out.valid),
+    .s_ready(out_ready),
+    
+    .drop(out.drop || drop_by_prev),
+    
+    .m_data(filtered.data),
+    .m_keep(filtered.keep),
+    .m_last(filtered.last),
+    .m_user(filtered.user),
+    .m_id(filtered.dest),
+    .m_valid(filtered.valid),
+    .m_ready(filtered_ready)
     );
-
+    
     // README: Change the width back. You can remove this.
     axis_dwidth_converter_down axis_dwidth_converter_down_i(
-        .aclk(eth_clk),
-        .aresetn(~reset),
-
-        .s_axis_tvalid(filtered.valid),
-        .s_axis_tready(filtered_ready),
-        .s_axis_tdata(filtered.data),
-        .s_axis_tkeep(filtered.keep),
-        .s_axis_tlast(filtered.last),
-        .s_axis_tid(filtered.dest),
-        .s_axis_tuser(filtered.user),
-
-        .m_axis_tvalid(m_valid),
-        .m_axis_tready(m_ready),
-        .m_axis_tdata(m_data),
-        .m_axis_tkeep(m_keep),
-        .m_axis_tlast(m_last),
-        .m_axis_tid(m_dest),
-        .m_axis_tuser(m_user)
+    .aclk(eth_clk),
+    .aresetn(~reset),
+    
+    .s_axis_tvalid(filtered.valid),
+    .s_axis_tready(filtered_ready),
+    .s_axis_tdata(filtered.data),
+    .s_axis_tkeep(filtered.keep),
+    .s_axis_tlast(filtered.last),
+    .s_axis_tid(filtered.dest),
+    .s_axis_tuser(filtered.user),
+    
+    .m_axis_tvalid(m_valid),
+    .m_axis_tready(m_ready),
+    .m_axis_tdata(m_data),
+    .m_axis_tkeep(m_keep),
+    .m_axis_tlast(m_last),
+    .m_axis_tid(m_dest),
+    .m_axis_tuser(m_user)
     );
 endmodule
