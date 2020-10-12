@@ -68,8 +68,7 @@ module frame_datapath
     reg [31:0] trg_ip_addr;
     reg [47:0] src_mac_addr;
     reg [47:0] trg_mac_addr;
-    reg arp_cache_w_en = 0;
-    reg arp_cache_r_en = 0;
+    reg arp_cache_wr_en = 0;
     reg [15:0] op;
     
     arp_cache #(
@@ -79,10 +78,9 @@ module frame_datapath
     .rst(reset),
     .w_ip(src_ip_addr),
     .w_mac(src_mac_addr),
-    .w_en(arp_cache_w_en),
+    .wr_en(arp_cache_wr_en),
     .r_ip(trg_ip_addr),
-    .r_mac(trg_mac_addr),
-    .r_en(arp_cache_r_en)
+    .r_mac(trg_mac_addr)
     );
     
     // Track frames and figure out when it is the first beat.
@@ -92,8 +90,7 @@ module frame_datapath
         begin
             in.is_first <= 1'b1;
         end
-        else
-        begin
+        else begin
             if (in.valid && in_ready)
             begin
                 in.is_first <= in.last;
@@ -116,8 +113,7 @@ module frame_datapath
         else if (s1_ready)
         begin
             s1 <= in;
-            if (in.valid && in.is_first && !in.drop && !in.dont_touch)
-            begin
+            if (in.valid && in.is_first && !in.drop && !in.dont_touch) begin
                 // Swap the MAC address in ethernet frame, since the source and target will change.
                 s1.data[`MAC_DST] <= in.data[`MAC_SRC];
                 s1.data[`MAC_SRC] <= LOCAL_MAC;
@@ -178,7 +174,7 @@ module frame_datapath
             s4 <= 0;
             src_ip_addr <= 0;
             src_mac_addr <= 0;
-            arp_cache_w_en <= 0;
+            arp_cache_wr_en <= 0;
         end
         else if (s4_ready)
         begin
@@ -187,7 +183,7 @@ module frame_datapath
             begin
                 src_ip_addr <= s3.data[`SRC_IP_ADDR];
                 src_mac_addr <= s3.data[`SRC_MAC_ADDR];
-                arp_cache_w_en <= 1'b1;
+                arp_cache_wr_en <= 1'b1;
                 if (op == REQUEST && s3.data[`TRG_IP_ADDR] == LOCAL_IP)
                 begin
                     // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
@@ -204,13 +200,13 @@ module frame_datapath
             else begin
                 src_ip_addr <= 0;
                 src_mac_addr <= 0;
-                arp_cache_w_en <= 0;
+                arp_cache_wr_en <= 0;
             end
         end
         else begin
             src_ip_addr <= 0;
             src_mac_addr <= 0;
-            arp_cache_w_en <= 0;
+            arp_cache_wr_en <= 0;
         end
     end
     
