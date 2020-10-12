@@ -183,11 +183,11 @@ module frame_datapath
         else if (s4_ready)
         begin
             s4 <= s3;
-            src_ip_addr <= s3.data[`SRC_IP_ADDR];
-            src_mac_addr <= s3.data[`SRC_MAC_ADDR];
-            arp_cache_w_en <= 1'b1;
             if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
             begin
+                src_ip_addr <= s3.data[`SRC_IP_ADDR];
+                src_mac_addr <= s3.data[`SRC_MAC_ADDR];
+                arp_cache_w_en <= 1'b1;
                 if (op == REQUEST && s3.data[`TRG_IP_ADDR] == LOCAL_IP)
                 begin
                     // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
@@ -200,6 +200,11 @@ module frame_datapath
                 else begin
                     s4.drop <= 1'b1;
                 end
+            end
+            else begin
+                src_ip_addr <= 0;
+                src_mac_addr <= 0;
+                arp_cache_w_en <= 0;
             end
         end
         else begin
