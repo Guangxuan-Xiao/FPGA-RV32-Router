@@ -55,16 +55,16 @@ localparam REQUEST = 16'h0100;
 localparam REPLY   = 16'h0200;
 
 localparam MAC0 = 48'h10aaaaaaaa80;
-localparam IP0  = 32'haaaaaa00;
+localparam IP0  = 32'h00aaaaaa;
 
 localparam MAC1 = 48'h10bbbbbbbb80;
-localparam IP1  = 32'hbbbbbb00;
+localparam IP1  = 32'h00bbbbbb;
 
 localparam MAC2 = 48'h10cccccccc80;
-localparam IP2  = 32'hcccccc00;
+localparam IP2  = 32'h00cccccc;
 
 localparam MAC3 = 48'h10dddddddd80;
-localparam IP3  = 32'hdddddd00;
+localparam IP3  = 32'h00dddddd;
 
 
 // Incrementally update the checksum in an IPv4 header
