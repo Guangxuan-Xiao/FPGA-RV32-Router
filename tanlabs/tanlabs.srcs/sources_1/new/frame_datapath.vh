@@ -45,6 +45,7 @@ logic drop_next;
 `define TRG_MAC_ADDR (32 * 8) +: 48
 `define SRC_IP_ADDR (28 * 8) +: 32
 `define TRG_IP_ADDR (38 * 8) +: 32
+`define FINAL (42 * 8) +: 48
 `define OP (20 * 8) +: 16
 
 `define TRG_IP_IP (30 * 8) +: 32

@@ -140,6 +140,9 @@ module frame_datapath
     // README: Your code here.
     // See the guide to figure out what you need to do with frames.
 
+    //THIS IS ONLY FOR TEST.
+    reg test_packet_valid;
+    assign test_packet_valid = 1;
 
     
     always@(*)
@@ -236,10 +239,6 @@ module frame_datapath
                     begin
                         s2.drop <= 1;
                     end
-                    else if(ttl<=1)
-                    begin
-                        s2.drop <= 1;
-                    end
                     else
                     begin
                         s2.drop <= 0;
@@ -277,7 +276,7 @@ module frame_datapath
                 begin
                 // Query MAC address from ARP cache.
                     arp_cache_wr_en <= 1'b0;
-                    trg_ip_addr <= s2.data[`TRG_IP_IP]; 
+                    trg_ip_addr <= query_nexthop; 
                 end
                 else
                 begin
@@ -317,7 +316,7 @@ module frame_datapath
         end
     end
     
-
+    reg [31:0] test_arp  = 31'h11111111;
     frame_data s4;
     wire s4_ready;
     assign s3_ready = s4_ready || !s3.valid;
@@ -337,6 +336,7 @@ module frame_datapath
                     if(trg_mac_addr == 48'h0)
                     //Not found, then we send an ARP packet.
                     begin
+                        test_arp <= my_ip;
                         s4.data[`MAC_SRC] <= my_mac;
                         s4.data[`MAC_DST] <= TBD;
                         s4.data[`MAC_TYPE] <= ETHERTYPE_ARP;
@@ -349,6 +349,7 @@ module frame_datapath
                         s4.data[`SRC_IP_ADDR] <= my_ip;
                         s4.data[`TRG_IP_ADDR] <= trg_ip_addr;
                         s4.data[`TRG_MAC_ADDR] <= TBD;
+                        s4.data[`FINAL] <= 48'h0;
                     end
                     else
                     begin
