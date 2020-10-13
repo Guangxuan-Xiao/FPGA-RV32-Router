@@ -66,6 +66,8 @@ module frame_datapath
     
     reg [31:0] src_ip_addr;
     reg [31:0] trg_ip_addr;
+    reg [31:0] src_ip_addr_conv;
+    reg [31:0] src_ip_addr_conv;
     reg [47:0] src_mac_addr;
     reg [47:0] trg_mac_addr;
     reg arp_cache_wr_en = 0;
