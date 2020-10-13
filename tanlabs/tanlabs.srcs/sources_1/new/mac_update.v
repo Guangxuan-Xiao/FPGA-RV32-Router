@@ -7,8 +7,8 @@ module mac_update
     input wire [31:0] trg_ip_addr_v,
     input wire [31:0] my_mac_addr,
     input wire [383:0] data_in,
-    output wire [383:0] data_out,
-    output wire is_send
+    output reg [383:0] data_out,
+    output reg is_send
 );
 
 `include "frame_datapath.vh"
@@ -16,14 +16,14 @@ module mac_update
 reg [31:0] src_ip_addr_v;
 reg [47:0] src_mac_addr_v;
 reg request_en = 0;
-reg [31:0] my_ip_c,
-reg [47:0] my_mac_c,
-reg [31:0] trg_ip_c,
-reg [15:0] ether_type_c,
-reg [15:0] hard_type_c,
-reg [15:0] prot_type_c,
-reg [7:0] hard_len_c,
-reg [7:0] prot_len_c,
+reg [31:0] my_ip_c;
+reg [47:0] my_mac_c;
+reg [31:0] trg_ip_c;
+reg [15:0] ether_type_c;
+reg [15:0] hard_type_c;
+reg [15:0] prot_type_c;
+reg [7:0] hard_len_c;
+reg [7:0] prot_len_c;
 reg [47:0] trg_mac_addr_v;
 
 arp_cache #(
@@ -35,7 +35,7 @@ arp_cache #(
     .w_mac(src_mac_addr_v),
     .wr_en(mac_up_en),
     .r_ip(trg_ip_addr_v),
-    .r_mac(trg_mac_addr_v),
+    .r_mac(trg_mac_addr_v)
 );
 
 arp_request_send send_request(
@@ -57,7 +57,6 @@ always@(posedge eth_clk)
 begin
     if(reset)
     begin
-        is_drop <= 0;
         request_en <= 0;
         my_ip_c <= 0;
         my_mac_c <= 0;
@@ -84,7 +83,7 @@ begin
     begin
         request_en <= 0;
         my_ip_c <= my_ip_addr;
-        my_mac_c <= my_mac_addr'
+        my_mac_c <= my_mac_addr;
         trg_ip_c <= data_in[`TRG_IP_ADDR];
         ether_type_c <= data_in[`MAC_TYPE];
         hard_type_c <= data_in[`HARD_TYPE];
