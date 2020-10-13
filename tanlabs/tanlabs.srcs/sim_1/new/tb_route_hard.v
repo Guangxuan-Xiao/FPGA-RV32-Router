@@ -2,6 +2,7 @@
 module tb_route_hard #()
                       ();
     reg [31:0] ip;
+    wire[31:0] nexthop
     reg [47:0] src_mac_addr;
     wire [47:0] trg_mac_addr;
     reg [31:0] trg_ip_addr;

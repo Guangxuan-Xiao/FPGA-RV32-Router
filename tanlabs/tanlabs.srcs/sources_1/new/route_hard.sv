@@ -8,36 +8,36 @@ module route_hard #(parameter NET0 = 0,
                     parameter IP2 = 32'hcccccccc,
                     parameter IP3 = 32'hdddddddd,
                     parameter MASK = 32'hf0000000)
-                   (input wire [31:0] ip,
-                    output reg [31:0] next_ip,
-                    output reg [1:0] next_port,
-                    output reg o_valid,
+                   (input wire [31:0] q_ip,
+                    output reg [31:0] q_nexthop,
+                    output reg [1:0] q_port,
+                    output reg q_valid,
                     );
-    case (ip & MASK)
+    case (q_ip & MASK)
         32'ha0000000:begin
-            next_port <= NET0;
-            next_ip   <= IP0;
-            o_valid   <= 1;
+            q_port    <= NET0;
+            q_nexthop <= IP0;
+            q_valid   <= 1;
         end
         32'hb0000000:begin
-            next_port <= NET1;
-            next_ip   <= IP1;
-            o_valid   <= 1;
+            q_port    <= NET1;
+            q_nexthop <= IP1;
+            q_valid   <= 1;
         end
         32'hc0000000:begin
-            next_port <= NET2;
-            next_ip   <= IP2;
-            o_valid   <= 1;
+            q_port    <= NET2;
+            q_nexthop <= IP2;
+            q_valid   <= 1;
         end
         32'hd0000000:begin
-            next_port <= NET3;
-            next_ip   <= IP3;
-            o_valid   <= 1;
+            q_port    <= NET3;
+            q_nexthop <= IP3;
+            q_valid   <= 1;
         end
         default: begin
-            next_port <= NET0;
-            next_ip   <= IP0;
-            o_valid   <= 0;
+            q_port    <= NET0;
+            q_nexthop <= IP0;
+            q_valid   <= 0;
         end
     endcase
 endmodule
