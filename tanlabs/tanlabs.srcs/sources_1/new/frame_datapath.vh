@@ -46,6 +46,9 @@ typedef struct packed
 `define TRG_IP_ADDR (38 * 8) +: 32
 `define OP (20 * 8) +: 16
 
+`define TRG_IP_IP (30 * 8) +: 32
+`define TTL_POS (22 * 8) +: 8
+
 localparam ID_CPU = 3'd4;  // The interface ID of CPU is 4.
 
 localparam ETHERTYPE_IP4 = 16'h0008;
@@ -55,17 +58,23 @@ localparam REQUEST = 16'h0100;
 localparam REPLY   = 16'h0200;
 
 localparam MAC0 = 48'h10aaaaaaaa80;
-localparam IP0  = 32'haaaaaa00;
+localparam IP0  = 32'h00aaaaaa;
 
 localparam MAC1 = 48'h10bbbbbbbb80;
-localparam IP1  = 32'hbbbbbb00;
+localparam IP1  = 32'h00bbbbbb;
 
 localparam MAC2 = 48'h10cccccccc80;
-localparam IP2  = 32'hcccccc00;
+localparam IP2  = 32'h00cccccc;
 
 localparam MAC3 = 48'h10dddddddd80;
-localparam IP3  = 32'hdddddd00;
+localparam IP3  = 32'h00dddddd;
 
+localparam TBD = 48'hffffffffffff;
+localparam HARD = 16'h0100;
+localparam PROT = 16'h0008;
+
+localparam HARD_L = 8'h06;
+localparam PROT_L = 8'h04;
 
 // Incrementally update the checksum in an IPv4 header
 // when TTL is decreased by 1.
