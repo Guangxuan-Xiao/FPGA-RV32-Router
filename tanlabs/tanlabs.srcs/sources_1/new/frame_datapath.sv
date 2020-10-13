@@ -82,6 +82,9 @@ module frame_datapath
     reg arp_cache_r_en = 0;
     reg [15:0] op;
 
+    reg [47:0] my_mac;
+    reg [31:0] my_ip;
+    
     arp_cache #(
         .CACHE_ADDR_WIDTH(CACHE_ADDR_WIDTH)
     ) arp_cache_module(
@@ -94,6 +97,35 @@ module frame_datapath
         .r_mac(trg_mac_addr),
         .r_en(arp_cache_r_en)
     );
+
+    reg [383:0] data_input_content;
+    reg [383:0] data_output_content;
+    reg packet_valid;
+    reg [7:0] ttl;
+
+    checksum_upd checksum
+    (
+        .input_data(data_input_content),
+        .output_data(data_output_content),
+        .packet_valid(packet_valid),
+        .time_to_live(ttl)
+    );
+
+    reg [31:0] query_ip;
+    reg [31:0] query_nexthop;
+    reg [1:0] query_port;
+    reg query_valid;
+
+    route_hard route_table
+    (
+        .q_ip(query_ip),
+        .q_nexthop(query_nexthop),
+        .q_port(query_port),
+        .q_valid(query_valid)
+    );
+
+    reg arp_yes;
+    reg ip_yes;
 
     // Track frames and figure out when it is the first beat.
     always @ (posedge eth_clk or posedge reset)
@@ -114,6 +146,42 @@ module frame_datapath
     // README: Your code here.
     // See the guide to figure out what you need to do with frames.
 
+
+    
+    always@(*)
+    begin
+        // This block aims at getting my MAC and IP according to in.id.
+        case(in.id)
+            3'b000:
+            begin
+                my_mac <= MAC0;
+                my_ip <= IP0;
+            end
+            3'b001:
+            begin
+                my_mac <= MAC1;
+                my_ip <= IP1;
+            end
+            3'b010:
+            begin
+                my_mac <= MAC2;
+                my_ip <= IP2;
+            end
+            3'b011:
+            begin
+                my_mac <= MAC3;
+                my_ip <= IP3;
+            end
+            default:
+            begin
+                my_mac <= 48'h0;
+                my_ip <= 32'h0;
+            end
+        endcase
+    end
+
+
+
     frame_data s1;
     wire s1_ready;
     assign in_ready = s1_ready || !in.valid;
@@ -126,11 +194,29 @@ module frame_datapath
         else if (s1_ready)
         begin
             s1 <= in;
-            if (in.valid && in.is_first && !in.drop && !in.dont_touch)
+            if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
-            // Swap the MAC address in ethernet frame, since the source and target will change.
-                s1.data[`MAC_DST] <= in.data[`MAC_SRC];
-                s1.data[`MAC_SRC] <= MAC0;
+                if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
+                begin
+                    //Start checkcum and query table if this is IP packet.
+                    ip_yes <= 1;
+                    arp_yes <= 0;
+                    data_input_content <= in.data;
+                    query_ip <= in.data[`TRG_IP_IP];
+                end
+                else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
+                begin
+                    //This is ARP packet.
+                    ip_yes <= 0;
+                    arp_yes <= 1;
+                end
+                else
+                begin
+                    //This is rubbish.
+                    ip_yes <= 0;
+                    arp_yes <= 0;
+                    s1.drop <= 1;
+                end
             end
         end
     end
@@ -149,10 +235,27 @@ module frame_datapath
             s2 <= s1;
             if (s1.valid && s1.is_first && !s1.drop && !s1.dont_touch)
             begin
-                // Judge if current protocol is ARP. If not, drop it.
-                if ( s1.data[`MAC_TYPE] != ETHERTYPE_ARP )
+                if(ip_yes)
                 begin
-                    s2.drop <= 1'b1;
+                    // Check the result of checksum, ttl, and decide whether drop or not.
+                    if(!query_valid || !packet_valid)
+                    begin
+                        s2.drop <= 1;
+                    end
+                    else if(ttl<=1)
+                    begin
+                        s2.drop <= 1;
+                    end
+                    else
+                    begin
+                        s2.drop <= 0;
+                        s2.data <= data_output_content;
+                    end
+                end
+                else
+                begin
+                    //(ARP) Get the op-code.
+                    op <= s1.data[`OP];
                 end
             end
         end
@@ -166,18 +269,61 @@ module frame_datapath
         if(reset)
         begin
             s3 <= 0;
+            trg_ip_addr <= 0;
+            src_ip_addr <= 0;
+            src_mac_addr <= 0;
+            arp_cache_wr_en <= 0;
         end
         else if (s3_ready)
         begin
             s3 <= s2;
             if (s2.valid && s2.is_first && !s2.drop && !s2.dont_touch)
-            // Get the operation type of the ARP protocol.
             begin
-                op <= s2.data[`OP];
+                if(ip_yes)
+                begin
+                // Query MAC address from ARP cache.
+                    arp_cache_wr_en <= 1'b0;
+                    trg_ip_addr <= s2.data[`TRG_IP_IP]; 
+                end
+                else
+                begin
+                    //(ARP)
+                    src_ip_addr <= s2.data[`SRC_IP_ADDR];
+                    src_mac_addr <= s2.data[`SRC_MAC_ADDR];
+                    arp_cache_wr_en <= 1'b1;
+                    if (op == REQUEST && s2.data[`TRG_IP_ADDR] == my_ip)
+                    begin
+                        // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
+                        s3.data[`SRC_IP_ADDR] <= s2.data[`TRG_IP_ADDR];
+                        s3.data[`SRC_MAC_ADDR] <= my_mac;
+                        s3.data[`TRG_IP_ADDR] <= s2.data[`SRC_IP_ADDR];
+                        s3.data[`TRG_MAC_ADDR] <= s2.data[`SRC_MAC_ADDR];
+                        s3.data[`OP] <= REPLY;
+                    end
+                    else 
+                    begin
+                        s3.drop <= 1'b1;
+                    end
+                end
+            end
+            else
+            begin
+                trg_ip_addr <= 0;
+                src_ip_addr <= 0;
+                src_mac_addr <= 0;
+                arp_cache_wr_en <= 0;
             end
         end
+        else
+        begin
+            trg_ip_addr <= 0;
+            src_ip_addr <= 0;
+            src_mac_addr <= 0;
+            arp_cache_wr_en <= 0;
+        end
     end
-                                      
+    
+
     frame_data s4;
     wire s4_ready;
     assign s3_ready = s4_ready || !s3.valid;
@@ -186,41 +332,43 @@ module frame_datapath
         if (reset)
         begin
             s4 <= 0;
-            src_ip_addr <= 0;
-            src_mac_addr <= 0;
-            arp_cache_w_en <= 0;
         end
         else if (s4_ready)
         begin
             s4 <= s3;
             if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
             begin
-                src_ip_addr <= s3.data[`SRC_IP_ADDR];
-                src_mac_addr <= s3.data[`SRC_MAC_ADDR];
-                arp_cache_wr_en <= 1'b1;
-                if (op == REQUEST && s3.data[`TRG_IP_ADDR] == IP0)
+                if(ip_yes)
                 begin
-                    // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
-                    s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
-                    s4.data[`SRC_MAC_ADDR] <= MAC0;
-                    s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
-                    s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
-                    s4.data[`OP] <= REPLY;
+                    if(trg_mac_addr == 48'h0)
+                    //Not found, then we send an ARP packet.
+                    begin
+                        s4.data[`MAC_SRC] <= my_mac;
+                        s4.data[`MAC_DST] <= TBD;
+                        s4.data[`MAC_TYPE] <= ETHERTYPE_ARP;
+                        s4.data[`HARD_TYPE] <= HARD;
+                        s4.data[`PROT_TYPE] <= PROT;
+                        s4.data[`OP] <= REQUEST;
+                        s4.data[`HARD_LEN] <= HARD_L;
+                        s4.data[`PROT_LEN] <= PROT_L;
+                        s4.data[`SRC_MAC_ADDR] <= my_mac;
+                        s4.data[`SRC_IP_ADDR] <= my_ip;
+                        s4.data[`TRG_IP_ADDR] <= trg_ip_addr;
+                        s4.data[`TRG_MAC_ADDR] <= TBD;
+                    end
+                    else
+                    begin
+                        s4.data[`MAC_SRC] <= my_mac;
+                        s4.data[`MAC_DST] <= trg_mac_addr;
+                    end
                 end
-                else begin
-                    s4.drop <= 1'b1;
+                else
+                begin
+                    // Change the MAC address of ether frame.
+                    s4.data[`MAC_DST] <= s3.data[`MAC_SRC];
+                    s4.data[`MAC_SRC] <= my_mac;
                 end
             end
-            else begin
-                src_ip_addr <= 0;
-                src_mac_addr <= 0;
-                arp_cache_w_en <= 0;
-            end
-        end
-        else begin
-            src_ip_addr <= 0;
-            src_mac_addr <= 0;
-            arp_cache_w_en <= 0;
         end
     end
 
@@ -237,13 +385,20 @@ module frame_datapath
         begin
             s5 <= s4;
             if (s4.valid && s4.is_first && !s4.drop && !s4.dont_touch)
-            // Loopback.
+            // Send the frame to the port from previous query.
             begin
-                s5.dest <= s4.id;
+                if(ip_yes)
+                begin
+                    s5.dest <= query_port;
+                end
+                else
+                begin
+                    s5.dest <= s4.id;
+                end
             end
         end
     end
-                                    
+    
     frame_data out;
     assign out = s5;
     assign out_data = s5.data;
