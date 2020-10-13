@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
-module tb_route_linear #(parameter CACHE_ADDR_WIDTH = 2)
-                        ();
+module tb2_route_linear #(parameter CACHE_ADDR_WIDTH = 2)
+                         ();
     reg rst;
     initial begin
         rst = 1;
@@ -25,7 +25,7 @@ module tb_route_linear #(parameter CACHE_ADDR_WIDTH = 2)
     wire[2:0] q_port;
     wire q_found;
     
-    router_linear #(
+    route_linear #(
     .CACHE_ADDR_WIDTH(CACHE_ADDR_WIDTH)
     ) router_linear_module(
     .clk(clk_125M),
@@ -41,53 +41,55 @@ module tb_route_linear #(parameter CACHE_ADDR_WIDTH = 2)
     .q_port(q_port),
     .q_found(q_found)
     );
-    // Software Lookup Testcase 3
+    // Software Lookup Testcase 2
     // Input:
     // I,0x00030201,24,2,0x0203a8c0
     // I,0x04030201,32,3,0x0109a8c0
-    // Q,0x04030201
     // Q,0x01030201
-    // Q,0x00000000
-    // D,0x04030201,32
+    // Q,0x02030201
+    // Q,0x03030201
     // Q,0x04030201
-    // Q,0x01030201
-    // Q,0x00000000
-    // D,0x00030201,24
-    // Q,0x04030201
-    // Q,0x01030201
-    // Q,0x00000000
+    // Q,0x05030201
     
     // Expected Output:
+    // 0x0203a8c0 2
+    // 0x0203a8c0 2
+    // 0x0203a8c0 2
     // 0x0109a8c0 3
     // 0x0203a8c0 2
-    // Not Found
-    // 0x0203a8c0 2
-    // 0x0203a8c0 2
-    // Not Found
-    // Not Found
-    // Not Found
-    // Not Found
     
     initial begin
         #20
-        wq_en = 1;
-        ins_en = 1;
-        w_ip  = 32'h00030201;
-        w_mask = 32'hffffff00;
-        w_port = 2;
+        wq_en     = 1;
+        ins_en    = 1;
+        w_ip      = 32'h00030201;
+        w_mask    = 32'h00ffffff;
+        w_port    = 2;
         w_nexthop = 32'h0203a8c0;
         #20
         wq_en = 0;
-
+        
         #20
-        wq_en = 1;
-        ins_en = 1;
-        w_ip  = 32'h04030201;
-        w_mask = 32'hffffffff;
-        w_port = 3;
+        wq_en     = 1;
+        ins_en    = 1;
+        w_ip      = 32'h04030201;
+        w_mask    = 32'hffffffff;
+        w_port    = 3;
         w_nexthop = 32'h0109a8c0;
         #20
         wq_en = 0;
+        
+        #20
+        wq_en = 0;
+        q_ip  = 32'h01030201;
+        
+        #20
+        wq_en = 0;
+        q_ip  = 32'h02030201;
+        
+        #20
+        wq_en = 0;
+        q_ip  = 32'h03030201;
 
         #20
         wq_en = 0;
@@ -95,7 +97,6 @@ module tb_route_linear #(parameter CACHE_ADDR_WIDTH = 2)
 
         #20
         wq_en = 0;
-        q_ip  = 32'h04030201;
-
+        q_ip  = 32'h05030201;
     end
 endmodule

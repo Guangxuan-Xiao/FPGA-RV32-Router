@@ -41,7 +41,7 @@ module tb4_route_linear #(parameter CACHE_ADDR_WIDTH = 2)
     .q_port(q_port),
     .q_found(q_found)
     );
-    // Software Lookup Testcase 3
+    // Software Lookup Testcase 4
     // Input:
     // I,0x00030201,24,2,0x0203a8c0
     // I,0x04030201,32,3,0x0109a8c0
