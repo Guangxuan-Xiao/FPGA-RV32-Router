@@ -78,8 +78,7 @@ module frame_datapath
     reg [31:0] src_ip_addr_conv;
     reg [47:0] src_mac_addr;
     reg [47:0] trg_mac_addr;
-    reg arp_cache_w_en = 0;
-    reg arp_cache_r_en = 0;
+    reg arp_cache_wr_en = 0;
     reg [15:0] op;
 
     reg [47:0] my_mac;
@@ -92,10 +91,9 @@ module frame_datapath
         .rst(reset),
         .w_ip(src_ip_addr),
         .w_mac(src_mac_addr),
-        .w_en(arp_cache_w_en),
+        .wr_en(arp_cache_wr_en),
         .r_ip(trg_ip_addr),
         .r_mac(trg_mac_addr),
-        .r_en(arp_cache_r_en)
     );
 
     reg [383:0] data_input_content;

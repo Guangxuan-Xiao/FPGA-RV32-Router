@@ -1,11 +1,11 @@
 // 'w' means wide.
 localparam DATAW_WIDTH      = 8 * 48;
 localparam CACHE_ADDR_WIDTH = 8;
-localparam ID_WIDTH         = 3;
 
 // README: Your code here.
 
-typedef struct packed {
+typedef struct packed 
+{
 // AXI-Stream signals.
 logic [DATAW_WIDTH - 1:0] data;
 logic [DATAW_WIDTH / 8 - 1:0] keep;
