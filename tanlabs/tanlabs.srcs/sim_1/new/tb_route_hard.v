@@ -1,73 +1,31 @@
 `timescale 1ns / 1ps
-module tb_route_hard #()
-                      ();
+module tb_route_hard ();
     reg [31:0] ip;
-    wire[31:0] nexthop
-    reg [47:0] src_mac_addr;
-    wire [47:0] trg_mac_addr;
-    reg [31:0] trg_ip_addr;
+    wire[31:0] nexthop;
+    wire [1:0] port;
+    wire valid;
 
     route_hard #() route_hard_module(
-    .ip(src_ip_addr),
-    .w_mac(src_mac_addr),
-    .wr_en(arp_cache_wr_en),
-    .r_ip(trg_ip_addr),
-    .r_mac(trg_mac_addr)
+    .q_ip(ip),
+    .q_nexthop(nexthop),
+    .q_port(port),
+    .q_valid(valid)
     );
-    reg reset;
+
     initial begin
-        reset = 1;
-        #5
-        reset = 0;
+        #20        
+        ip     = 32'h00001010;
+        #20
+        ip     = 32'habcdabcd;
+        #20        
+        ip     = 32'hdcbadcba;
+        #20
+        ip     = 32'hcbcbcbcb;
+        #20        
+        ip     = 32'hbabababa;        
+        #20
+        ip     = 32'h10101010;
+        #20        
+        ip     = 32'h00001010;
     end
-    
-    wire clk_125M;
-    
-    clock clock_i(
-    .clk_125M(clk_125M)
-    );
-    
-    
-    
-    initial begin
-        // write abcdabcd, 114514191981
-        #20
-        src_ip_addr     = 32'habcdabcd;
-        src_mac_addr    = 48'h114514191981;
-        arp_cache_wr_en = 1;
-        #20
-        arp_cache_wr_en = 0;
-        #20
-        
-        // write dcbadcba, 114514191981
-        src_ip_addr     = 32'hdcbadcba;
-        src_mac_addr    = 48'h114514191981;
-        arp_cache_wr_en = 1;
-        #20
-        arp_cache_wr_en = 0;
-        
-        // overwrite abcdabcd, 110110110110
-        #20
-        src_ip_addr     = 32'habcdabcd;
-        src_mac_addr    = 48'h110110110110;
-        arp_cache_wr_en = 1;
-        #20
-        arp_cache_wr_en = 0;
-        
-        // query abcdabcd
-        #20
-        trg_ip_addr = 32'habcdabcd;
-        #20
-        
-        // query dcbadcba
-        #20
-        trg_ip_addr = 32'hdcbadcba;
-        #20
-        
-        // query aaaaaaaa
-        #20
-        trg_ip_addr = 32'haaaaaaaa;
-    end
-    
-    
 endmodule
