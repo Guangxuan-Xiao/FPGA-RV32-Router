@@ -23,43 +23,43 @@ module tb_arp_cache #(parameter CACHE_ADDR_WIDTH = 2)
     initial begin
         // write abcdabcd, 114514191981
         #20
-        src_ip_addr    = 32'habcdabcd;
-        src_mac_addr   = 48'h114514191981;
+        src_ip_addr     = 32'habcdabcd;
+        src_mac_addr    = 48'h114514191981;
         arp_cache_wr_en = 1;
         #20
         arp_cache_wr_en = 0;
         #20
-
+        
         // write dcbadcba, 114514191981
-        src_ip_addr    = 32'hdcbadcba;
-        src_mac_addr   = 48'h114514191981;
+        src_ip_addr     = 32'hdcbadcba;
+        src_mac_addr    = 48'h114514191981;
         arp_cache_wr_en = 1;
         #20
         arp_cache_wr_en = 0;
-
+        
         // overwrite abcdabcd, 110110110110
         #20
-        src_ip_addr    = 32'habcdabcd;
-        src_mac_addr   = 48'h110110110110;
+        src_ip_addr     = 32'habcdabcd;
+        src_mac_addr    = 48'h110110110110;
         arp_cache_wr_en = 1;
         #20
         arp_cache_wr_en = 0;
-
+        
         // query abcdabcd
         #20
-        trg_ip_addr    = 32'habcdabcd;
+        trg_ip_addr = 32'habcdabcd;
         #20
-
+        
         // query dcbadcba
         #20
-        trg_ip_addr    = 32'hdcbadcba;
+        trg_ip_addr = 32'hdcbadcba;
         #20
-
+        
         // query aaaaaaaa
         #20
-        trg_ip_addr    = 32'haaaaaaaa;
+        trg_ip_addr = 32'haaaaaaaa;
     end
-
+    
     arp_cache #(
     .CACHE_ADDR_WIDTH(CACHE_ADDR_WIDTH)
     ) arp_cache_module(
