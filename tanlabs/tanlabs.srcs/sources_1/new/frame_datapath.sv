@@ -74,6 +74,8 @@ module frame_datapath
 
     reg [31:0] src_ip_addr;
     reg [31:0] trg_ip_addr;
+    reg [31:0] src_ip_addr_conv;
+    reg [31:0] src_ip_addr_conv;
     reg [47:0] src_mac_addr;
     reg [47:0] trg_mac_addr;
     reg arp_cache_w_en = 0;
@@ -128,7 +130,7 @@ module frame_datapath
             begin
             // Swap the MAC address in ethernet frame, since the source and target will change.
                 s1.data[`MAC_DST] <= in.data[`MAC_SRC];
-                s1.data[`MAC_SRC] <= LOCAL_MAC;
+                s1.data[`MAC_SRC] <= MAC0;
             end
         end
     end
@@ -195,12 +197,12 @@ module frame_datapath
             begin
                 src_ip_addr <= s3.data[`SRC_IP_ADDR];
                 src_mac_addr <= s3.data[`SRC_MAC_ADDR];
-                arp_cache_w_en <= 1'b1;
-                if (op == REQUEST && s3.data[`TRG_IP_ADDR] == LOCAL_IP)
+                arp_cache_wr_en <= 1'b1;
+                if (op == REQUEST && s3.data[`TRG_IP_ADDR] == IP0)
                 begin
                     // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
                     s4.data[`SRC_IP_ADDR] <= s3.data[`TRG_IP_ADDR];
-                    s4.data[`SRC_MAC_ADDR] <= LOCAL_MAC;
+                    s4.data[`SRC_MAC_ADDR] <= MAC0;
                     s4.data[`TRG_IP_ADDR] <= s3.data[`SRC_IP_ADDR];
                     s4.data[`TRG_MAC_ADDR] <= s3.data[`SRC_MAC_ADDR];
                     s4.data[`OP] <= REPLY;

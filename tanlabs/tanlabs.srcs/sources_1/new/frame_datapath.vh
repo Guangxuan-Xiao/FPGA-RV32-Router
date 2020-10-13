@@ -36,6 +36,10 @@ typedef struct packed
 `define MAC_SRC (6 * 8) +: 48
 `define MAC_TYPE (12 * 8) +: 16
 `define IP4_TTL ((14 + 8) * 8) +: 8
+`define HARD_TYPE (14 * 8) +: 16
+`define PROT_TYPE (16 * 8) +: 16
+`define HARD_LEN (18 * 8) +: 8
+`define PROT_LEN (19 * 8) +: 8
 `define SRC_MAC_ADDR (22 * 8) +: 48
 `define TRG_MAC_ADDR (32 * 8) +: 48
 `define SRC_IP_ADDR (28 * 8) +: 32
@@ -50,8 +54,17 @@ localparam ETHERTYPE_ARP = 16'h0608;
 localparam REQUEST = 16'h0100;
 localparam REPLY   = 16'h0200;
 
-localparam LOCAL_MAC = 48'h104514191980;
-localparam LOCAL_IP  = 32'habababab;
+localparam MAC0 = 48'h10aaaaaaaa80;
+localparam IP0  = 32'haaaaaa00;
+
+localparam MAC1 = 48'h10bbbbbbbb80;
+localparam IP1  = 32'hbbbbbb00;
+
+localparam MAC2 = 48'h10cccccccc80;
+localparam IP2  = 32'hcccccc00;
+
+localparam MAC3 = 48'h10dddddddd80;
+localparam IP3  = 32'hdddddd00;
 
 
 // Incrementally update the checksum in an IPv4 header
