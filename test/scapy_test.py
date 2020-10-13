@@ -1,4 +1,4 @@
 from scapy.all import *
-dst = '187.187.187.0'
+dst = '170.170.170.170'
 while True:
-    send(IP(ttl=255, dst=dst), iface="enx000ec650a042")
+    send(IP(ttl=255, dst=dst), iface="enx00e04c680024")
