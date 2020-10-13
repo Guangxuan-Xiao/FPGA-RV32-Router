@@ -21,6 +21,7 @@ module checksum_upd
 );
     
     wire [IP_HEAD_LEN - 1:0] ip_head;
+    reg [IP_HEAD_LEN - 1:0] ip_head_copy;
     reg [IP_CHECKSUM_INTERMEDIATE * IP_CHECKSUM_NUMBER - 1:0] checksum_intermediate;
     wire [IP_CHECKSUM_LEN - 1:0] checksum;
     wire checksum_valid;
@@ -59,9 +60,11 @@ module checksum_upd
     always @ (*)
     begin
         output_data = input_data;
-        ip_head[TTL_END - 1:TTL_START] = ip_head[TTL_END - 1:TTL_START] - 1;
-        ip_head[CHECKSUM_START +: BYTE_LEN] = ip_head[CHECKSUM_START +: BYTE_LEN] + 1;
-        if (ip_head[CHECKSUM_END : CHECKSUM_START] == 16h'ffff)
-            ip_head[CHECKSUM_END : CHECKSUM_START] = 0;
+        ip_head_copy = ip_head;
+        ip_head_copy[TTL_END - 1:TTL_START] = ip_head_copy[TTL_END - 1:TTL_START] - 1;
+        ip_head_copy[CHECKSUM_START +: BYTE_LEN] = ip_head_copy[CHECKSUM_START +: BYTE_LEN] + 1;
+        if (ip_head_copy[CHECKSUM_END : CHECKSUM_START] == 16h'ffff)
+            ip_head_copy[CHECKSUM_END : CHECKSUM_START] = 0;
+        output_data[IP_HEAD_END : IP_HEAD_START] = ip_head_copy;
     end
 endmodule
