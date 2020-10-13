@@ -63,8 +63,10 @@ module checksum_upd
         ip_head_copy = ip_head;
         ip_head_copy[TTL_END - 1:TTL_START] = ip_head_copy[TTL_END - 1:TTL_START] - 1;
         ip_head_copy[CHECKSUM_START +: BYTE_LEN] = ip_head_copy[CHECKSUM_START +: BYTE_LEN] + 1;
-        if (ip_head_copy[CHECKSUM_END : CHECKSUM_START] == 16h'ffff)
+        if (ip_head_copy[CHECKSUM_END : CHECKSUM_START] == 16'hffff)
             ip_head_copy[CHECKSUM_END : CHECKSUM_START] = 0;
+        else
+            ip_head_copy = ip_head_copy;
         output_data[IP_HEAD_END : IP_HEAD_START] = ip_head_copy;
     end
 endmodule
