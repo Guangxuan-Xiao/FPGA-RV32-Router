@@ -10,7 +10,9 @@ module checksum_upd
     parameter TTL_START = 64,
     parameter TTL_END = 72,
     parameter HEAD_LEN_START = 4,
-    parameter HEAD_LEN_END = 8
+    parameter HEAD_LEN_END = 8,
+    parameter CHECKSUM_START = 80,
+    parameter CHECKSUM_END = 96
 )
 (   input wire [DATA_WIDTH - 1:0] input_data,
     output reg [DATA_WIDTH - 1:0] output_data,
@@ -54,4 +56,12 @@ module checksum_upd
 
     assign time_to_live = ip_head[TTL_END - 1:TTL_START];
 
+    always @ (*)
+    begin
+        output_data = input_data;
+        ip_head[TTL_END - 1:TTL_START] = ip_head[TTL_END - 1:TTL_START] - 1;
+        ip_head[CHECKSUM_START +: BYTE_LEN] = ip_head[CHECKSUM_START +: BYTE_LEN] + 1;
+        if (ip_head[CHECKSUM_END : CHECKSUM_START] == 16h'ffff)
+            ip_head[CHECKSUM_END : CHECKSUM_START] = 0;
+    end
 endmodule
