@@ -235,7 +235,7 @@ module frame_datapath
                 if(ip_yes)
                 begin
                     // Check the result of checksum, ttl, and decide whether drop or not.
-                    if(!query_valid || !packet_valid)
+                    if(!query_valid || !test_packet_valid)
                     begin
                         s2.drop <= 1;
                     end
