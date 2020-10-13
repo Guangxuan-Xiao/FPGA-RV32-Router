@@ -1,10 +1,10 @@
 `timescale 1ns/1ps
 typedef struct packed {
 reg valid;         // If this entry is valid
-reg[31:0] ip;      // Little endian, ipv4 address.
+reg[31:0] ip;      // Big endian, ipv4 address.
 reg[31:0] mask;    // Little endian, subnet mask.
 reg[1:0]  port;    // Little endian, nexthop out port.
-reg[31:0] nexthop; // Litle endian, nexthop ipv4 addr.
+reg[31:0] nexthop; // Big endian, nexthop ipv4 addr.
 } route_entry;
 
 
