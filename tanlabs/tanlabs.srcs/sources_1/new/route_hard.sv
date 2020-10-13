@@ -14,7 +14,7 @@ module route_hard #(parameter PORT0 = 0,
                     parameter MASK = 32'h0000000f)
                    (input wire [31:0] q_ip,
                     output reg [31:0] q_nexthop,
-                    output reg [1:0] q_port,
+                    output reg [2:0] q_port,
                     output reg q_valid);
     always @(*) begin
         case (q_ip & MASK)

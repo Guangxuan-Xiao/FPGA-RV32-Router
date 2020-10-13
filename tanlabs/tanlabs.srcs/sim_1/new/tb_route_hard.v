@@ -2,7 +2,7 @@
 module tb_route_hard ();
     reg [31:0] ip;
     wire[31:0] nexthop;
-    wire [1:0] port;
+    wire [2:0] port;
     wire valid;
 
     route_hard #() route_hard_module(

@@ -3,7 +3,7 @@ typedef struct packed {
 reg valid;         // If this entry is valid
 reg[31:0] ip;      // Big endian, ipv4 address.
 reg[31:0] mask;    // Little endian, subnet mask.
-reg[1:0]  port;    // Little endian, nexthop out port.
+reg[2:0]  port;    // Little endian, nexthop out port.
 reg[31:0] nexthop; // Big endian, nexthop ipv4 addr.
 } route_entry;
 
@@ -15,11 +15,11 @@ module route_linear #(parameter CACHE_ADDR_WIDTH = 6)
                       input wire ins_en,
                       input wire[31:0] w_ip,
                       input wire[31:0] w_mask,
-                      input wire[1:0] w_port,
+                      input wire[2:0] w_port,
                       input wire[31:0] w_nexthop,
                       input wire[31:0] q_ip,
                       output reg[31:0] q_nexthop,
-                      output reg[1:0] q_port,
+                      output reg[2:0] q_port,
                       output reg q_found);
     // cache data
     route_entry [(2**CACHE_ADDR_WIDTH)-1:0] cache = 0;

@@ -18,11 +18,11 @@ module tb4_route_linear #(parameter CACHE_ADDR_WIDTH = 2)
     reg ins_en;
     reg[31:0] w_ip;
     reg[31:0] w_mask;
-    reg[1:0] w_port;
+    reg[2:0] w_port;
     reg[31:0] w_nexthop;
     reg[31:0] q_ip;
     wire[31:0] q_nexthop;
-    wire[1:0] q_port;
+    wire[2:0] q_port;
     wire q_found;
     
     route_linear #(
