@@ -77,7 +77,7 @@ module tb_route_linear #(parameter CACHE_ADDR_WIDTH = 2)
         w_port = 2;
         w_nexthop = 32'h0203a8c0;
         #20
-        wq_en = 0
+        wq_en = 0;
 
         #20
         wq_en = 1;
@@ -87,7 +87,7 @@ module tb_route_linear #(parameter CACHE_ADDR_WIDTH = 2)
         w_port = 3;
         w_nexthop = 32'h0109a8c0;
         #20
-        wq_en = 0
+        wq_en = 0;
 
         #20
         wq_en = 0;
