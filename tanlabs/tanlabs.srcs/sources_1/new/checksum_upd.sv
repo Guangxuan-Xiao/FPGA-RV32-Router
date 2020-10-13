@@ -17,8 +17,7 @@ module checksum_upd
 (   input wire [DATA_WIDTH - 1:0] input_data,
     input wire reset,
     output reg [DATA_WIDTH - 1:0] output_data,
-    output reg packet_valid,
-    output reg [BYTE_LEN - 1:0] time_to_live
+    output reg packet_valid
 );
     
     wire [IP_HEAD_LEN - 1:0] ip_head;
@@ -56,8 +55,6 @@ module checksum_upd
     
     assign packet_valid = checksum_valid & ttl_valid & len_valid;
 
-    assign time_to_live = ip_head[TTL_END - 1:TTL_START];
-
     always @ (*)
     begin
         output_data = input_data;
@@ -74,7 +71,6 @@ module checksum_upd
         if (reset) begin
             output_data = 0;
             packet_valid = 0;
-            time_to_live = 0;
         end
     end
 endmodule

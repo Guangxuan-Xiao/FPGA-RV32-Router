@@ -84,7 +84,6 @@ module frame_datapath
         .CACHE_ADDR_WIDTH(CACHE_ADDR_WIDTH)
     ) arp_cache_module(
         .clk(eth_clk),
-        .rst(reset),
         .w_ip(src_ip_addr),
         .w_mac(src_mac_addr),
         .wr_en(arp_cache_wr_en),
@@ -100,9 +99,9 @@ module frame_datapath
     checksum_upd checksum
     (
         .input_data(data_input_content),
+        .reset(reset),
         .output_data(data_output_content),
-        .packet_valid(packet_valid),
-        .time_to_live(ttl)
+        .packet_valid(packet_valid)
     );
 
     reg [31:0] query_ip;
