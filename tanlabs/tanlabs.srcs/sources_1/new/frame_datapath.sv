@@ -66,6 +66,8 @@ module frame_datapath
 
     reg [31:0] src_ip_addr;
     reg [31:0] trg_ip_addr;
+    reg [31:0] src_ip_addr_conv;
+    reg [31:0] src_ip_addr_conv;
     reg [47:0] src_mac_addr;
     reg [47:0] trg_mac_addr;
     reg arp_cache_w_en = 0;
@@ -77,13 +79,25 @@ module frame_datapath
     ) arp_cache_module(
         .clk(eth_clk),
         .rst(reset),
-        .w_ip(src_ip_addr),
+        .w_ip(src_ip_addr_conv),
         .w_mac(src_mac_addr),
         .w_en(arp_cache_w_en),
-        .r_ip(trg_ip_addr),
+        .r_ip(trg_ip_addr_conv),
         .r_mac(trg_mac_addr),
         .r_en(arp_cache_r_en)
     );
+
+    // Fix endian.
+    conv_32 src_ip_converter(
+        .wire_in(src_ip_addr),
+        .wire_out(src_ip_addr_conv)
+    );
+
+    conv_32 trg_ip_converter(
+        .wire_in(trg_ip_addr),
+        .wire_out(trg_ip_addr_conv)
+    );
+
 
     // Track frames and figure out when it is the first beat.
     always @ (posedge eth_clk or posedge reset)

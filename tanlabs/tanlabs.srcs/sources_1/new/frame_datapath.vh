@@ -36,6 +36,10 @@ typedef struct packed
 `define MAC_SRC (6 * 8) +: 48
 `define MAC_TYPE (12 * 8) +: 16
 `define IP4_TTL ((14 + 8) * 8) +: 8
+`define HARD_TYPE (14 * 8) +: 16
+`define PROT_TYPE (16 * 8) +: 16
+`define HARD_LEN (18 * 8) +: 8
+`define PROT_LEN (19 * 8) +: 8
 `define SRC_MAC_ADDR (22 * 8) +: 48
 `define TRG_MAC_ADDR (32 * 8) +: 48
 `define SRC_IP_ADDR (28 * 8) +: 32
