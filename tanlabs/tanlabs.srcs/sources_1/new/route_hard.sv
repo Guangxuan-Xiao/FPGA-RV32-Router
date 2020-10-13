@@ -11,33 +11,35 @@ module route_hard #(parameter NET0 = 0,
                    (input wire [31:0] q_ip,
                     output reg [31:0] q_nexthop,
                     output reg [1:0] q_port,
-                    output reg q_valid,
-                    );
-    case (q_ip & MASK)
-        32'ha0000000:begin
-            q_port    <= NET0;
-            q_nexthop <= IP0;
-            q_valid   <= 1;
-        end
-        32'hb0000000:begin
-            q_port    <= NET1;
-            q_nexthop <= IP1;
-            q_valid   <= 1;
-        end
-        32'hc0000000:begin
-            q_port    <= NET2;
-            q_nexthop <= IP2;
-            q_valid   <= 1;
-        end
-        32'hd0000000:begin
-            q_port    <= NET3;
-            q_nexthop <= IP3;
-            q_valid   <= 1;
-        end
-        default: begin
-            q_port    <= NET0;
-            q_nexthop <= IP0;
-            q_valid   <= 0;
-        end
-    endcase
+                    output reg q_valid);
+    always @(*) begin
+        case (q_ip & MASK)
+            32'ha0000000:begin
+                q_port    <= NET0;
+                q_nexthop <= IP0;
+                q_valid   <= 1;
+            end
+            32'hb0000000:begin
+                q_port    <= NET1;
+                q_nexthop <= IP1;
+                q_valid   <= 1;
+            end
+            32'hc0000000:begin
+                q_port    <= NET2;
+                q_nexthop <= IP2;
+                q_valid   <= 1;
+            end
+            32'hd0000000:begin
+                q_port    <= NET3;
+                q_nexthop <= IP3;
+                q_valid   <= 1;
+            end
+            default: begin
+                q_port    <= NET0;
+                q_nexthop <= IP0;
+                q_valid   <= 0;
+            end
+        endcase
+    end
+    
 endmodule

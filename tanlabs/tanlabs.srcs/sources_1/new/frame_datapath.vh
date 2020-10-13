@@ -54,8 +54,17 @@ localparam ETHERTYPE_ARP = 16'h0608;
 localparam REQUEST = 16'h0100;
 localparam REPLY   = 16'h0200;
 
-localparam LOCAL_MAC = 48'h104514191980;
-localparam LOCAL_IP  = 32'habababab;
+localparam MAC0 = 48'h10aaaaaaaa80;
+localparam IP0  = 32'haaaaaa00;
+
+localparam MAC1 = 48'h10bbbbbbbb80;
+localparam IP1  = 32'hbbbbbb00;
+
+localparam MAC2 = 48'h10cccccccc80;
+localparam IP2  = 32'hcccccc00;
+
+localparam MAC3 = 48'h10dddddddd80;
+localparam IP3  = 32'hdddddd00;
 
 
 // Incrementally update the checksum in an IPv4 header
