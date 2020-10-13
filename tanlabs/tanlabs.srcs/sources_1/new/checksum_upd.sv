@@ -7,12 +7,12 @@ module checksum_upd
     parameter IP_CHECKSUM_NUMBER = 10,
     parameter IP_CHECKSUM_LEN = 16,
     parameter BYTE_LEN = 8,
-    parameter TTL_START = 88,
-    parameter TTL_END = 96,
-    parameter HEAD_LEN_START = 152,
-    parameter HEAD_LEN_END = 156,
-    parameter CHECKSUM_START = 64,
-    parameter CHECKSUM_END = 80
+    parameter TTL_START = 64,
+    parameter TTL_END = 72,
+    parameter HEAD_LEN_START = 0,
+    parameter HEAD_LEN_END = 4,
+    parameter CHECKSUM_START = 80,
+    parameter CHECKSUM_END = 96
 )
 (   input wire [DATA_WIDTH - 1:0] input_data,
     input wire reset,
@@ -63,11 +63,11 @@ module checksum_upd
         output_data = input_data;
         ip_head_copy = ip_head;
         ip_head_copy[TTL_END - 1:TTL_START] = ip_head_copy[TTL_END - 1:TTL_START] - 1;
-        ip_head_copy[CHECKSUM_START + BYTE_LEN +: BYTE_LEN] = ip_head_copy[CHECKSUM_START + BYTE_LEN +: BYTE_LEN] + 1;
+        ip_head_copy[CHECKSUM_START +: BYTE_LEN] = ip_head_copy[CHECKSUM_START +: BYTE_LEN] + 1;
         if (ip_head_copy[CHECKSUM_END - 1:CHECKSUM_START] == 16'hffff)
             ip_head_copy[CHECKSUM_END - 1:CHECKSUM_START] = 0;
-        else if (ip_head_copy[CHECKSUM_START + BYTE_LEN +: BYTE_LEN] == 0)
-            ip_head_copy[CHECKSUM_START +: BYTE_LEN] = ip_head_copy[CHECKSUM_START +: BYTE_LEN] + 1;
+        else if (ip_head_copy[CHECKSUM_START +: BYTE_LEN] == 0)
+            ip_head_copy[CHECKSUM_START + BYTE_LEN +: BYTE_LEN] = ip_head_copy[CHECKSUM_START + BYTE_LEN +: BYTE_LEN] + 1;
         else
             ip_head_copy = ip_head_copy;
         output_data[IP_HEAD_END : IP_HEAD_START] = ip_head_copy;

@@ -72,9 +72,7 @@ module tb_frame_datapath
         .m_user(out_user),
         .m_dest(out_dest),
         .m_valid(out_valid),
-        .m_ready(out_ready),
-        .out_data(out_data_real),
-        .in_data(in_data_real)
+        .m_ready(out_ready)
     );
 
     axis_receiver axis_receiver_i(
