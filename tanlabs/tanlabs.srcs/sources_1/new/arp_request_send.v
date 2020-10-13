@@ -27,6 +27,7 @@ begin
         arp_data[`HARD_TYPE] <= 16'h0;
         arp_data[`PROT_TYPE] <= 16'h0;
         arp_data[`HARD_LEN] <= 8'h0;
+        arp_data[`OP] <= 16'h0;
         arp_data[`PROT_LEN] <= 8'h0;
         arp_data[`SRC_MAC_ADDR] <= 48'h0;
         arp_data[`SRC_IP_ADDR] <= 32'h0;
@@ -40,6 +41,7 @@ begin
         arp_data[`MAC_TYPE] <= ether_type;
         arp_data[`HARD_TYPE] <= hard_type;
         arp_data[`PROT_TYPE] <= prot_type;
+        arp_data[`OP] <= 16'h0100;
         arp_data[`HARD_LEN] <= hard_len;
         arp_data[`PROT_LEN] <= prot_len;
         arp_data[`SRC_MAC_ADDR] <= my_mac;
