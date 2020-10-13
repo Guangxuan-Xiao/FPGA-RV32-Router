@@ -25,23 +25,19 @@ module frame_datapath
     output wire [DATA_WIDTH / 8 - 1:0] m_user,
     output wire [ID_WIDTH - 1:0] m_dest,
     output wire m_valid,
-    input m_ready,
-    output wire [383 : 0] out_data,
-    output wire [383: 0] in_data
+    input m_ready
 );
 
     `include "frame_datapath.vh"
 
     frame_data in;
     wire in_ready;
-    (*keep = "TRUE"*) reg [1023:0] data;
-    assign data[1023:256] = {out_data, in_data};
-    ila_0 ila_0_test (
-	.clk(eth_clk), // input wire clk
+//    ila_0 ila_0_test (
+//	.clk(eth_clk), // input wire clk
 
 
-	.probe0(data) // input wire [1023:0] probe0
-);
+//	.probe0(data) // input wire [1023:0] probe0
+//);
 
     // README: Here, we use a width upsizer to change the width to 48 bytes
     // (MAC 14 + ARP 28 + round up 6) to ensure that L2 (MAC) and L3 (IPv4 or ARP) headers appear
@@ -93,7 +89,7 @@ module frame_datapath
         .w_mac(src_mac_addr),
         .wr_en(arp_cache_wr_en),
         .r_ip(trg_ip_addr),
-        .r_mac(trg_mac_addr),
+        .r_mac(trg_mac_addr)
     );
 
     reg [383:0] data_input_content;
@@ -399,8 +395,6 @@ module frame_datapath
     
     frame_data out;
     assign out = s5;
-    assign out_data = s5.data;
-    assign in_data = in.data;
 
     wire out_ready;
     assign s5_ready = out_ready || !out.valid;
