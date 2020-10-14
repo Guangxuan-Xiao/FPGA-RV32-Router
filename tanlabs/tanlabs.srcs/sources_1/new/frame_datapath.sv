@@ -217,7 +217,9 @@ module frame_datapath
     end
 
     reg arp_yes_2;
-    reg ip_yes_2;            
+    reg ip_yes_2;    
+
+    reg [31:0] query_nexthop_2;        
     frame_data s2;
     wire s2_ready;
     assign s1_ready = s2_ready || !s1.valid;
@@ -238,6 +240,7 @@ module frame_datapath
                 begin
                     ip_yes_2 <= ip_yes_1;
                     arp_yes_2 <= arp_yes_1;
+                    query_nexthop_2 <= query_nexthop; 
                     // Check the result of checksum, ttl, and decide whether drop or not.
                     if(!query_valid || !test_packet_valid)
                     begin
@@ -291,7 +294,7 @@ module frame_datapath
                 begin
                 // Query MAC address from ARP cache.
                     arp_cache_wr_en <= 1'b0;
-                    trg_ip_addr <= query_nexthop; 
+                    trg_ip_addr <= query_nexthop_2; 
                     ip_yes_3 <= ip_yes_2;
                     arp_yes_3 <= arp_yes_2;
                 end
@@ -334,7 +337,7 @@ module frame_datapath
             end
         end
         else
-        begin
+        begin 
             trg_ip_addr <= 0;
             src_ip_addr <= 0;
             src_mac_addr <= 0;

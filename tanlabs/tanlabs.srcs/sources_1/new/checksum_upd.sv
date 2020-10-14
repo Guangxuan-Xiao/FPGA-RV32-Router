@@ -52,8 +52,6 @@ module checksum_upd
     assign ttl_valid = ip_head[TTL_END - 1:TTL_START] >= 2;
 
     assign len_valid = (ip_head[HEAD_LEN_END - 1:HEAD_LEN_START] == 5);
-    
-    assign packet_valid = checksum_valid & ttl_valid & len_valid;
 
     always @ (*)
     begin
@@ -68,6 +66,7 @@ module checksum_upd
         else
             ip_head_copy = ip_head_copy;
         output_data[IP_HEAD_END : IP_HEAD_START] = ip_head_copy;
+        packet_valid = checksum_valid & ttl_valid & len_valid;
         if (reset) begin
             output_data = 0;
             packet_valid = 0;
