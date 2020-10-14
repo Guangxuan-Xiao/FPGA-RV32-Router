@@ -367,6 +367,8 @@ module frame_datapath
         else if (s4_ready)
         begin
             s4 <= s3;
+            arp_yes_4 <= arp_yes_3;
+            ip_yes_4 <= ip_yes_3;
             // store_trg_mac <= trg_mac_addr;
 
             // if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
@@ -439,7 +441,7 @@ module frame_datapath
                     arp_yes_5 <= arp_yes_4;
                     ip_yes_5 <= ip_yes_4;
                     store_trg_mac <= trg_mac_addr;
-                    if(trg_mac_addr)
+                    if(!trg_mac_addr)
                     //Not found, then we send an ARP packet.
                     begin
                         test_arp <= my_ip;
