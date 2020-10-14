@@ -45,5 +45,4 @@ module route_hard #(parameter PORT0 = 0,
             end
         endcase
     end
-    
 endmodule

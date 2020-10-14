@@ -84,6 +84,7 @@ module frame_datapath
         .CACHE_ADDR_WIDTH(CACHE_ADDR_WIDTH)
     ) arp_cache_module(
         .clk(eth_clk),
+        .rst(reset),
         .w_ip(src_ip_addr),
         .w_mac(src_mac_addr),
         .wr_en(arp_cache_wr_en),
