@@ -179,6 +179,8 @@ module frame_datapath
 
 
 
+    reg arp_yes_1;
+    reg ip_yes_1;
     frame_data s1;
     wire s1_ready;
     assign in_ready = s1_ready || !in.valid;
@@ -187,6 +189,8 @@ module frame_datapath
         if (reset)
         begin
             s1 <= 0;
+            arp_yes_1 <= 0;
+            ip_yes_1 <= 0;
         end
         else if (s1_ready)
         begin
@@ -196,28 +200,30 @@ module frame_datapath
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
                 begin
                     //Start checkcum and query table if this is IP packet.
-                    ip_yes <= 1;
-                    arp_yes <= 0;
+                    ip_yes_1 <= 1;
+                    arp_yes_1 <= 0;
                     data_input_content <= in.data;
                     query_ip <= in.data[`TRG_IP_IP];
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
                 begin
                     //This is ARP packet.
-                    ip_yes <= 0;
-                    arp_yes <= 1;
+                    ip_yes_1 <= 0;
+                    arp_yes_1 <= 1;
                 end
                 else
                 begin
                     //This is rubbish.
-                    ip_yes <= 0;
-                    arp_yes <= 0;
+                    ip_yes_1 <= 0;
+                    arp_yes_1 <= 0;
                     s1.drop <= 1;
                 end
             end
         end
     end
-            
+
+    reg arp_yes_2;
+    reg ip_yes_2;            
     frame_data s2;
     wire s2_ready;
     assign s1_ready = s2_ready || !s1.valid;
@@ -226,14 +232,18 @@ module frame_datapath
         if (reset)
         begin
             s2 <= 0;
+            arp_yes_2 <= 0;
+            ip_yes_2 <= 0;
         end
         else if (s2_ready)
         begin
             s2 <= s1;
             if (s1.valid && s1.is_first && !s1.drop && !s1.dont_touch)
             begin
-                if(ip_yes)
+                if(ip_yes_1)
                 begin
+                    ip_yes_2 <= ip_yes_1;
+                    arp_yes_2 <= arp_yes_1;
                     // Check the result of checksum, ttl, and decide whether drop or not.
                     if(!query_valid || !test_packet_valid)
                     begin
@@ -245,15 +255,24 @@ module frame_datapath
                         s2.data <= data_output_content;
                     end
                 end
-                else
+                else if(arp_yes_1)
                 begin
+                    ip_yes_2 <= ip_yes_1;
+                    arp_yes_2 <= arp_yes_1;
                     //(ARP) Get the op-code.
                     op <= s1.data[`OP];
+                end
+                else
+                begin
+                    ip_yes_2 <= ip_yes_1;
+                    arp_yes_2 <= arp_yes_1;
                 end
             end
         end
     end
 
+    reg arp_yes_3;
+    reg ip_yes_3;  
     frame_data s3;
     wire s3_ready;
     assign s2_ready = s3_ready || !s2.valid;
@@ -266,24 +285,30 @@ module frame_datapath
             src_ip_addr <= 0;
             src_mac_addr <= 0;
             arp_cache_wr_en <= 0;
+            arp_yes_3 <= 0;
+            ip_yes_3 <= 0;
         end
         else if (s3_ready)
         begin
             s3 <= s2;
             if (s2.valid && s2.is_first && !s2.drop && !s2.dont_touch)
             begin
-                if(ip_yes)
+                if(ip_yes_2)
                 begin
                 // Query MAC address from ARP cache.
                     arp_cache_wr_en <= 1'b0;
                     trg_ip_addr <= query_nexthop; 
+                    ip_yes_3 <= ip_yes_2;
+                    arp_yes_3 <= arp_yes_2;
                 end
-                else
+                else if(arp_yes_2)
                 begin
                     //(ARP)
                     src_ip_addr <= s2.data[`SRC_IP_ADDR];
                     src_mac_addr <= s2.data[`SRC_MAC_ADDR];
                     arp_cache_wr_en <= 1'b1;
+                    ip_yes_3 <= ip_yes_2;
+                    arp_yes_3 <= arp_yes_2;
                     if (op == REQUEST && s2.data[`TRG_IP_ADDR] == my_ip)
                     begin
                         // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
@@ -298,6 +323,11 @@ module frame_datapath
                         s3.drop <= 1'b1;
                     end
                 end
+                else
+                begin
+                    ip_yes_3 <= ip_yes_2;
+                    arp_yes_3 <= arp_yes_2;
+                end
             end
             else
             begin
@@ -305,6 +335,8 @@ module frame_datapath
                 src_ip_addr <= 0;
                 src_mac_addr <= 0;
                 arp_cache_wr_en <= 0;
+                ip_yes_3 <= ip_yes_2;
+                arp_yes_3 <= arp_yes_2;
             end
         end
         else
@@ -313,9 +345,13 @@ module frame_datapath
             src_ip_addr <= 0;
             src_mac_addr <= 0;
             arp_cache_wr_en <= 0;
+            ip_yes_3 <= ip_yes_2;
+            arp_yes_3 <= arp_yes_2;
         end
     end
-    
+
+    reg arp_yes_4;
+    reg ip_yes_4;      
     reg [31:0] test_arp  = 31'h11111111;
     frame_data s4;
     wire s4_ready;
@@ -325,14 +361,18 @@ module frame_datapath
         if (reset)
         begin
             s4 <= 0;
+            arp_yes_4 <= 0;
+            ip_yes_4 <= 0;
         end
         else if (s4_ready)
         begin
             s4 <= s3;
             if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
             begin
-                if(ip_yes)
+                if(ip_yes_3)
                 begin
+                    arp_yes_4 <= arp_yes_3;
+                    ip_yes_4 <= ip_yes_3;
                     if(trg_mac_addr == 48'h0)
                     //Not found, then we send an ARP packet.
                     begin
@@ -357,11 +397,18 @@ module frame_datapath
                         s4.data[`MAC_DST] <= trg_mac_addr;
                     end
                 end
-                else
+                else if(arp_yes_3)
                 begin
                     // Change the MAC address of ether frame.
                     s4.data[`MAC_DST] <= s3.data[`MAC_SRC];
                     s4.data[`MAC_SRC] <= my_mac;
+                    arp_yes_4 <= arp_yes_3;
+                    ip_yes_4 <= ip_yes_3;
+                end
+                else
+                begin
+                    arp_yes_4 <= arp_yes_3;
+                    ip_yes_4 <= ip_yes_3;
                 end
             end
         end
@@ -382,13 +429,17 @@ module frame_datapath
             if (s4.valid && s4.is_first && !s4.drop && !s4.dont_touch)
             // Send the frame to the port from previous query.
             begin
-                if(ip_yes)
+                if(ip_yes_4)
                 begin
                     s5.dest <= query_port;
                 end
-                else
+                else if(arp_yes_4)
                 begin
                     s5.dest <= s4.id;
+                end
+                else
+                begin
+                    s5.dest <= 0;
                 end
             end
         end
