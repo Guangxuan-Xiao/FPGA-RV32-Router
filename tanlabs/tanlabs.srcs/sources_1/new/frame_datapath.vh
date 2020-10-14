@@ -1,6 +1,6 @@
 // 'w' means wide.
 localparam DATAW_WIDTH      = 8 * 48;
-localparam CACHE_ADDR_WIDTH = 8;
+localparam CACHE_ADDR_WIDTH = 4;
 
 // README: Your code here.
 

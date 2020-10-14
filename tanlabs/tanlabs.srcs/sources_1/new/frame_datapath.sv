@@ -107,7 +107,7 @@ module frame_datapath
 
     reg [31:0] query_ip;
     reg [31:0] query_nexthop;
-    reg [1:0] query_port;
+    reg [2:0] query_port;
     reg query_valid;
 
     route_hard route_table
