@@ -440,8 +440,8 @@ module frame_datapath
                 begin
                     arp_yes_5 <= arp_yes_4;
                     ip_yes_5 <= ip_yes_4;
-                    store_trg_mac <= trg_mac_addr;
-                    if(!trg_mac_addr)
+                    store_trg_mac = trg_mac_addr;
+                    if(!store_trg_mac)
                     //Not found, then we send an ARP packet.
                     begin
                         test_arp <= my_ip;
