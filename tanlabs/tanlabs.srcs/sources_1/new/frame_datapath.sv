@@ -175,6 +175,7 @@ module frame_datapath
 
     reg arp_yes_1;
     reg ip_yes_1;
+    reg [15:0] test_content;
     frame_data s1;
     wire s1_ready;
     assign in_ready = s1_ready || !in.valid;
@@ -191,6 +192,7 @@ module frame_datapath
             s1 <= in;
             if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
+                test_content <= in.data[`MAC_TYPE];
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
                 begin
                     //Start checkcum and query table if this is IP packet.
@@ -219,7 +221,8 @@ module frame_datapath
     reg arp_yes_2;
     reg ip_yes_2;    
 
-    reg [31:0] query_nexthop_2;        
+    reg [31:0] query_nexthop_2;      
+    reg [2:0] query_port_2;  
     frame_data s2;
     wire s2_ready;
     assign s1_ready = s2_ready || !s1.valid;
@@ -241,6 +244,7 @@ module frame_datapath
                     ip_yes_2 <= ip_yes_1;
                     arp_yes_2 <= arp_yes_1;
                     query_nexthop_2 <= query_nexthop; 
+                    query_port_2 <= query_port;
                     // Check the result of checksum, ttl, and decide whether drop or not.
                     if(!query_valid || !test_packet_valid)
                     begin
@@ -271,6 +275,7 @@ module frame_datapath
     reg arp_yes_3;
     reg ip_yes_3;  
     reg [47:0] store_trg_mac;
+    reg [2:0] query_port_3;  
     frame_data s3;
     wire s3_ready;
     assign s2_ready = s3_ready || !s2.valid;
@@ -298,6 +303,7 @@ module frame_datapath
                     trg_ip_addr <= query_nexthop_2; 
                     ip_yes_3 <= ip_yes_2;
                     arp_yes_3 <= arp_yes_2;
+                    query_port_3 <= query_port_2;
                 end
                 else if(arp_yes_2)
                 begin
@@ -351,6 +357,7 @@ module frame_datapath
     reg arp_yes_4;
     reg ip_yes_4;      
     reg [31:0] test_arp  = 31'h11111111;
+    reg [2:0] query_port_4;  
     frame_data s4;
     wire s4_ready;
     reg [31:0] test_mac;
@@ -369,6 +376,7 @@ module frame_datapath
             s4 <= s3;
             arp_yes_4 <= arp_yes_3;
             ip_yes_4 <= ip_yes_3;
+            query_port_4 <= query_port_3;
             // store_trg_mac <= trg_mac_addr;
 
             // if (s3.valid && s3.is_first && !s3.drop && !s3.dont_touch)
@@ -424,6 +432,7 @@ module frame_datapath
     reg ip_yes_5;  
     frame_data s5;
     wire s5_ready;
+    reg [2:0] query_port_5;  
     assign s4_ready = s5_ready || !s4.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -440,6 +449,7 @@ module frame_datapath
                 begin
                     arp_yes_5 <= arp_yes_4;
                     ip_yes_5 <= ip_yes_4;
+                    query_port_5 <= query_port_4;
                     store_trg_mac = trg_mac_addr;
                     if(!store_trg_mac)
                     //Not found, then we send an ARP packet.
@@ -455,7 +465,7 @@ module frame_datapath
                         s5.data[`PROT_LEN] <= PROT_L;
                         s5.data[`SRC_MAC_ADDR] <= my_mac;
                         s5.data[`SRC_IP_ADDR] <= my_ip;
-                        s5.data[`TRG_IP_ADDR] <= trg_ip_addr;
+                        s5.data[`TRG_IP_ADDR] <= s4.data[`TRG_IP_IP];
                         s5.data[`TRG_MAC_ADDR] <= TBD;
                         s5.data[`FINAL] <= 48'h0;
                     end
@@ -500,7 +510,7 @@ module frame_datapath
             begin
                 if(ip_yes_5)
                 begin
-                    s6.dest <= query_port;
+                    s6.dest <= query_port_5;
                 end
                 else if(arp_yes_5)
                 begin
