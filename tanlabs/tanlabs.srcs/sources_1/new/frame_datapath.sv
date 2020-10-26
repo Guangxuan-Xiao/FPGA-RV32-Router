@@ -112,6 +112,33 @@ module frame_datapath
         .q_valid(query_valid)
     );
 
+    reg rl_wq_en;
+    reg rl_ins_en;
+    reg [31:0] rl_w_ip;
+    reg [31:0] rl_w_mask;
+    reg [31:0] rl_w_nexthop;
+    reg [31:0] rl_q_ip;
+    reg [31:0] rl_q_nexthop; 
+    reg [2:0] rl_w_port;
+    reg [2:0] rl_q_port;
+    reg rl_q_found;
+
+    route_linear route_linear_table
+    (
+        .clk(eth_clk),
+        .rst(reset),
+        .wq_en(rl_wq_en),
+        .ins_en(rl_ins_en)
+        .w_ip(rl_w_ip),
+        .w_mask(rl_w_mask),
+        .w_port(rl_w_port),
+        .w_nexthop(rl_w_nexthop),
+        .q_ip(rl_q_ip),
+        .q_nexthop(rl_q_nexthop),
+        .q_port(rl_q_port),
+        .q_found(rl_q_found)
+    );
+
     reg arp_yes;
     reg ip_yes;
 
@@ -175,9 +202,11 @@ module frame_datapath
 
     reg arp_yes_1;
     reg ip_yes_1;
+    reg ltp_yes_1;
     reg [15:0] test_content;
     frame_data s1;
     wire s1_ready;
+
     assign in_ready = s1_ready || !in.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -198,6 +227,7 @@ module frame_datapath
                     //Start checkcum and query table if this is IP packet.
                     ip_yes_1 <= 1;
                     arp_yes_1 <= 0;
+                    ltp_yes_1 <= 0;
                     data_input_content <= in.data;
                     query_ip <= in.data[`TRG_IP_IP];
                 end
@@ -206,12 +236,20 @@ module frame_datapath
                     //This is ARP packet.
                     ip_yes_1 <= 0;
                     arp_yes_1 <= 1;
+                    ltp_yes_1 <= 0;
+                end
+                else if (in.data[`MAC_TYPE] == ETHERTYPE_LTP)
+                begin
+                    ip_yes_1 <= 0;
+                    arp_yes_1 <= 0;
+                    ltp_yes_1 <= 1;
                 end
                 else
                 begin
                     //This is rubbish.
                     ip_yes_1 <= 0;
                     arp_yes_1 <= 0;
+                    ltp_yes_1 <= 0;
                     s1.drop <= 1;
                 end
             end
@@ -220,6 +258,7 @@ module frame_datapath
 
     reg arp_yes_2;
     reg ip_yes_2;    
+    reg ltp_yes_2;
 
     reg [31:0] query_nexthop_2;      
     reg [2:0] query_port_2;  
@@ -243,6 +282,7 @@ module frame_datapath
                 begin
                     ip_yes_2 <= ip_yes_1;
                     arp_yes_2 <= arp_yes_1;
+                    ltp_yes_2 <= ltp_yes_1;
                     query_nexthop_2 <= query_nexthop; 
                     query_port_2 <= query_port;
                     // Check the result of checksum, ttl, and decide whether drop or not.
@@ -260,8 +300,16 @@ module frame_datapath
                 begin
                     ip_yes_2 <= ip_yes_1;
                     arp_yes_2 <= arp_yes_1;
+                    ltp_yes_2 <= ltp_yes_1;
                     //(ARP) Get the op-code.
                     op <= s1.data[`OP];
+                end
+                else if (ltp_yes_1) 
+                begin
+                    ip_yes_2 <= ip_yes_1;
+                    arp_yes_2 <= arp_yes_1;
+                    ltp_yes_2 <= ltp_yes_1;
+
                 end
                 else
                 begin
