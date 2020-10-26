@@ -315,6 +315,7 @@ module frame_datapath
                 begin
                     ip_yes_2 <= ip_yes_1;
                     arp_yes_2 <= arp_yes_1;
+                    ltp_yes_2 <= ltp_yes_1;
                 end
             end
         end
