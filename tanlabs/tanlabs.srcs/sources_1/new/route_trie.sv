@@ -1,5 +1,15 @@
 `timescale 1ns/1ps
-`include "frame_datapath.vh"
+
+localparam TRIE_ADDR_WIDTH    = 13;
+localparam NEXTHOP_ADDR_WIDTH = 8;
+
+typedef struct packed
+{
+logic [31:0] ip;
+logic [2:0] port;
+} nexthop_t;
+
+
 module route_trie (input wire clka,
                    input wire clkb,
                    input wire rst,
@@ -7,7 +17,8 @@ module route_trie (input wire clka,
                    input wire [31:0] i_ip,
                    output nexthop_t o_nexthop,
                    output wire o_valid,
-                   output wire o_ready);
+                   output wire o_ready,
+                   output wire [32:0] layer_o_ready_o);
     wire[TRIE_ADDR_WIDTH-1:0] next_node_addr[32:0];
     wire[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr[32:0];
     wire[32:0] layer_o_valid;

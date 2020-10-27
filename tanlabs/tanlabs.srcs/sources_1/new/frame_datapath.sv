@@ -139,6 +139,22 @@ module frame_datapath
         .q_found(rl_q_found)
     );
 
+    reg rt_i_ready;
+    reg [31:0] rt_i_ip;
+    reg rt_o_valid;
+    reg rt_o_ready;
+    reg [32:0] layer_o_r;
+
+    route_trie route_trie_table(
+        .clka(eth_clk),
+        .rst(reset),
+        .i_ready(rt_i_ready),
+        .i_ip(rt_i_ip),
+        .o_valid(rt_o_valid),
+        .o_ready(rt_o_ready),
+        .layer_o_ready_o(layer_o_r)
+    );
+
     reg arp_yes;
     reg ip_yes;
 
@@ -211,6 +227,8 @@ module frame_datapath
         else if (s1_ready)
         begin
             s1 <= in;
+            rt_i_ready <= 1;
+            rt_i_ip <= 32'haaaaaaaa;
             if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
