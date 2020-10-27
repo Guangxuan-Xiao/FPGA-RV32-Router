@@ -18,7 +18,7 @@ module trie_layer(input wire clka,
     trie_node_t current_node_data;
     
     blk_mem_gen_2 trie_bram (
-    .clka(clk),    // input wire clka
+    .clka(clka),    // input wire clka
     .ena(ena),      // input wire ena
     .wea(wea),      // input wire [0 : 0] wea, which is read-only.
     .addra(current_node_addr),  // input wire [13 : 0] addra
@@ -37,7 +37,7 @@ module trie_layer(input wire clka,
     // - store it into nexthop_addr
     // - set valid to 1
     // next_node = bit ? current_node->lc : current_node->rc
-    reg ip_bit_old;
+    reg ip_bit_old; // To store ip bit of last interval.
     always_ff @(posedge clka, posedge rst) begin
         if (rst) begin
             next_node_addr <= 'b0;
