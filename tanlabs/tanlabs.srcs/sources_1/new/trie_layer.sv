@@ -1,12 +1,17 @@
 `include "frame_datapath.vh"
+`timescale 1ns/1ps
 module trie_layer(input wire clka,
                   input wire clkb,
                   input wire rst,
                   input wire ip_bit,
+                  input wire[31:0] i_ip,
+                  input wire i_ready,
                   input wire[TRIE_ADDR_WIDTH-1:0] current_node_addr,
                   output reg[TRIE_ADDR_WIDTH-1:0] next_node_addr,
                   output reg[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr,
-                  output reg valid);
+                  output reg[31:0] o_ip,
+                  output reg o_valid,
+                  output reg o_ready);
     // A is for hardware reading.
     // B is for software manipulation, which has not been implemented yet.
     reg ena, wea;
@@ -35,21 +40,58 @@ module trie_layer(input wire clka,
     // Get current node information
     // If there is nexthop information in current node
     // - store it into nexthop_addr
-    // - set valid to 1
+    // - set o_valid to 1
     // next_node = bit ? current_node->lc : current_node->rc
     reg ip_bit_old; // To store ip bit of last interval.
-    always_ff @(posedge clka, posedge rst) begin
+    reg i_ready_old;
+    reg[31:0] ip_old;
+    // 32-stage pipeline
+    always_comb begin
         if (rst) begin
-            next_node_addr <= 'b0;
-            nexthop_addr   <= 'b0;
-            valid          <= 'b0;
-            ip_bit_old     <= 'b0;
+            next_node_addr = 'b0;
+            nexthop_addr   = 'b0;
+            o_valid        = 'b0;
+            ip_bit_old     = 'b0;
+            ip_old         = 'b0;
+            o_ip           = 'b0;
+            o_ready        = 'b0;
+            i_ready_old    = 'b0;
+        end
+        else if (i_ready_old) begin
+            next_node_addr = ip_bit_old?current_node_data.rc_addr:current_node_data.lc_addr;
+            nexthop_addr   = current_node_data.nexthop_addr?current_node_data.nexhop_addr:nexthop_addr;
+            o_valid        = current_node_data.nexthop_addr?1:0;
+            o_ready        = 1;
+            i_ready_old    = i_ready;
+            ip_bit_old     = ip_bit;
+            o_ip           = ip_old;
+            ip_old         = i_ip;
         end
         else begin
-            ip_bit_old     <= ip_bit;
-            next_node_addr <= ip_bit_old?current_node_data.rc_addr:current_node_data.lc_addr;
-            nexthop_addr   <= current_node_data.nexhop_addr;
-            valid          <= current_node_data.nexthop_addr?1:0;
+            i_ready_old    = i_ready;
+            ip_bit_old     = ip_bit;
+            o_ip           = ip_old;
+            ip_old         = i_ip;
+            next_node_addr = 'b0;
+            nexthop_addr   = 'b0;
+            o_valid        = 'b0;
+            o_ready        = 'b0;
         end
     end
+    
+    // 64-stage pipeline
+    // always_ff @(posedge clka, posedge rst) begin
+    //     if (rst) begin
+    //         next_node_addr <= 'b0;
+    //         nexthop_addr   <= 'b0;
+    //         o_valid        <= 'b0;
+    //         ip_bit_old     <= 'b0;
+    //     end
+    //     else begin
+    //         ip_bit_old     <= ip_bit;
+    //         next_node_addr <= ip_bit_old?current_node_data.rc_addr:current_node_data.lc_addr;
+    //         nexthop_addr   <= current_node_data.nexhop_addr;
+    //         o_valid        <= current_node_data.nexthop_addr?1:0;
+    //     end
+    // end
 endmodule
