@@ -56,37 +56,36 @@ module trie_layer(input wire clka,
     // 32-stage pipeline
     always_ff @(posedge clka, posedge rst) begin
         if (rst) begin
-            i_ready_old    = 0;
+            i_ready_old <= 'b0;
+            ip_bit_old  <= 'b0;
+            ip_old      <= 'b0;
+            o_ip        <= 'b0;
         end
         else begin
-            i_ready_old    = i_ready;
+            i_ready_old <= i_ready;
+            ip_bit_old  <= ip_bit;
+            o_ip        <= ip_old;
+            ip_old      <= i_ip;
         end
     end
+    
     always_comb begin
         if (rst) begin
             next_node_addr = 'b0;
             nexthop_addr   = 'b0;
             o_valid        = 'b0;
-            ip_bit_old     = 'b0;
-            ip_old         = 'b0;
-            o_ip           = 'b0;
             o_ready        = 'b0;
-        end 
-        else if (i_ready_old != 0) begin
-            $display("branch 0 %d",i_ready_old);
+        end
+        else if (i_ready_old) begin
+            // $display("branch 0 %d",i_ready_old);
             next_node_addr = ip_bit_old?current_node_data.rc_addr:current_node_data.lc_addr;
             nexthop_addr   = current_node_data.nexthop_addr?current_node_data.nexthop_addr:nexthop_addr;
             o_valid        = current_node_data.nexthop_addr?1:0;
             o_ready        = 'b1;
-            ip_bit_old     = ip_bit;
-            o_ip           = ip_old;
-            ip_old         = i_ip;
+            
         end
         else begin
-            $display("branch 1 %d",i_ready_old);
-            ip_bit_old     = ip_bit;
-            o_ip           = ip_old;
-            ip_old         = i_ip;
+            // $display("branch 1 %d",i_ready_old);
             next_node_addr = 'b0;
             nexthop_addr   = 'b0;
             o_valid        = 'b0;

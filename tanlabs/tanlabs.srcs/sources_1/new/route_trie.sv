@@ -17,13 +17,12 @@ module route_trie (input wire clka,
                    input wire [31:0] i_ip,
                    output nexthop_t o_nexthop,
                    output wire o_valid,
-                   output wire o_ready
-                   );
+                   output wire o_ready);
     reg [TRIE_ADDR_WIDTH-1:0] next_node_addr[32:0];
     reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr[32:0];
     reg [32:0] layer_o_valid;
     reg [32:0] layer_o_ready;
-    reg [32:0] ip_t[31:0];
+    reg [31:0] ip_t[32:0];
     
     trie_layer trie_root (
     .clka,
