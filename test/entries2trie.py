@@ -43,20 +43,6 @@ class BiTrie():
                     parent.rchild = Node(bit=bit)
                 current_node = parent.rchild
 
-                '''
-                import sys
-                #current_node size is 56
-                print("current_node size is",sys.getsizeof(current_node))
-                #24
-                print(sys.getsizeof(current_node.bit))
-                #57
-                print(sys.getsizeof(current_node.network))
-                #28
-                print(sys.getsizeof(current_node.prefix_len))
-                #56
-                print(sys.getsizeof(current_node.next_hop))
-                '''
-
             # 当前结点current_node成为下次循环的parent
             parent = current_node
 
