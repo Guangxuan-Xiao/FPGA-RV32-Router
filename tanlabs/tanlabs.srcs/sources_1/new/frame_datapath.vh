@@ -29,6 +29,9 @@ logic dont_touch;  // Do not touch this beat!
 // You can do so by setting both last and drop_next.
 logic drop_next;
 
+//Type
+logic [2:0] prot_type;
+
 // README: Your code here.
 } frame_data;
 
