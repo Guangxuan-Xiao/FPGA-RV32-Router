@@ -5,8 +5,8 @@ localparam NEXTHOP_ADDR_WIDTH = 8;
 
 typedef struct packed
 {
-logic [31:0] ip;
 logic [2:0] port;
+logic [31:0] ip;
 } nexthop_t;
 
 

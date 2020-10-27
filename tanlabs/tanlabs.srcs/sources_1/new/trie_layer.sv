@@ -2,9 +2,9 @@
 
 typedef struct packed
 {
-logic[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr;
 logic[TRIE_ADDR_WIDTH-1:0] lc_addr;
 logic[TRIE_ADDR_WIDTH-1:0] rc_addr;
+logic[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr;
 } trie_node_t;
 
 
