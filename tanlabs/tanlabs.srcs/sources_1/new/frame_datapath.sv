@@ -203,7 +203,8 @@ module frame_datapath
     reg arp_yes_1;
     reg ip_yes_1;
     reg ltp_yes_1;
-    reg [15:0] test_content;
+    reg [7:0] test_content;
+    reg [7:0] test_port;
     frame_data s1;
     wire s1_ready;
 
@@ -229,7 +230,10 @@ module frame_datapath
                     arp_yes_1 <= 0;
                     ltp_yes_1 <= 0;
                     data_input_content <= in.data;
-                    query_ip <= in.data[`TRG_IP_IP];
+                    //query_ip <= in.data[`TRG_IP_IP];
+                    rl_ins_en   <= 0;
+                    rl_wq_en    <= 0;
+                    rl_q_ip     <= in.data[`TRG_IP_IP];                   
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
                 begin
@@ -243,10 +247,12 @@ module frame_datapath
                     ip_yes_1 <= 0;
                     arp_yes_1 <= 0;
                     ltp_yes_1 <= 1;
+                    test_content <= in.data[`LTP_OP];
+                    test_port <= in.data[`LTP_PORT];
                     if(in.data[`LTP_OP] == 8'h01)
                     begin
                         rl_ins_en   <= 1;
-                        rl_wq_en    <= 0;
+                        rl_wq_en    <= 1;
                         rl_w_ip     <= in.data[`LTP_SRC_IP];
                         rl_w_nexthop<= in.data[`LTP_TRG_IP];
                         rl_w_mask   <= in.data[`LTP_MASK];
@@ -256,7 +262,7 @@ module frame_datapath
                     else if(in.data[`LTP_OP] == 8'h02)
                     begin
                         rl_ins_en   <= 0;
-                        rl_wq_en    <= 0;
+                        rl_wq_en    <= 1;
                         rl_w_ip     <= in.data[`LTP_SRC_IP];
                         rl_w_nexthop<= in.data[`LTP_TRG_IP];
                         rl_w_mask   <= in.data[`LTP_MASK];
@@ -313,8 +319,8 @@ module frame_datapath
                     ip_yes_2 <= ip_yes_1;
                     arp_yes_2 <= arp_yes_1;
                     ltp_yes_2 <= ltp_yes_1;
-                    query_nexthop_2 <= query_nexthop; 
-                    query_port_2 <= query_port;
+                    query_nexthop_2 <= rl_q_nexthop; 
+                    query_port_2 <= rl_q_port;
                     // Check the result of checksum, ttl, and decide whether drop or not.
                     if(!query_valid || !test_packet_valid)
                     begin
