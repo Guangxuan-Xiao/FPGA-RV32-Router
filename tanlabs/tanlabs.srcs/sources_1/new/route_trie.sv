@@ -32,8 +32,9 @@ module route_trie (input wire clka,
     .i_ip(i_ip),
     .i_ready,
     .current_node_addr(1),
+    .i_nexthop_addr(0),
     .next_node_addr(next_node_addr[0]),
-    .nexthop_addr(nexthop_addr[0]),
+    .o_nexthop_addr(nexthop_addr[0]),
     .o_ip(ip_t[0]),
     .o_valid(layer_o_valid[0]),
     .o_ready(layer_o_ready[0])
@@ -50,8 +51,9 @@ module route_trie (input wire clka,
         .i_ip(ip_t[i-1]),
         .i_ready(layer_o_ready[i-1]),
         .current_node_addr(next_node_addr[i-1]),
+        .i_nexthop_addr(nexthop_addr[i-1]),
         .next_node_addr(next_node_addr[i]),
-        .nexthop_addr(nexthop_addr[i]),
+        .o_nexthop_addr(nexthop_addr[i]),
         .o_ip(ip_t[i]),
         .o_valid(layer_o_valid[i]),
         .o_ready(layer_o_ready[i])
@@ -60,7 +62,7 @@ module route_trie (input wire clka,
     endgenerate
     
     
-    assign o_valid = layer_o_valid[32];
+    assign o_valid = (layer_o_valid == 0)?'b0:'b1;
     assign o_ready = layer_o_ready[32];
     
     reg ena, wea;
