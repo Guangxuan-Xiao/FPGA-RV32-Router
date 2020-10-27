@@ -2,10 +2,10 @@ import ipaddress
 
 
 class Node():
-    def __init__(self, bit=None, network=None, prefix_len=None, next_hop=None, lchild=None, rchild=None):
+    def __init__(self, idx, bit=None, prefix_len=None, nexthop_addr=None, lchild=None, rchild=None):
+        self.idx = idx
         self.bit = bit
-        self.next_hop = next_hop
-        self.network = network
+        self.nexthop_addr = nexthop_addr
         self.prefix_len = prefix_len
         self.lchild = lchild
         self.rchild = rchild
@@ -16,10 +16,11 @@ class Node():
 class BiTrie():
     def __init__(self):
         # 根节点bit和next_hop为空,可以用来存放缺省路由,目前没有支持
-        self.root = Node()
+        self.root = Node(idx=1)
+        self.size = 1
 
     # 添加路由或者修改路由的下一跳
-    def add(self, network, prefix_len, next_hop):
+    def add(self, network, prefix_len, nexthop_addr):
         # parent是每次循环要操作（可能只是经过，也可能是存储路由）的结点current_node的父节点，
         # 从root开始向下进行操作
         parent = self.root
@@ -34,13 +35,15 @@ class BiTrie():
             if bit == 0:
                 if not parent.lchild:
                     # 左孩子不存在，则新建左孩子结点
-                    parent.lchild = Node(bit=bit)
+                    self.size += 1
+                    parent.lchild = Node(self.size, bit=bit)
                 # 如果左孩子存在，它可能用于存储路由，也可能只是提供路径，不过这里不区分（除了i==0时）
                 # 即是否有掩码短，包含了当前network的路由，并不区分
                 current_node = parent.lchild
             elif bit == 1:
                 if not parent.rchild:
-                    parent.rchild = Node(bit=bit)
+                    self.size += 1
+                    parent.rchild = Node(self.size, bit=bit)
                 current_node = parent.rchild
 
             # 当前结点current_node成为下次循环的parent
@@ -49,9 +52,8 @@ class BiTrie():
         # 存储最后一个bit的结点存储路由信息，i==0时循环结束
         # 虽然代码上没有区别，但是功能上实现了添加和修改下一跳的两种情况，具体是添加还是修改，取决于软件的数据状态（亦即取决于代码的执行路径）
         current_node.bit = bit
-        current_node.network = network
         current_node.prefix_len = prefix_len
-        current_node.next_hop = next_hop
+        current_node.nexthop_addr = nexthop_addr
 
         # print(node.next_hop)
 
@@ -129,47 +131,37 @@ class BiTrie():
                 break
 
     # 打印路由表，先序遍历整棵树，先打印root，然后递归遍历左右子树（需要先将左右孩子转换成树）
-    def PreOrderTraverse(self):
+    def PreOrderTraverse(self, mode="normal"):
         parent = self.root
-        if parent.next_hop:
-            print("{0}/{1} {2}".format(parent.network,
-                                       parent.prefix_len, parent.next_hop))
+        lc_idx = 0 if parent.lchild is None else parent.lchild.idx
+        rc_idx = 0 if parent.rchild is None else parent.rchild.idx
+        nexthop_addr = 0 if parent.nexthop_addr is None else parent.nexthop_addr
+        if mode == "normal":
+            print("{0} {1} {2} {3}".format(parent.idx,
+                                           lc_idx, rc_idx, nexthop_addr))
+        elif mode == "bram":
+            lc_bin = '{:013b}'.format(lc_idx)
+            rc_bin = '{:013b}'.format(rc_idx)
+            nexthop_addr_bin = '{:08b}'.format(nexthop_addr)
+            print(lc_bin+rc_bin+nexthop_addr_bin, end=",")
+        else:
+            raise NotImplementedError("Unknown mode: "+mode)
         if parent.lchild:
             lchild_trie = BiTrie()
             lchild_trie.root = parent.lchild
-            lchild_trie.PreOrderTraverse()
+            lchild_trie.PreOrderTraverse(mode=mode)
         if parent.rchild:
             rchild_trie = BiTrie()
             rchild_trie.root = parent.rchild
-            rchild_trie.PreOrderTraverse()
+            rchild_trie.PreOrderTraverse(mode=mode)
 
 
 trie = BiTrie()
 
-'''
-输出为：
-5.5.5.5
-8.8.8.8
-2.2.2.2
-128.0.0.0 2.2.2.2
-224.0.0.0 5.5.5.5
-228.0.0.0 8.8.8.8
-2.2.2.2
-8.8.8.8
-2.2.2.2
-128.0.0.0 2.2.2.2
-228.0.0.0 8.8.8.8
-'''
-# 不考虑IP地址的分类
-trie.add("224.0.0.0", 3, "5.5.5.5")
-trie.add("228.0.0.0", 6, "8.8.8.8")
-trie.add("128.0.0.0", 1, "2.2.2.2")
-print(trie.search("224.0.0.0", 3))
-print(trie.search("228.0.0.0", 6))
-print(trie.search("128.0.0.0", 1))
-trie.PreOrderTraverse()
-trie.delete("224.0.0.0", 3)
-print(trie.search("224.0.0.0", 3))
-print(trie.search("228.0.0.0", 6))
-print(trie.search("128.0.0.0", 1))
-trie.PreOrderTraverse()
+trie.add("170.0.0.0", 8, 1)
+trie.add("187.0.0.0", 8, 2)
+trie.add("204.0.0.0", 8, 3)
+trie.add("221.0.0.0", 8, 4)
+trie.PreOrderTraverse(mode="bram")
+print()
+trie.PreOrderTraverse(mode="normal")

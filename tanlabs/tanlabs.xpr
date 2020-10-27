@@ -37,13 +37,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="123"/>
-    <Option Name="WTModelSimExportSim" Val="123"/>
-    <Option Name="WTQuestaExportSim" Val="123"/>
-    <Option Name="WTIesExportSim" Val="123"/>
-    <Option Name="WTVcsExportSim" Val="123"/>
-    <Option Name="WTRivieraExportSim" Val="123"/>
-    <Option Name="WTActivehdlExportSim" Val="123"/>
+    <Option Name="WTXSimExportSim" Val="124"/>
+    <Option Name="WTModelSimExportSim" Val="124"/>
+    <Option Name="WTQuestaExportSim" Val="124"/>
+    <Option Name="WTIesExportSim" Val="124"/>
+    <Option Name="WTVcsExportSim" Val="124"/>
+    <Option Name="WTRivieraExportSim" Val="124"/>
+    <Option Name="WTActivehdlExportSim" Val="124"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -356,6 +356,12 @@
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/ip/blk_mem_gen_2/2.coe">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
