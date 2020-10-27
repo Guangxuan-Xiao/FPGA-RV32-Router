@@ -37,14 +37,17 @@ module trie_layer(input wire clka,
     // - store it into nexthop_addr
     // - set valid to 1
     // next_node = bit ? current_node->lc : current_node->rc
+    reg ip_bit_old;
     always_ff @(posedge clka, posedge rst) begin
         if (rst) begin
             next_node_addr <= 'b0;
             nexthop_addr   <= 'b0;
             valid          <= 'b0;
+            ip_bit_old     <= 'b0;
         end
         else begin
-            next_node_addr <= ip_bit?current_node_data.rc_addr:current_node_data.lc_addr;
+            ip_bit_old     <= ip_bit;
+            next_node_addr <= ip_bit_old?current_node_data.rc_addr:current_node_data.lc_addr;
             nexthop_addr   <= current_node_data.nexhop_addr;
             valid          <= current_node_data.nexthop_addr?1:0;
         end
