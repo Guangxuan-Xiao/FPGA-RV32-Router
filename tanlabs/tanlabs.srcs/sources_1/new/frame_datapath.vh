@@ -29,6 +29,7 @@ logic drop_next;
 
 //Type
 logic [2:0] prot_type;
+logic [DATAW_WIDTH - 1:0] store_data;
 
 // README: Your code here.
 } frame_data;
