@@ -51,10 +51,17 @@ logic drop_next;
 `define TRG_IP_IP (30 * 8) +: 32
 `define TTL_POS (22 * 8) +: 8
 
+`define LTP_OP (14 * 8) +: 8
+`define LTP_PORT (15 * 8) +: 8
+`define LTP_MASK (16 * 8) +: 32
+`define LTP_SRC_IP (20 * 8) +: 32
+`define LTP_TRG_IP (24 * 8) +: 32
+
 localparam ID_CPU = 3'd4;  // The interface ID of CPU is 4.
 
 localparam ETHERTYPE_IP4 = 16'h0008;
 localparam ETHERTYPE_ARP = 16'h0608;
+localparam ETHERTYPE_LTP = 16'h1509;
 
 localparam REQUEST = 16'h0100;
 localparam REPLY   = 16'h0200;

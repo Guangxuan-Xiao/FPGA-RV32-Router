@@ -128,7 +128,7 @@ module frame_datapath
         .clk(eth_clk),
         .rst(reset),
         .wq_en(rl_wq_en),
-        .ins_en(rl_ins_en)
+        .ins_en(rl_ins_en),
         .w_ip(rl_w_ip),
         .w_mask(rl_w_mask),
         .w_port(rl_w_port),
@@ -243,6 +243,36 @@ module frame_datapath
                     ip_yes_1 <= 0;
                     arp_yes_1 <= 0;
                     ltp_yes_1 <= 1;
+                    if(in.data[`LTP_OP] == 8'h01)
+                    begin
+                        rl_ins_en   <= 1;
+                        rl_wq_en    <= 0;
+                        rl_w_ip     <= in.data[`LTP_SRC_IP];
+                        rl_w_nexthop<= in.data[`LTP_TRG_IP];
+                        rl_w_mask   <= in.data[`LTP_MASK];
+                        rl_w_port   <= in.data[`LTP_PORT];
+                        rl_q_ip     <= 32'h0;
+                    end
+                    else if(in.data[`LTP_OP] == 8'h02)
+                    begin
+                        rl_ins_en   <= 0;
+                        rl_wq_en    <= 0;
+                        rl_w_ip     <= in.data[`LTP_SRC_IP];
+                        rl_w_nexthop<= in.data[`LTP_TRG_IP];
+                        rl_w_mask   <= in.data[`LTP_MASK];
+                        rl_w_port   <= in.data[`LTP_PORT];
+                        rl_q_ip     <= 32'h0;                        
+                    end
+                    else if(in.data[`LTP_OP] == 8'h03)
+                    begin
+                        rl_ins_en   <= 0;
+                        rl_wq_en    <= 0;
+                        rl_w_ip     <= in.data[`LTP_SRC_IP];
+                        rl_w_nexthop<= in.data[`LTP_TRG_IP];
+                        rl_w_mask   <= in.data[`LTP_MASK];
+                        rl_w_port   <= in.data[`LTP_PORT];
+                        rl_q_ip     <= in.data[`LTP_SRC_IP];                        
+                    end
                 end
                 else
                 begin
@@ -309,7 +339,6 @@ module frame_datapath
                     ip_yes_2 <= ip_yes_1;
                     arp_yes_2 <= arp_yes_1;
                     ltp_yes_2 <= ltp_yes_1;
-
                 end
                 else
                 begin
@@ -323,6 +352,7 @@ module frame_datapath
 
     reg arp_yes_3;
     reg ip_yes_3;  
+    reg ltp_yes_3;
     reg [47:0] store_trg_mac;
     reg [2:0] query_port_3;  
     frame_data s3;
@@ -352,6 +382,7 @@ module frame_datapath
                     trg_ip_addr <= query_nexthop_2; 
                     ip_yes_3 <= ip_yes_2;
                     arp_yes_3 <= arp_yes_2;
+                    ltp_yes_3 <= ltp_yes_2;
                     query_port_3 <= query_port_2;
                 end
                 else if(arp_yes_2)
@@ -362,6 +393,7 @@ module frame_datapath
                     arp_cache_wr_en <= 1'b1;
                     ip_yes_3 <= ip_yes_2;
                     arp_yes_3 <= arp_yes_2;
+                    ltp_yes_3 <= ltp_yes_2;
                     if (op == REQUEST && s2.data[`TRG_IP_ADDR] == my_ip)
                     begin
                         // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
@@ -376,10 +408,18 @@ module frame_datapath
                         s3.drop <= 1'b1;
                     end
                 end
+                else if(ltp_yes_2)
+                begin
+                    ip_yes_3 <= ip_yes_2;
+                    arp_yes_3 <= arp_yes_2;
+                    ltp_yes_3 <= ltp_yes_2;
+                    s3.drop <= 1;
+                end
                 else
                 begin
                     ip_yes_3 <= ip_yes_2;
                     arp_yes_3 <= arp_yes_2;
+                    ltp_yes_3 <= ltp_yes_2;
                 end
             end
             else
