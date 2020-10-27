@@ -143,7 +143,6 @@ module frame_datapath
     reg [31:0] rt_i_ip;
     reg rt_o_valid;
     reg rt_o_ready;
-    reg [32:0] layer_o_r;
 
     route_trie route_trie_table(
         .clka(eth_clk),
@@ -151,12 +150,8 @@ module frame_datapath
         .i_ready(rt_i_ready),
         .i_ip(rt_i_ip),
         .o_valid(rt_o_valid),
-        .o_ready(rt_o_ready),
-        .layer_o_ready_o(layer_o_r)
+        .o_ready(rt_o_ready)
     );
-
-    reg arp_yes;
-    reg ip_yes;
 
     // Track frames and figure out when it is the first beat.
     always @ (posedge eth_clk or posedge reset)
@@ -228,7 +223,7 @@ module frame_datapath
         begin
             s1 <= in;
             rt_i_ready <= 1;
-            rt_i_ip <= 32'haaaaaaaa;
+            rt_i_ip <= 32'hbbbbbbbb;
             if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)

@@ -2,9 +2,9 @@
 
 typedef struct packed
 {
-logic[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr;
 logic[TRIE_ADDR_WIDTH-1:0] lc_addr;
 logic[TRIE_ADDR_WIDTH-1:0] rc_addr;
+logic[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr;
 } trie_node_t;
 
 
@@ -54,6 +54,14 @@ module trie_layer(input wire clka,
     reg i_ready_old;
     reg[31:0] ip_old;
     // 32-stage pipeline
+    always_ff @(posedge clka, posedge rst) begin
+        if (rst) begin
+            i_ready_old    = 0;
+        end
+        else begin
+            i_ready_old    = i_ready;
+        end
+    end
     always_comb begin
         if (rst) begin
             next_node_addr = 'b0;
@@ -63,20 +71,19 @@ module trie_layer(input wire clka,
             ip_old         = 'b0;
             o_ip           = 'b0;
             o_ready        = 'b0;
-            i_ready_old    = 'b0;
-        end
-        else if (i_ready_old) begin
+        end 
+        else if (i_ready_old != 0) begin
+            $display("branch 0 %d",i_ready_old);
             next_node_addr = ip_bit_old?current_node_data.rc_addr:current_node_data.lc_addr;
             nexthop_addr   = current_node_data.nexthop_addr?current_node_data.nexthop_addr:nexthop_addr;
             o_valid        = current_node_data.nexthop_addr?1:0;
-            o_ready        = 1;
-            i_ready_old    = i_ready;
+            o_ready        = 'b1;
             ip_bit_old     = ip_bit;
             o_ip           = ip_old;
             ip_old         = i_ip;
         end
         else begin
-            i_ready_old    = i_ready;
+            $display("branch 1 %d",i_ready_old);
             ip_bit_old     = ip_bit;
             o_ip           = ip_old;
             ip_old         = i_ip;
