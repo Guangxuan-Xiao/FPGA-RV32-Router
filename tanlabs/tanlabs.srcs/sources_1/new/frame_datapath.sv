@@ -225,7 +225,6 @@ module frame_datapath
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
                 begin
-                    //This is ARP packet.
                     s1.prot_type <= 3'b001;
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_LTP)
