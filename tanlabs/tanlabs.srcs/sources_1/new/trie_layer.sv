@@ -54,6 +54,14 @@ module trie_layer(input wire clka,
     reg i_ready_old;
     reg[31:0] ip_old;
     // 32-stage pipeline
+    always_ff @(posedge clka, posedge rst) begin
+        if (rst) begin
+            i_ready_old    = 0;
+        end
+        else begin
+            i_ready_old    = i_ready;
+        end
+    end
     always_comb begin
         if (rst) begin
             next_node_addr = 'b0;
@@ -63,7 +71,6 @@ module trie_layer(input wire clka,
             ip_old         = 'b0;
             o_ip           = 'b0;
             o_ready        = 'b0;
-            i_ready_old    = 'b0;
         end 
         else if (i_ready_old != 0) begin
             $display("branch 0 %d",i_ready_old);
@@ -71,14 +78,12 @@ module trie_layer(input wire clka,
             nexthop_addr   = current_node_data.nexthop_addr?current_node_data.nexthop_addr:nexthop_addr;
             o_valid        = current_node_data.nexthop_addr?1:0;
             o_ready        = 'b1;
-            i_ready_old    = i_ready;
             ip_bit_old     = ip_bit;
             o_ip           = ip_old;
             ip_old         = i_ip;
         end
         else begin
             $display("branch 1 %d",i_ready_old);
-            i_ready_old    = i_ready;
             ip_bit_old     = ip_bit;
             o_ip           = ip_old;
             ip_old         = i_ip;
