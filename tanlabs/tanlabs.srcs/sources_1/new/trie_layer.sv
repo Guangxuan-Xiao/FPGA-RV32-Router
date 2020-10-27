@@ -1,5 +1,13 @@
-`include "frame_datapath.vh"
 `timescale 1ns/1ps
+
+typedef struct packed
+{
+logic[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr;
+logic[TRIE_ADDR_WIDTH-1:0] lc_addr;
+logic[TRIE_ADDR_WIDTH-1:0] rc_addr;
+} trie_node_t;
+
+
 module trie_layer(input wire clka,
                   input wire clkb,
                   input wire rst,
@@ -59,7 +67,7 @@ module trie_layer(input wire clka,
         end
         else if (i_ready_old) begin
             next_node_addr = ip_bit_old?current_node_data.rc_addr:current_node_data.lc_addr;
-            nexthop_addr   = current_node_data.nexthop_addr?current_node_data.nexhop_addr:nexthop_addr;
+            nexthop_addr   = current_node_data.nexthop_addr?current_node_data.nexthop_addr:nexthop_addr;
             o_valid        = current_node_data.nexthop_addr?1:0;
             o_ready        = 1;
             i_ready_old    = i_ready;

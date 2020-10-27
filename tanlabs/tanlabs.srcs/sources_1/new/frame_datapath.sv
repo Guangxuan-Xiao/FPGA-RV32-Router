@@ -143,6 +143,7 @@ module frame_datapath
     reg [31:0] rt_i_ip;
     reg rt_o_valid;
     reg rt_o_ready;
+    reg [32:0] layer_o_r;
 
     route_trie route_trie_table(
         .clka(eth_clk),
@@ -150,7 +151,8 @@ module frame_datapath
         .i_ready(rt_i_ready),
         .i_ip(rt_i_ip),
         .o_valid(rt_o_valid),
-        .o_ready(rt_o_ready)
+        .o_ready(rt_o_ready),
+        .layer_o_ready_o(layer_o_r)
     );
 
     reg arp_yes;
