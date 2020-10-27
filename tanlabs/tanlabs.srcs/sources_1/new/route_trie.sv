@@ -1,115 +1,86 @@
 `timescale 1ns/1ps
-typedef struct packed {
-reg valid;         // If this entry is valid
-reg[31:0] ip;      // Big endian, ipv4 address.
-reg[31:0] mask;    // Little endian, subnet mask.
-reg[2:0]  port;    // Little endian, nexthop out port.
-reg[31:0] nexthop; // Big endian, nexthop ipv4 addr.
-} route_entry;
+
+localparam TRIE_ADDR_WIDTH    = 13;
+localparam NEXTHOP_ADDR_WIDTH = 8;
+
+typedef struct packed
+{
+logic [31:0] ip;
+logic [2:0] port;
+} nexthop_t;
 
 
-module route_trie #(parameter CACHE_ADDR_WIDTH = 6)
-                     (input wire clk,
-                      input wire rst,
-                      input wire wq_en,
-                      input wire ins_en,
-                      input wire[31:0] w_ip,
-                      input wire[31:0] w_mask,
-                      input wire[2:0] w_port,
-                      input wire[31:0] w_nexthop,
-                      input wire[31:0] q_ip,
-                      output reg[31:0] q_nexthop,
-                      output reg[2:0] q_port,
-                      output reg q_found);
-    // cache data
-    route_entry [(2**CACHE_ADDR_WIDTH)-1:0] cache = 0;
-    reg [CACHE_ADDR_WIDTH-1:0] next               = 0;
-    reg found                                     = 0;
-    reg [CACHE_ADDR_WIDTH:0] ptr                  = 0;
+module route_trie (input wire clka,
+                   input wire clkb,
+                   input wire rst,
+                   input wire i_ready,
+                   input wire [31:0] i_ip,
+                   output nexthop_t o_nexthop,
+                   output wire o_valid,
+                   output wire o_ready,
+                   output wire [32:0] layer_o_ready_o);
+    wire[TRIE_ADDR_WIDTH-1:0] next_node_addr[32:0];
+    wire[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr[32:0];
+    wire[32:0] layer_o_valid;
+    wire[32:0] layer_o_ready;
+    wire[32:0] ip_t[31:0];
     
-    always @(posedge clk) begin
-        if (rst) begin
-            for (ptr = 0; ptr<(2**CACHE_ADDR_WIDTH); ptr = ptr +1) begin
-                cache[ptr].valid <= 0;
-                next             <= 0;
-                found            <= 0;
-            end
-        end
-        else begin
-            if (wq_en) begin
-                if (ins_en) begin
-                    // Insert
-                    found = 1'b0;
-                    for(ptr = 0; ptr < (2**CACHE_ADDR_WIDTH); ptr = ptr+1) begin
-                        if (cache[ptr].valid && cache[ptr].ip == w_ip && cache[ptr].mask == w_mask) begin
-                            cache[ptr].port    <= w_port;
-                            cache[ptr].nexthop <= w_nexthop;
-                            found = 1'b1;
-                        end
-                    end
-                    if (!found) begin
-                        cache[next].valid   <= 1'b1;
-                        cache[next].ip      <= w_ip;
-                        cache[next].mask    <= w_mask;
-                        cache[next].port    <= w_port;
-                        cache[next].nexthop <= w_nexthop;
-                        next                <= next + 1;
-                    end
-                end
-                else begin
-                    // Delete
-                    for(ptr = 0; ptr < (2**CACHE_ADDR_WIDTH); ptr = ptr+1) begin
-                        if (cache[ptr].valid && cache[ptr].ip == w_ip && cache[ptr].mask == w_mask) begin
-                            cache[ptr].valid = 0;
-                        end
-                    end
-                end
-            end
-        end
-    end
+    trie_layer trie_root (
+    .clka,
+    .clkb,
+    .rst,
+    .ip_bit(i_ip[0]),
+    .i_ip(i_ip),
+    .i_ready,
+    .current_node_addr(1),
+    .next_node_addr(next_node_addr[0]),
+    .nexthop_addr(nexthop_addr[0]),
+    .o_ip(ip_t[0]),
+    .o_valid(layer_o_valid[0]),
+    .o_ready(layer_o_ready[0])
+    );
     
-    reg[31:0] best_nexthop = 0;
-    reg[1:0] best_port     = 0;
-    reg [31:0] best_mask   = 0;
-    always @(*) begin
-        if (rst || wq_en) begin
-            // Insert or Delete
-            q_nexthop    = 0;
-            q_port       = 0;
-            q_found      = 0;
-            best_nexthop = 0;
-            best_port    = 0;
-            best_mask    = 0;
-        end
-        else begin
-            q_found      = 0;
-            best_nexthop = 0;
-            best_port    = 0;
-            best_mask    = 0;
-            // Query
-            for (ptr = 0; ptr < (2**CACHE_ADDR_WIDTH); ptr = ptr+1) begin
-                // Longest Prefix Match
-                if (cache[ptr].valid && (cache[ptr].ip & cache[ptr].mask) == (q_ip & cache[ptr].mask) && cache[ptr].mask > best_mask) begin
-                    best_nexthop = cache[ptr].nexthop;
-                    best_port    = cache[ptr].port;
-                    best_mask    = cache[ptr].mask;
-                    q_found      = 1;
-                end
-                else begin
-                    best_nexthop = best_nexthop;
-                    best_port    = best_port;
-                    best_mask    = best_mask;
-                    q_found      = q_found;
-                end
-            end
-            if (q_found) begin
-                q_nexthop = best_nexthop;
-                q_port    = best_port;
-            end
-            else begin
-                q_nexthop = 0;
-                q_port    = 0;
-            end
-        end
+    genvar i;
+    generate;
+    for (i = 1; i <= 32; i = i+1) begin
+        trie_layer trie_layerx (
+        .clka,
+        .clkb,
+        .rst,
+        .ip_bit(ip_t[i-1][i]),
+        .i_ip(ip_t[i-1]),
+        .i_ready(layer_o_ready[i-1]),
+        .current_node_addr(next_node_addr[i-1]),
+        .next_node_addr(next_node_addr[i]),
+        .nexthop_addr(nexthop_addr[i]),
+        .o_ip(ip_t[i]),
+        .o_valid(layer_o_valid[i]),
+        .o_ready(layer_o_ready[i])
+        );
     end
+    endgenerate
+    
+    
+    assign o_valid = layer_o_valid[32];
+    assign o_ready = layer_o_ready[32];
+    
+    reg ena, wea;
+    always_comb begin
+        ena = 1; // currently we only use hardware side interface.
+        wea = 0; // hardware manipulation is read-only.
+    end
+    blk_mem_gen_1 nexthop_bram(
+    .clka,    // input wire clka
+    .ena,      // input wire ena
+    .wea,      // input wire [0 : 0] wea
+    .addra(nexthop_addr[32]),  // input wire [7 : 0] addra
+    // .dina(dina),    // input wire [34 : 0] dina
+    .douta(o_nexthop)  //, output wire [34 : 0] douta
+    // .clkb(clkb),    // input wire clkb
+    // .enb(enb),      // input wire enb
+    // .web(web),      // input wire [0 : 0] web
+    // .addrb(addrb),  // input wire [7 : 0] addrb
+    // .dinb(dinb),    // input wire [34 : 0] dinb
+    // .doutb(doutb)  // output wire [34 : 0] doutb
+    );
 endmodule

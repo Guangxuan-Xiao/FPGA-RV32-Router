@@ -1,8 +1,6 @@
 // 'w' means wide.
 localparam DATAW_WIDTH        = 8 * 48;
 localparam CACHE_ADDR_WIDTH   = 4;
-localparam TRIE_ADDR_WIDTH    = 13;
-localparam NEXTHOP_ADDR_WIDTH = 8;
 // README: Your code here.
 
 typedef struct packed
@@ -29,21 +27,11 @@ logic dont_touch;  // Do not touch this beat!
 // You can do so by setting both last and drop_next.
 logic drop_next;
 
+//Type
+logic [2:0] prot_type;
+
 // README: Your code here.
 } frame_data;
-
-typedef struct packed
-{
-logic [31:0] ip;
-logic [2:0] port;
-} nexthop_t;
-
-typedef struct packed
-{
-logic[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr;
-logic[TRIE_ADDR_WIDTH-1:0] lc_addr;
-logic[TRIE_ADDR_WIDTH-1:0] rc_addr;
-} trie_node_t;
 
 // README: Your code here. You can define some other constants like EtherType.
 `define MAC_DST (0 * 8) +: 48
