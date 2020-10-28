@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="44" Path="/media/xgx/OS/Files/Documents/2020-2021Autumn/Learning/Computer_Network/hardware_router/joint-lab-g4/tanlabs/tanlabs.xpr">
+<Project Version="7" Minor="44" Path="/home/zzz/Desktop/joint-lab-g4/tanlabs/tanlabs.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="cb3d598700cb4d6d9e3d57604fd0b1f3"/>
@@ -37,13 +37,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="125"/>
-    <Option Name="WTModelSimExportSim" Val="125"/>
-    <Option Name="WTQuestaExportSim" Val="125"/>
-    <Option Name="WTIesExportSim" Val="125"/>
-    <Option Name="WTVcsExportSim" Val="125"/>
-    <Option Name="WTRivieraExportSim" Val="125"/>
-    <Option Name="WTActivehdlExportSim" Val="125"/>
+    <Option Name="WTXSimExportSim" Val="126"/>
+    <Option Name="WTModelSimExportSim" Val="126"/>
+    <Option Name="WTQuestaExportSim" Val="126"/>
+    <Option Name="WTIesExportSim" Val="126"/>
+    <Option Name="WTVcsExportSim" Val="126"/>
+    <Option Name="WTRivieraExportSim" Val="126"/>
+    <Option Name="WTActivehdlExportSim" Val="126"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -623,7 +623,9 @@
     </Run>
     <Run Id="blk_mem_gen_2_synth_1" Type="Ft3:Synth" SrcSet="blk_mem_gen_2" Part="xc7a200tfbg676-2" ConstrsSet="blk_mem_gen_2" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" Dir="$PRUNDIR/blk_mem_gen_2_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2019"/>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2019">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
         <Step Id="synth_design"/>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -718,7 +720,9 @@
     </Run>
     <Run Id="blk_mem_gen_2_impl_1" Type="Ft2:EntireDesign" Part="xc7a200tfbg676-2" ConstrsSet="blk_mem_gen_2" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="blk_mem_gen_2_synth_1" IncludeInArchive="false" GenFullBitstream="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2019"/>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2019">
+          <Desc>Default settings for Implementation.</Desc>
+        </StratHandle>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>
