@@ -17,13 +17,12 @@ module route_trie (input wire clka,
                    input wire [31:0] i_ip,
                    output nexthop_t o_nexthop,
                    output wire o_valid,
-                   output wire o_ready
-                   );
+                   output wire o_ready);
     reg [TRIE_ADDR_WIDTH-1:0] next_node_addr[32:0];
     reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr[32:0];
     reg [32:0] layer_o_valid;
     reg [32:0] layer_o_ready;
-    reg [32:0] ip_t[31:0];
+    reg [31:0] ip_t[32:0];
     
     trie_layer trie_root (
     .clka,
@@ -32,9 +31,11 @@ module route_trie (input wire clka,
     .ip_bit(i_ip[0]),
     .i_ip(i_ip),
     .i_ready,
+    .i_valid(0),
     .current_node_addr(1),
+    .i_nexthop_addr(0),
     .next_node_addr(next_node_addr[0]),
-    .nexthop_addr(nexthop_addr[0]),
+    .o_nexthop_addr(nexthop_addr[0]),
     .o_ip(ip_t[0]),
     .o_valid(layer_o_valid[0]),
     .o_ready(layer_o_ready[0])
@@ -50,9 +51,11 @@ module route_trie (input wire clka,
         .ip_bit(ip_t[i-1][i]),
         .i_ip(ip_t[i-1]),
         .i_ready(layer_o_ready[i-1]),
+        .i_valid(layer_o_valid[i-1]),
         .current_node_addr(next_node_addr[i-1]),
+        .i_nexthop_addr(nexthop_addr[i-1]),
         .next_node_addr(next_node_addr[i]),
-        .nexthop_addr(nexthop_addr[i]),
+        .o_nexthop_addr(nexthop_addr[i]),
         .o_ip(ip_t[i]),
         .o_valid(layer_o_valid[i]),
         .o_ready(layer_o_ready[i])

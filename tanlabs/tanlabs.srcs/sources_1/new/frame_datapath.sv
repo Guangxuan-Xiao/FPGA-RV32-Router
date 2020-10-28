@@ -1,6 +1,11 @@
 `timescale 1ns / 1ps
 
 // Example Frame Data Path.
+typedef struct packed
+{
+logic [2:0] port;
+logic [31:0] ip;
+} nexthop_t;
 
 module frame_datapath
 #(
@@ -143,6 +148,7 @@ module frame_datapath
     reg [31:0] rt_i_ip;
     reg rt_o_valid;
     reg rt_o_ready;
+    nexthop_t rt_o_nexthop;
 
     route_trie route_trie_table(
         .clka(eth_clk),
@@ -150,7 +156,8 @@ module frame_datapath
         .i_ready(rt_i_ready),
         .i_ip(rt_i_ip),
         .o_valid(rt_o_valid),
-        .o_ready(rt_o_ready)
+        .o_ready(rt_o_ready),
+        .o_nexthop(rt_o_nexthop)
     );
 
     // Track frames and figure out when it is the first beat.
@@ -211,7 +218,6 @@ module frame_datapath
 
     frame_data s1;
     wire s1_ready;
-
     assign in_ready = s1_ready || !in.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -222,15 +228,24 @@ module frame_datapath
         else if (s1_ready)
         begin
             s1 <= in;
+<<<<<<< HEAD
             // rt_i_ready <= 1;
             // rt_i_ip <= 32'hbbbbbbbb;
+=======
+            rt_i_ip <= 32'hbbbbbbbb;   
+            rt_i_ready <= 1;
+>>>>>>> 61cc8230e48bc19565b65d6ff18a2f80d6200c59
             if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
                 begin
                     //Start checkcum and query table if this is IP packet.
                     s1.prot_type <= 3'b000;
+<<<<<<< HEAD
                     data_input_content <= in.data;           
+=======
+                    s1.store_data <= in.data;
+>>>>>>> 61cc8230e48bc19565b65d6ff18a2f80d6200c59
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
                 begin
@@ -240,17 +255,543 @@ module frame_datapath
                 begin
                     //This is rubbish.
                     s1.prot_type <= 3'b111;
-                    s1.drop <= 1;
+                    s1.drop <= 0;
                 end
             end
         end
     end
 
+    frame_data query_trie_1;
+    wire query_trie_1_ready;
+    assign s1_ready = query_trie_1_ready || !s1.valid;
+    always @ (posedge eth_clk or posedge reset)
+    begin
+        if (reset)
+        begin
+            query_trie_1 <= 0;
+        end
+        else if(query_trie_1_ready)
+        begin
+            query_trie_1 <= s1;
+        end
+    end
+
+frame_data query_trie_2;
+wire query_trie_2_ready;
+assign query_trie_1_ready = query_trie_2_ready || !query_trie_1.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_2 <= 0;
+	end
+	else if (query_trie_2_ready)
+	begin
+		query_trie_2 <= query_trie_1;
+	end
+end
+
+
+frame_data query_trie_3;
+wire query_trie_3_ready;
+assign query_trie_2_ready = query_trie_3_ready || !query_trie_2.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_3 <= 0;
+	end
+	else if (query_trie_3_ready)
+	begin
+		query_trie_3 <= query_trie_2;
+	end
+end
+
+
+frame_data query_trie_4;
+wire query_trie_4_ready;
+assign query_trie_3_ready = query_trie_4_ready || !query_trie_3.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_4 <= 0;
+	end
+	else if (query_trie_4_ready)
+	begin
+		query_trie_4 <= query_trie_3;
+	end
+end
+
+
+frame_data query_trie_5;
+wire query_trie_5_ready;
+assign query_trie_4_ready = query_trie_5_ready || !query_trie_4.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_5 <= 0;
+	end
+	else if (query_trie_5_ready)
+	begin
+		query_trie_5 <= query_trie_4;
+	end
+end
+
+
+frame_data query_trie_6;
+wire query_trie_6_ready;
+assign query_trie_5_ready = query_trie_6_ready || !query_trie_5.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_6 <= 0;
+	end
+	else if (query_trie_6_ready)
+	begin
+		query_trie_6 <= query_trie_5;
+	end
+end
+
+
+frame_data query_trie_7;
+wire query_trie_7_ready;
+assign query_trie_6_ready = query_trie_7_ready || !query_trie_6.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_7 <= 0;
+	end
+	else if (query_trie_7_ready)
+	begin
+		query_trie_7 <= query_trie_6;
+	end
+end
+
+
+frame_data query_trie_8;
+wire query_trie_8_ready;
+assign query_trie_7_ready = query_trie_8_ready || !query_trie_7.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_8 <= 0;
+	end
+	else if (query_trie_8_ready)
+	begin
+		query_trie_8 <= query_trie_7;
+	end
+end
+
+
+frame_data query_trie_9;
+wire query_trie_9_ready;
+assign query_trie_8_ready = query_trie_9_ready || !query_trie_8.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_9 <= 0;
+	end
+	else if (query_trie_9_ready)
+	begin
+		query_trie_9 <= query_trie_8;
+	end
+end
+
+
+frame_data query_trie_10;
+wire query_trie_10_ready;
+assign query_trie_9_ready = query_trie_10_ready || !query_trie_9.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_10 <= 0;
+	end
+	else if (query_trie_10_ready)
+	begin
+		query_trie_10 <= query_trie_9;
+	end
+end
+
+
+frame_data query_trie_11;
+wire query_trie_11_ready;
+assign query_trie_10_ready = query_trie_11_ready || !query_trie_10.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_11 <= 0;
+	end
+	else if (query_trie_11_ready)
+	begin
+		query_trie_11 <= query_trie_10;
+	end
+end
+
+
+frame_data query_trie_12;
+wire query_trie_12_ready;
+assign query_trie_11_ready = query_trie_12_ready || !query_trie_11.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_12 <= 0;
+	end
+	else if (query_trie_12_ready)
+	begin
+		query_trie_12 <= query_trie_11;
+	end
+end
+
+
+frame_data query_trie_13;
+wire query_trie_13_ready;
+assign query_trie_12_ready = query_trie_13_ready || !query_trie_12.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_13 <= 0;
+	end
+	else if (query_trie_13_ready)
+	begin
+		query_trie_13 <= query_trie_12;
+	end
+end
+
+
+frame_data query_trie_14;
+wire query_trie_14_ready;
+assign query_trie_13_ready = query_trie_14_ready || !query_trie_13.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_14 <= 0;
+	end
+	else if (query_trie_14_ready)
+	begin
+		query_trie_14 <= query_trie_13;
+	end
+end
+
+
+frame_data query_trie_15;
+wire query_trie_15_ready;
+assign query_trie_14_ready = query_trie_15_ready || !query_trie_14.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_15 <= 0;
+	end
+	else if (query_trie_15_ready)
+	begin
+		query_trie_15 <= query_trie_14;
+	end
+end
+
+
+frame_data query_trie_16;
+wire query_trie_16_ready;
+assign query_trie_15_ready = query_trie_16_ready || !query_trie_15.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_16 <= 0;
+	end
+	else if (query_trie_16_ready)
+	begin
+		query_trie_16 <= query_trie_15;
+	end
+end
+
+
+frame_data query_trie_17;
+wire query_trie_17_ready;
+assign query_trie_16_ready = query_trie_17_ready || !query_trie_16.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_17 <= 0;
+	end
+	else if (query_trie_17_ready)
+	begin
+		query_trie_17 <= query_trie_16;
+	end
+end
+
+
+frame_data query_trie_18;
+wire query_trie_18_ready;
+assign query_trie_17_ready = query_trie_18_ready || !query_trie_17.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_18 <= 0;
+	end
+	else if (query_trie_18_ready)
+	begin
+		query_trie_18 <= query_trie_17;
+	end
+end
+
+
+frame_data query_trie_19;
+wire query_trie_19_ready;
+assign query_trie_18_ready = query_trie_19_ready || !query_trie_18.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_19 <= 0;
+	end
+	else if (query_trie_19_ready)
+	begin
+		query_trie_19 <= query_trie_18;
+	end
+end
+
+
+frame_data query_trie_20;
+wire query_trie_20_ready;
+assign query_trie_19_ready = query_trie_20_ready || !query_trie_19.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_20 <= 0;
+	end
+	else if (query_trie_20_ready)
+	begin
+		query_trie_20 <= query_trie_19;
+	end
+end
+
+
+frame_data query_trie_21;
+wire query_trie_21_ready;
+assign query_trie_20_ready = query_trie_21_ready || !query_trie_20.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_21 <= 0;
+	end
+	else if (query_trie_21_ready)
+	begin
+		query_trie_21 <= query_trie_20;
+	end
+end
+
+
+frame_data query_trie_22;
+wire query_trie_22_ready;
+assign query_trie_21_ready = query_trie_22_ready || !query_trie_21.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_22 <= 0;
+	end
+	else if (query_trie_22_ready)
+	begin
+		query_trie_22 <= query_trie_21;
+	end
+end
+
+
+frame_data query_trie_23;
+wire query_trie_23_ready;
+assign query_trie_22_ready = query_trie_23_ready || !query_trie_22.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_23 <= 0;
+	end
+	else if (query_trie_23_ready)
+	begin
+		query_trie_23 <= query_trie_22;
+	end
+end
+
+
+frame_data query_trie_24;
+wire query_trie_24_ready;
+assign query_trie_23_ready = query_trie_24_ready || !query_trie_23.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_24 <= 0;
+	end
+	else if (query_trie_24_ready)
+	begin
+		query_trie_24 <= query_trie_23;
+	end
+end
+
+
+frame_data query_trie_25;
+wire query_trie_25_ready;
+assign query_trie_24_ready = query_trie_25_ready || !query_trie_24.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_25 <= 0;
+	end
+	else if (query_trie_25_ready)
+	begin
+		query_trie_25 <= query_trie_24;
+	end
+end
+
+
+frame_data query_trie_26;
+wire query_trie_26_ready;
+assign query_trie_25_ready = query_trie_26_ready || !query_trie_25.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_26 <= 0;
+	end
+	else if (query_trie_26_ready)
+	begin
+		query_trie_26 <= query_trie_25;
+	end
+end
+
+
+frame_data query_trie_27;
+wire query_trie_27_ready;
+assign query_trie_26_ready = query_trie_27_ready || !query_trie_26.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_27 <= 0;
+	end
+	else if (query_trie_27_ready)
+	begin
+		query_trie_27 <= query_trie_26;
+	end
+end
+
+
+frame_data query_trie_28;
+wire query_trie_28_ready;
+assign query_trie_27_ready = query_trie_28_ready || !query_trie_27.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_28 <= 0;
+	end
+	else if (query_trie_28_ready)
+	begin
+		query_trie_28 <= query_trie_27;
+	end
+end
+
+
+frame_data query_trie_29;
+wire query_trie_29_ready;
+assign query_trie_28_ready = query_trie_29_ready || !query_trie_28.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_29 <= 0;
+	end
+	else if (query_trie_29_ready)
+	begin
+		query_trie_29 <= query_trie_28;
+	end
+end
+
+
+frame_data query_trie_30;
+wire query_trie_30_ready;
+assign query_trie_29_ready = query_trie_30_ready || !query_trie_29.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_30 <= 0;
+	end
+	else if (query_trie_30_ready)
+	begin
+		query_trie_30 <= query_trie_29;
+	end
+end
+
+
+frame_data query_trie_31;
+wire query_trie_31_ready;
+assign query_trie_30_ready = query_trie_31_ready || !query_trie_30.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_31 <= 0;
+	end
+	else if (query_trie_31_ready)
+	begin
+		query_trie_31 <= query_trie_30;
+	end
+end
+
+
+frame_data query_trie_32;
+wire query_trie_32_ready;
+assign query_trie_31_ready = query_trie_32_ready || !query_trie_31.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_32 <= 0;
+	end
+	else if (query_trie_32_ready)
+	begin
+		query_trie_32 <= query_trie_31;
+	end
+end
+
+
+frame_data query_trie_33;
+wire query_trie_33_ready;
+assign query_trie_32_ready = query_trie_33_ready || !query_trie_32.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_33 <= 0;
+	end
+	else if (query_trie_33_ready)
+	begin
+		query_trie_33 <= query_trie_32;
+	end
+end
+
     reg [31:0] query_nexthop_2;      
     reg [2:0] query_port_2;  
     frame_data s2;
     wire s2_ready;
-    assign s1_ready = s2_ready || !s1.valid;
+    assign query_trie_33_ready = s2_ready || !query_trie_33.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
         if (reset)
@@ -260,14 +801,14 @@ module frame_datapath
         else if (s2_ready)
         begin
             s2 <= s1;
-            if (s1.valid && s1.is_first && !s1.drop && !s1.dont_touch)
+            if (query_trie_33.valid && query_trie_33.is_first && !query_trie_33.drop && !query_trie_33.dont_touch)
             begin
                 case(s1.prot_type)
                     3'b000:
                     begin
-                        query_nexthop_2 <= rl_q_nexthop; 
-                        query_port_2 <= rl_q_port;
-                        if(!query_valid || !test_packet_valid)
+                        query_nexthop_2 <= rt_o_nexthop.ip; 
+                        query_port_2 <= rt_o_nexthop.port;
+                        if(!rt_o_valid || !test_packet_valid)
                         begin
                             s2.drop <= 1;
                         end
@@ -335,10 +876,6 @@ module frame_datapath
                         end
                     end
 
-                    3'b010:
-                    begin
-                        s3.drop <= 1;
-                    end
                 endcase
             end
             else
