@@ -222,57 +222,19 @@ module frame_datapath
         else if (s1_ready)
         begin
             s1 <= in;
-            rt_i_ready <= 1;
-            rt_i_ip <= 32'hbbbbbbbb;
+            // rt_i_ready <= 1;
+            // rt_i_ip <= 32'hbbbbbbbb;
             if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
                 begin
                     //Start checkcum and query table if this is IP packet.
                     s1.prot_type <= 3'b000;
-                    data_input_content <= in.data;
-                    //query_ip <= in.data[`TRG_IP_IP];
-                    rl_ins_en   <= 0;
-                    rl_wq_en    <= 0;
-                    rl_q_ip     <= in.data[`TRG_IP_IP];                   
+                    data_input_content <= in.data;           
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
                 begin
                     s1.prot_type <= 3'b001;
-                end
-                else if (in.data[`MAC_TYPE] == ETHERTYPE_LTP)
-                begin
-                    s1.prot_type <= 3'b010;
-                    if(in.data[`LTP_OP] == 8'h01)
-                    begin
-                        rl_ins_en   <= 1;
-                        rl_wq_en    <= 1;
-                        rl_w_ip     <= in.data[`LTP_SRC_IP];
-                        rl_w_nexthop<= in.data[`LTP_TRG_IP];
-                        rl_w_mask   <= in.data[`LTP_MASK];
-                        rl_w_port   <= in.data[`LTP_PORT];
-                        rl_q_ip     <= 32'h0;
-                    end
-                    else if(in.data[`LTP_OP] == 8'h02)
-                    begin
-                        rl_ins_en   <= 0;
-                        rl_wq_en    <= 1;
-                        rl_w_ip     <= in.data[`LTP_SRC_IP];
-                        rl_w_nexthop<= in.data[`LTP_TRG_IP];
-                        rl_w_mask   <= in.data[`LTP_MASK];
-                        rl_w_port   <= in.data[`LTP_PORT];
-                        rl_q_ip     <= 32'h0;                        
-                    end
-                    else if(in.data[`LTP_OP] == 8'h03)
-                    begin
-                        rl_ins_en   <= 0;
-                        rl_wq_en    <= 0;
-                        rl_w_ip     <= in.data[`LTP_SRC_IP];
-                        rl_w_nexthop<= in.data[`LTP_TRG_IP];
-                        rl_w_mask   <= in.data[`LTP_MASK];
-                        rl_w_port   <= in.data[`LTP_PORT];
-                        rl_q_ip     <= in.data[`LTP_SRC_IP];                        
-                    end
                 end
                 else
                 begin
