@@ -998,13 +998,15 @@ end
                 end
 
                 3'b001:
+                begin
                     s6.dest <= s5.id;
-                endcase
+                end
 
                 default:
                 begin
                     s6.dest <= 0;
                 end
+                endcase
             end
         end
     end
