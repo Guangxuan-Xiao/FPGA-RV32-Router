@@ -57,21 +57,30 @@ module trie_layer(input wire clka,
     // reg[NEXTHOP_ADDR_WIDTH-1:0] i_nexthop_addr_old;
     // 32-stage pipeline
     reg ip_bit_old;
+    reg[NEXTHOP_ADDR_WIDTH-1:0] i_nexthop_addr_old;
+    reg i_valid_old;
     always_ff @(posedge clka, posedge rst) begin
         if (rst) begin
-            o_ip       <= 'b0;
-            o_ready    <= 'b0;
-            ip_bit_old <= 'b0;
+            o_ip               <= 'b0;
+            o_ready            <= 'b0;
+            ip_bit_old         <= 'b0;
+            i_valid_old        <= 'b0;
+            i_nexthop_addr_old <= 'b0;
+            
         end
         else if (i_ready)begin
-            o_ready    <= 'b1;
-            o_ip       <= i_ip;
-            ip_bit_old <= ip_bit;
+            o_ready            <= 'b1;
+            o_ip               <= i_ip;
+            ip_bit_old         <= ip_bit;
+            i_valid_old        <= i_valid;
+            i_nexthop_addr_old <= i_nexthop_addr;
         end
         else begin
-            o_ip       <= 'b0;
-            o_ready    <= 'b0;
-            ip_bit_old <= 'b0;
+            o_ip               <= 'b0;
+            o_ready            <= 'b0;
+            ip_bit_old         <= 'b0;
+            i_valid_old        <= 'b0;
+            i_nexthop_addr_old <= 'b0;
         end
     end
     always_comb begin
@@ -86,8 +95,8 @@ module trie_layer(input wire clka,
             o_valid        = 'b1;
         end
         else begin
-            o_nexthop_addr = i_nexthop_addr;
-            o_valid        = i_valid;
+            o_nexthop_addr = i_nexthop_addr_old;
+            o_valid        = i_valid_old;
         end
     end
     

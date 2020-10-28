@@ -2,7 +2,11 @@
 
 localparam TRIE_ADDR_WIDTH    = 13;
 localparam NEXTHOP_ADDR_WIDTH = 8;
-
+typedef struct packed
+{
+logic [2:0] port;
+logic [31:0] ip;
+} nexthop_t;
 
 
 module route_trie (input wire clka,
@@ -11,8 +15,8 @@ module route_trie (input wire clka,
                    input wire i_ready,
                    input wire [31:0] i_ip,
                    output nexthop_t o_nexthop,
-                   output wire o_valid,
-                   output wire o_ready);
+                   output reg o_valid,
+                   output reg o_ready);
     reg [TRIE_ADDR_WIDTH-1:0] next_node_addr[32:0];
     reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr[32:0];
     reg [32:0] layer_o_valid;
@@ -38,7 +42,7 @@ module route_trie (input wire clka,
     
     genvar i;
     generate;
-    for (i = 1; i <= 32; i = i+1) begin
+    for (i = 1; i < 33; i = i+1) begin
         trie_layer trie_layerx (
         .clka,
         .clkb,
@@ -58,9 +62,17 @@ module route_trie (input wire clka,
     end
     endgenerate
     
+    always_ff @(posedge clka, posedge rst) begin
+        if (rst) begin
+            o_valid <= 0;
+            o_ready <= 0;
+        end
+        else begin
+            o_valid <= layer_o_valid[32];
+            o_ready <= layer_o_ready[32];
+        end
+    end
     
-    assign o_valid = layer_o_valid[32];
-    assign o_ready = layer_o_ready[32];
     
     reg ena, wea;
     always_comb begin
