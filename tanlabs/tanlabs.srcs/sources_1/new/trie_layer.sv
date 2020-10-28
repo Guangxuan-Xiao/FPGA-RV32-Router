@@ -1,5 +1,4 @@
 `timescale 1ns/1ps
-
 typedef struct packed
 {
 logic[TRIE_ADDR_WIDTH-1:0] lc_addr;
@@ -14,9 +13,11 @@ module trie_layer(input wire clka,
                   input wire ip_bit,
                   input wire[31:0] i_ip,
                   input wire i_ready,
+                  input wire i_valid,
                   input wire[TRIE_ADDR_WIDTH-1:0] current_node_addr,
+                  input wire[NEXTHOP_ADDR_WIDTH-1:0] i_nexthop_addr,
                   output reg[TRIE_ADDR_WIDTH-1:0] next_node_addr,
-                  output reg[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr,
+                  output reg[NEXTHOP_ADDR_WIDTH-1:0] o_nexthop_addr,
                   output reg[31:0] o_ip,
                   output reg o_valid,
                   output reg o_ready);
@@ -50,49 +51,88 @@ module trie_layer(input wire clka,
     // - store it into nexthop_addr
     // - set o_valid to 1
     // next_node = bit ? current_node->lc : current_node->rc
-    reg ip_bit_old; // To store ip bit of last interval.
-    reg i_ready_old;
-    reg[31:0] ip_old;
+    // reg ip_bit_old; // To store ip bit of last interval.
+    // reg i_ready_old;
+    // reg[31:0] ip_old;
+    // reg[NEXTHOP_ADDR_WIDTH-1:0] i_nexthop_addr_old;
     // 32-stage pipeline
+    reg ip_bit_old;
+    reg[NEXTHOP_ADDR_WIDTH-1:0] i_nexthop_addr_old;
+    reg i_valid_old;
     always_ff @(posedge clka, posedge rst) begin
         if (rst) begin
-            i_ready_old    = 0;
+            o_ip               <= 'b0;
+            o_ready            <= 'b0;
+            ip_bit_old         <= 'b0;
+            i_valid_old        <= 'b0;
+            i_nexthop_addr_old <= 'b0;
+            
+        end
+        else if (i_ready)begin
+            o_ready            <= 'b1;
+            o_ip               <= i_ip;
+            ip_bit_old         <= ip_bit;
+            i_valid_old        <= i_valid;
+            i_nexthop_addr_old <= i_nexthop_addr;
         end
         else begin
-            i_ready_old    = i_ready;
+            o_ip               <= 'b0;
+            o_ready            <= 'b0;
+            ip_bit_old         <= 'b0;
+            i_valid_old        <= 'b0;
+            i_nexthop_addr_old <= 'b0;
         end
     end
     always_comb begin
-        if (rst) begin
-            next_node_addr = 'b0;
-            nexthop_addr   = 'b0;
-            o_valid        = 'b0;
-            ip_bit_old     = 'b0;
-            ip_old         = 'b0;
-            o_ip           = 'b0;
-            o_ready        = 'b0;
-        end 
-        else if (i_ready_old != 0) begin
-            $display("branch 0 %d",i_ready_old);
-            next_node_addr = ip_bit_old?current_node_data.rc_addr:current_node_data.lc_addr;
-            nexthop_addr   = current_node_data.nexthop_addr?current_node_data.nexthop_addr:nexthop_addr;
-            o_valid        = current_node_data.nexthop_addr?1:0;
-            o_ready        = 'b1;
-            ip_bit_old     = ip_bit;
-            o_ip           = ip_old;
-            ip_old         = i_ip;
+        if (ip_bit_old) begin
+            next_node_addr = current_node_data.rc_addr;
         end
         else begin
-            $display("branch 1 %d",i_ready_old);
-            ip_bit_old     = ip_bit;
-            o_ip           = ip_old;
-            ip_old         = i_ip;
-            next_node_addr = 'b0;
-            nexthop_addr   = 'b0;
-            o_valid        = 'b0;
-            o_ready        = 'b0;
+            next_node_addr = current_node_data.lc_addr;
+        end
+        if (current_node_data.nexthop_addr) begin
+            o_nexthop_addr = current_node_data.nexthop_addr;
+            o_valid        = 'b1;
+        end
+        else begin
+            o_nexthop_addr = i_nexthop_addr_old;
+            o_valid        = i_valid_old;
         end
     end
+    
+    // always_comb begin
+    //     if (rst) begin
+    //         next_node_addr = 'b0;
+    //         o_nexthop_addr = 'b0;
+    //         o_valid        = 'b0;
+    //         o_ready        = 'b0;
+    //     end
+    //     else if (i_ready_old) begin
+    //         // $display("branch 0 %d",i_ready_old);
+    //         if (ip_bit_old) begin
+    //             next_node_addr = current_node_data.rc_addr;
+    //         end
+    //         else begin
+    //             next_node_addr = current_node_data.lc_addr;
+    //         end
+    //         if (current_node_data.nexthop_addr) begin
+    //             o_nexthop_addr = current_node_data.nexthop_addr;
+    //             o_valid        = 'b1;
+    //         end
+    //         else begin
+    //             o_nexthop_addr = i_nexthop_addr_old;
+    //             o_valid        = i_valid;
+    //         end
+    //         o_ready = 'b1;
+    //     end
+    //     else begin
+    //         // $display("branch 1 %d",i_ready_old);
+    //         next_node_addr = 'b0;
+    //         o_nexthop_addr = 'b0;
+    //         o_valid        = i_valid;
+    //         o_ready        = 'b0;
+    //     end
+    // end
     
     // 64-stage pipeline
     // always_ff @(posedge clka, posedge rst) begin
