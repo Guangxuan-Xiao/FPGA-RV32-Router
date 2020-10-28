@@ -1,12 +1,10 @@
 `timescale 1ns / 1ps
-
-// Example Frame Data Path.
 typedef struct packed
 {
 logic [2:0] port;
 logic [31:0] ip;
 } nexthop_t;
-
+// Example Frame Data Path.
 module frame_datapath
 #(
     parameter DATA_WIDTH = 64,
@@ -228,15 +226,15 @@ module frame_datapath
         else if (s1_ready)
         begin
             s1 <= in;
-            rt_i_ip <= 32'hbbbbbbbb;   
-            rt_i_ready <= 1;
             if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
                 begin
                     //Start checkcum and query table if this is IP packet.
                     s1.prot_type <= 3'b000;
-                    s1.store_data <= in.data;
+                    data_input_content <= in.data;
+                    rt_i_ip <= 32'hbbbbbbbb;   
+                    rt_i_ready <= 1;
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
                 begin
@@ -264,6 +262,7 @@ module frame_datapath
         else if(query_trie_1_ready)
         begin
             query_trie_1 <= s1;
+            query_trie_1.store_data <= data_output_content;
         end
     end
 
@@ -778,6 +777,7 @@ begin
 	end
 end
 
+    reg liushui = 0;
     reg [31:0] query_nexthop_2;      
     reg [2:0] query_port_2;  
     frame_data s2;
@@ -791,28 +791,29 @@ end
         end
         else if (s2_ready)
         begin
-            s2 <= s1;
+            s2 <= query_trie_33;
             if (query_trie_33.valid && query_trie_33.is_first && !query_trie_33.drop && !query_trie_33.dont_touch)
             begin
-                case(s1.prot_type)
+                case(query_trie_33.prot_type)
                     3'b000:
                     begin
+                        liushui <= rt_o_ready;
                         query_nexthop_2 <= rt_o_nexthop.ip; 
                         query_port_2 <= rt_o_nexthop.port;
-                        if(!rt_o_valid || !test_packet_valid)
+                        if( !rt_o_valid ||!test_packet_valid)
                         begin
                             s2.drop <= 1;
                         end
                         else
                         begin
                             s2.drop <= 0;
-                            s2.data <= data_output_content;
+                            s2.data <= query_trie_33.store_data;
                         end
                     end
 
                     3'b001:
                     begin
-                        op <= s1.data[`OP];
+                        op <= query_trie_33.data[`OP];
                     end
                 endcase
             end
