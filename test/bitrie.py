@@ -156,12 +156,13 @@ class BiTrie():
             rchild_trie.PreOrderTraverse(mode=mode)
 
 
-trie = BiTrie()
+if __name__ == "__main__":
+    trie = BiTrie()
 
-trie.add("170.0.0.0", 8, 1)
-trie.add("187.0.0.0", 8, 2)
-trie.add("204.0.0.0", 8, 3)
-trie.add("221.0.0.0", 8, 4)
-trie.PreOrderTraverse(mode="bram")
-print()
-trie.PreOrderTraverse(mode="normal")
+    trie.add("170.0.0.0", 8, 1)
+    trie.add("187.0.0.0", 8, 2)
+    trie.add("204.0.0.0", 8, 3)
+    trie.add("221.0.0.0", 8, 4)
+    trie.PreOrderTraverse(mode="bram")
+    print()
+    trie.PreOrderTraverse(mode="normal")

@@ -34,39 +34,39 @@ module tb_route_trie ();
     
     initial begin
         #20
-        ip      = 32'h0000aaaa;
+        ip      = 32'h00005555;
         i_ready = 1;
         #20
         i_ready = 0;
-        #20
-        ip      = 32'habcdabcd;
-        i_ready = 1;
-        #20
-        i_ready = 0;
-        #20
-        ip      = 32'hbbbbbbbb;
-        i_ready = 1;
-        #20
-        i_ready = 0;
-        #20
-        ip      = 32'hcbcbcbcb;
-        i_ready = 1;
-        #20
-        i_ready = 0;
-        #20
-        ip      = 32'hcccccccc;
-        i_ready = 1;
-        #20
-        i_ready = 0;
-        #20
-        ip      = 32'h10101010;
-        i_ready = 1;
-        #20
-        i_ready = 0;
-        #20
-        ip      = 32'hdddddddd;
-        i_ready = 1;
-        #20
-        i_ready = 0;
+        // #20
+        // ip      = 32'habcdabcd;
+        // i_ready = 1;
+        // #20
+        // i_ready = 0;
+        // #20
+        // ip      = 32'hbbbbbbbb;
+        // i_ready = 1;
+        // #20
+        // i_ready = 0;
+        // #20
+        // ip      = 32'hcbcbcbcb;
+        // i_ready = 1;
+        // #20
+        // i_ready = 0;
+        // #20
+        // ip      = 32'hcccccccc;
+        // i_ready = 1;
+        // #20
+        // i_ready = 0;
+        // #20
+        // ip      = 32'h10101010;
+        // i_ready = 1;
+        // #20
+        // i_ready = 0;
+        // #20
+        // ip      = 32'hdddddddd;
+        // i_ready = 1;
+        // #20
+        // i_ready = 0;
     end
 endmodule

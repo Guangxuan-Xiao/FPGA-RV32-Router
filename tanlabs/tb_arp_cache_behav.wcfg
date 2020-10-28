@@ -3,102 +3,152 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="tb4_route_linear_behav.wdb" id="1">
+      <db_ref path="tb_route_trie_behav.wdb" id="1">
          <top_modules>
-            <top_module name="\$unit_route_linear_sv " />
+            <top_module name="\$unit_route_trie_sv " />
             <top_module name="glbl" />
-            <top_module name="tb4_route_linear" />
+            <top_module name="tb_route_trie" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="216201fs"></ZoomEndTime>
-      <Cursor1Time time="295416fs"></Cursor1Time>
+      <ZoomEndTime time="97801fs"></ZoomEndTime>
+      <Cursor1Time time="28100fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="241"></NameColumnWidth>
-      <ValueColumnWidth column_width="235"></ValueColumnWidth>
+      <ValueColumnWidth column_width="211"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="20" />
-   <wvobject type="logic" fp_name="/tb4_route_linear/router_linear_module/clk">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
+   <WVObjectSize size="32" />
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/clka">
+      <obj_property name="ElementShortName">clka</obj_property>
+      <obj_property name="ObjectShortName">clka</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb4_route_linear/router_linear_module/rst">
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/clkb">
+      <obj_property name="ElementShortName">clkb</obj_property>
+      <obj_property name="ObjectShortName">clkb</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/rst">
       <obj_property name="ElementShortName">rst</obj_property>
       <obj_property name="ObjectShortName">rst</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb4_route_linear/router_linear_module/wq_en">
-      <obj_property name="ElementShortName">wq_en</obj_property>
-      <obj_property name="ObjectShortName">wq_en</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/i_ready">
+      <obj_property name="ElementShortName">i_ready</obj_property>
+      <obj_property name="ObjectShortName">i_ready</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb4_route_linear/router_linear_module/ins_en">
-      <obj_property name="ElementShortName">ins_en</obj_property>
-      <obj_property name="ObjectShortName">ins_en</obj_property>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/i_ip">
+      <obj_property name="ElementShortName">i_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i_ip[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/w_ip">
-      <obj_property name="ElementShortName">w_ip[31:0]</obj_property>
-      <obj_property name="ObjectShortName">w_ip[31:0]</obj_property>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/o_nexthop">
+      <obj_property name="ElementShortName">o_nexthop</obj_property>
+      <obj_property name="ObjectShortName">o_nexthop</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/w_mask">
-      <obj_property name="ElementShortName">w_mask[31:0]</obj_property>
-      <obj_property name="ObjectShortName">w_mask[31:0]</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/o_valid">
+      <obj_property name="ElementShortName">o_valid</obj_property>
+      <obj_property name="ObjectShortName">o_valid</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/w_port">
-      <obj_property name="ElementShortName">w_port[1:0]</obj_property>
-      <obj_property name="ObjectShortName">w_port[1:0]</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/o_ready">
+      <obj_property name="ElementShortName">o_ready</obj_property>
+      <obj_property name="ObjectShortName">o_ready</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/w_nexthop">
-      <obj_property name="ElementShortName">w_nexthop[31:0]</obj_property>
-      <obj_property name="ObjectShortName">w_nexthop[31:0]</obj_property>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/next_node_addr">
+      <obj_property name="ElementShortName">next_node_addr[32:0][12:0]</obj_property>
+      <obj_property name="ObjectShortName">next_node_addr[32:0][12:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/q_ip">
-      <obj_property name="ElementShortName">q_ip[31:0]</obj_property>
-      <obj_property name="ObjectShortName">q_ip[31:0]</obj_property>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/nexthop_addr">
+      <obj_property name="ElementShortName">nexthop_addr[32:0][7:0]</obj_property>
+      <obj_property name="ObjectShortName">nexthop_addr[32:0][7:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/q_nexthop">
-      <obj_property name="ElementShortName">q_nexthop[31:0]</obj_property>
-      <obj_property name="ObjectShortName">q_nexthop[31:0]</obj_property>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/layer_o_valid">
+      <obj_property name="ElementShortName">layer_o_valid[32:0]</obj_property>
+      <obj_property name="ObjectShortName">layer_o_valid[32:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/q_port">
-      <obj_property name="ElementShortName">q_port[1:0]</obj_property>
-      <obj_property name="ObjectShortName">q_port[1:0]</obj_property>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/layer_o_ready">
+      <obj_property name="ElementShortName">layer_o_ready[32:0]</obj_property>
+      <obj_property name="ObjectShortName">layer_o_ready[32:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb4_route_linear/router_linear_module/q_found">
-      <obj_property name="ElementShortName">q_found</obj_property>
-      <obj_property name="ObjectShortName">q_found</obj_property>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/ip_t">
+      <obj_property name="ElementShortName">ip_t[32:0][31:0]</obj_property>
+      <obj_property name="ObjectShortName">ip_t[32:0][31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/cache">
-      <obj_property name="ElementShortName">cache[3:0]</obj_property>
-      <obj_property name="ObjectShortName">cache[3:0]</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/ena">
+      <obj_property name="ElementShortName">ena</obj_property>
+      <obj_property name="ObjectShortName">ena</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/next">
-      <obj_property name="ElementShortName">next[1:0]</obj_property>
-      <obj_property name="ObjectShortName">next[1:0]</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/wea">
+      <obj_property name="ElementShortName">wea</obj_property>
+      <obj_property name="ObjectShortName">wea</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb4_route_linear/router_linear_module/found">
-      <obj_property name="ElementShortName">found</obj_property>
-      <obj_property name="ObjectShortName">found</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /clka">
+      <obj_property name="ElementShortName">clka</obj_property>
+      <obj_property name="ObjectShortName">clka</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/ptr">
-      <obj_property name="ElementShortName">ptr[2:0]</obj_property>
-      <obj_property name="ObjectShortName">ptr[2:0]</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /clkb">
+      <obj_property name="ElementShortName">clkb</obj_property>
+      <obj_property name="ObjectShortName">clkb</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/best_nexthop">
-      <obj_property name="ElementShortName">best_nexthop[31:0]</obj_property>
-      <obj_property name="ObjectShortName">best_nexthop[31:0]</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /rst">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/best_port">
-      <obj_property name="ElementShortName">best_port[1:0]</obj_property>
-      <obj_property name="ObjectShortName">best_port[1:0]</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /ip_bit">
+      <obj_property name="ElementShortName">ip_bit</obj_property>
+      <obj_property name="ObjectShortName">ip_bit</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/best_mask">
-      <obj_property name="ElementShortName">best_mask[31:0]</obj_property>
-      <obj_property name="ObjectShortName">best_mask[31:0]</obj_property>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /i_ip">
+      <obj_property name="ElementShortName">i_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i_ip[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb4_route_linear/router_linear_module/CACHE_ADDR_WIDTH">
-      <obj_property name="ElementShortName">CACHE_ADDR_WIDTH[31:0]</obj_property>
-      <obj_property name="ObjectShortName">CACHE_ADDR_WIDTH[31:0]</obj_property>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /i_ready">
+      <obj_property name="ElementShortName">i_ready</obj_property>
+      <obj_property name="ObjectShortName">i_ready</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /i_valid">
+      <obj_property name="ElementShortName">i_valid</obj_property>
+      <obj_property name="ObjectShortName">i_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /current_node_addr">
+      <obj_property name="ElementShortName">current_node_addr[12:0]</obj_property>
+      <obj_property name="ObjectShortName">current_node_addr[12:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /i_nexthop_addr">
+      <obj_property name="ElementShortName">i_nexthop_addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">i_nexthop_addr[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /next_node_addr">
+      <obj_property name="ElementShortName">next_node_addr[12:0]</obj_property>
+      <obj_property name="ObjectShortName">next_node_addr[12:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /o_nexthop_addr">
+      <obj_property name="ElementShortName">o_nexthop_addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">o_nexthop_addr[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /o_ip">
+      <obj_property name="ElementShortName">o_ip[31:0]</obj_property>
+      <obj_property name="ObjectShortName">o_ip[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /o_valid">
+      <obj_property name="ElementShortName">o_valid</obj_property>
+      <obj_property name="ObjectShortName">o_valid</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /o_ready">
+      <obj_property name="ElementShortName">o_ready</obj_property>
+      <obj_property name="ObjectShortName">o_ready</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /ena">
+      <obj_property name="ElementShortName">ena</obj_property>
+      <obj_property name="ObjectShortName">ena</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /wea">
+      <obj_property name="ElementShortName">wea</obj_property>
+      <obj_property name="ObjectShortName">wea</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /current_node_data">
+      <obj_property name="ElementShortName">current_node_data</obj_property>
+      <obj_property name="ObjectShortName">current_node_data</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
 </wave_config>
