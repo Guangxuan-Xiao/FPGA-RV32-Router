@@ -3,12 +3,6 @@
 localparam TRIE_ADDR_WIDTH    = 13;
 localparam NEXTHOP_ADDR_WIDTH = 8;
 
-typedef struct packed
-{
-logic [2:0] port;
-logic [31:0] ip;
-} nexthop_t;
-
 
 module route_trie (input wire clka,
                    input wire clkb,

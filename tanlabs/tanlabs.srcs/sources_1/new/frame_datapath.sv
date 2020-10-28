@@ -1,6 +1,11 @@
 `timescale 1ns / 1ps
 
 // Example Frame Data Path.
+typedef struct packed
+{
+logic [2:0] port;
+logic [31:0] ip;
+} nexthop_t;
 
 module frame_datapath
 #(
@@ -143,6 +148,7 @@ module frame_datapath
     reg [31:0] rt_i_ip;
     reg rt_o_valid;
     reg rt_o_ready;
+    nexthop_t rt_o_nexthop;
 
     route_trie route_trie_table(
         .clka(eth_clk),
@@ -150,7 +156,8 @@ module frame_datapath
         .i_ready(rt_i_ready),
         .i_ip(rt_i_ip),
         .o_valid(rt_o_valid),
-        .o_ready(rt_o_ready)
+        .o_ready(rt_o_ready),
+        .o_nexthop(rt_o_nexthop)
     );
 
     // Track frames and figure out when it is the first beat.
@@ -239,7 +246,7 @@ module frame_datapath
                 begin
                     //This is rubbish.
                     s1.prot_type <= 3'b111;
-                    s1.drop <= 1;
+                    s1.drop <= 0;
                 end
             end
         end
@@ -758,7 +765,7 @@ end
 
 frame_data query_trie_33;
 wire query_trie_33_ready;
-assign query_trie_32_ready = s2_ready || !query_trie_32.valid;
+assign query_trie_32_ready = query_trie_33_ready || !query_trie_32.valid;
 always @ (posedge eth_clk or posedge reset)
 begin
 	if (reset)
@@ -770,8 +777,6 @@ begin
 		query_trie_33 <= query_trie_32;
 	end
 end
-
-    reg liushui = 0;
 
     reg [31:0] query_nexthop_2;      
     reg [2:0] query_port_2;  
@@ -787,16 +792,14 @@ end
         else if (s2_ready)
         begin
             s2 <= s1;
-            liushui <= rt_o_ready;
-            if (query_trie_25.valid && query_trie_25.is_first && !query_trie_25.drop && !query_trie_25.dont_touch)
+            if (query_trie_33.valid && query_trie_33.is_first && !query_trie_33.drop && !query_trie_33.dont_touch)
             begin
-                liushui <= rt_o_ready;
                 case(s1.prot_type)
                     3'b000:
                     begin
-                        query_nexthop_2 <= rl_q_nexthop; 
-                        query_port_2 <= rl_q_port;
-                        if(!query_valid || !test_packet_valid)
+                        query_nexthop_2 <= rt_o_nexthop.ip; 
+                        query_port_2 <= rt_o_nexthop.port;
+                        if(!rt_o_valid || !test_packet_valid)
                         begin
                             s2.drop <= 1;
                         end
