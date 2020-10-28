@@ -132,6 +132,7 @@ class BiTrie():
 
     # 打印路由表，先序遍历整棵树，先打印root，然后递归遍历左右子树（需要先将左右孩子转换成树）
     def PreOrderTraverse(self, mode="normal"):
+        ret = []
         parent = self.root
         lc_idx = 0 if parent.lchild is None else parent.lchild.idx
         rc_idx = 0 if parent.rchild is None else parent.rchild.idx
@@ -143,26 +144,27 @@ class BiTrie():
             lc_bin = '{:013b}'.format(lc_idx)
             rc_bin = '{:013b}'.format(rc_idx)
             nexthop_addr_bin = '{:08b}'.format(nexthop_addr)
-            print(lc_bin+rc_bin+nexthop_addr_bin, end=",")
+            ret.append(
+                {"idx": parent.idx, "data": lc_bin+rc_bin+nexthop_addr_bin})
         else:
             raise NotImplementedError("Unknown mode: "+mode)
         if parent.lchild:
             lchild_trie = BiTrie()
             lchild_trie.root = parent.lchild
-            lchild_trie.PreOrderTraverse(mode=mode)
+            ret += lchild_trie.PreOrderTraverse(mode=mode)
         if parent.rchild:
             rchild_trie = BiTrie()
             rchild_trie.root = parent.rchild
-            rchild_trie.PreOrderTraverse(mode=mode)
+            ret += rchild_trie.PreOrderTraverse(mode=mode)
+        return sorted(ret, key=lambda x: x["idx"])
 
 
 if __name__ == "__main__":
     trie = BiTrie()
-
-    trie.add("170.0.0.0", 8, 1)
-    trie.add("187.0.0.0", 8, 2)
-    trie.add("204.0.0.0", 8, 3)
-    trie.add("221.0.0.0", 8, 4)
-    trie.PreOrderTraverse(mode="bram")
-    print()
+    trie.add(0x55000000, 8, 1)  # 0xaa000000
+    trie.add(0xdd000000, 8, 2)  # 0xbb000000
+    trie.add(0x33000000, 8, 3)  # 0xcc000000
+    trie.add(0xbb000000, 8, 4)  # 0xdd000000
+    ret = trie.PreOrderTraverse(mode="bram")
+    print(ret)
     trie.PreOrderTraverse(mode="normal")
