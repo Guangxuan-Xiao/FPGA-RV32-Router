@@ -233,7 +233,7 @@ module frame_datapath
                     //Start checkcum and query table if this is IP packet.
                     s1.prot_type <= 3'b000;
                     data_input_content <= in.data;
-                    rt_i_ip <= 32'hbbbbbbbb;   
+                    rt_i_ip <= in.data[`TRG_IP_IP];   
                     rt_i_ready <= 1;
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
@@ -777,12 +777,27 @@ begin
 	end
 end
 
+frame_data query_trie_34;
+wire query_trie_34_ready;
+assign query_trie_33_ready = query_trie_34_ready || !query_trie_33.valid;
+always @ (posedge eth_clk or posedge reset)
+begin
+	if (reset)
+	begin
+		query_trie_34 <= 0;
+	end
+	else if (query_trie_34_ready)
+	begin
+		query_trie_34 <= query_trie_33;
+	end
+end
+
     reg liushui = 0;
     reg [31:0] query_nexthop_2;      
     reg [2:0] query_port_2;  
     frame_data s2;
     wire s2_ready;
-    assign query_trie_33_ready = s2_ready || !query_trie_33.valid;
+    assign query_trie_34_ready = s2_ready || !query_trie_34.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
         if (reset)
@@ -791,10 +806,10 @@ end
         end
         else if (s2_ready)
         begin
-            s2 <= query_trie_33;
-            if (query_trie_33.valid && query_trie_33.is_first && !query_trie_33.drop && !query_trie_33.dont_touch)
+            s2 <= query_trie_34;
+            if (query_trie_34.valid && query_trie_34.is_first && !query_trie_34.drop && !query_trie_34.dont_touch)
             begin
-                case(query_trie_33.prot_type)
+                case(query_trie_34.prot_type)
                     3'b000:
                     begin
                         liushui <= rt_o_ready;
@@ -807,13 +822,13 @@ end
                         else
                         begin
                             s2.drop <= 0;
-                            s2.data <= query_trie_33.store_data;
+                            s2.data <= query_trie_34.store_data;
                         end
                     end
 
                     3'b001:
                     begin
-                        op <= query_trie_33.data[`OP];
+                        op <= query_trie_34.data[`OP];
                     end
                 endcase
             end
