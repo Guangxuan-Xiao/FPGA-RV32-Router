@@ -14,6 +14,7 @@ module trie_layer(input wire clka,
                   input wire ip_bit,
                   input wire[31:0] i_ip,
                   input wire i_ready,
+                  input wire i_valid,
                   input wire[TRIE_ADDR_WIDTH-1:0] current_node_addr,
                   input wire[NEXTHOP_ADDR_WIDTH-1:0] i_nexthop_addr,
                   output reg[TRIE_ADDR_WIDTH-1:0] next_node_addr,
@@ -94,7 +95,7 @@ module trie_layer(input wire clka,
             end
             else begin
                 o_nexthop_addr = i_nexthop_addr_old;
-                o_valid        = 'b0;
+                o_valid        = i_valid;
             end
             o_ready = 'b1;
         end
