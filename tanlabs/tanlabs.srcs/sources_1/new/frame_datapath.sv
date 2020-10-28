@@ -5,15 +5,6 @@ logic [2:0] port;
 logic [31:0] ip;
 } nexthop_t;
 // Example Frame Data Path.
-<<<<<<< HEAD
-typedef struct packed
-{
-logic [2:0] port;
-logic [31:0] ip;
-} nexthop_t;
-
-=======
->>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
 module frame_datapath
 #(
     parameter DATA_WIDTH = 64,
@@ -235,24 +226,15 @@ module frame_datapath
         else if (s1_ready)
         begin
             s1 <= in;
-<<<<<<< HEAD
-            rt_i_ip <= 32'hbbbbbbbb;   
-            rt_i_ready <= 1;
-=======
->>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
             if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
                 begin
                     //Start checkcum and query table if this is IP packet.
                     s1.prot_type <= 3'b000;
-<<<<<<< HEAD
-                    s1.store_data <= in.data;
-=======
                     data_input_content <= in.data;
                     rt_i_ip <= in.data[`TRG_IP_IP];   
                     rt_i_ready <= 1;
->>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
                 begin
@@ -280,10 +262,7 @@ module frame_datapath
         else if(query_trie_1_ready)
         begin
             query_trie_1 <= s1;
-<<<<<<< HEAD
-=======
             query_trie_1.store_data <= data_output_content;
->>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
         end
     end
 
@@ -798,8 +777,6 @@ begin
 	end
 end
 
-<<<<<<< HEAD
-=======
 frame_data query_trie_34;
 wire query_trie_34_ready;
 assign query_trie_33_ready = query_trie_34_ready || !query_trie_33.valid;
@@ -816,16 +793,11 @@ begin
 end
 
     reg liushui = 0;
->>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
     reg [31:0] query_nexthop_2;      
     reg [2:0] query_port_2;  
     frame_data s2;
     wire s2_ready;
-<<<<<<< HEAD
-    assign query_trie_33_ready = s2_ready || !query_trie_33.valid;
-=======
     assign query_trie_34_ready = s2_ready || !query_trie_34.valid;
->>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
     always @ (posedge eth_clk or posedge reset)
     begin
         if (reset)
@@ -834,27 +806,16 @@ end
         end
         else if (s2_ready)
         begin
-<<<<<<< HEAD
-            s2 <= s1;
-            if (query_trie_33.valid && query_trie_33.is_first && !query_trie_33.drop && !query_trie_33.dont_touch)
-=======
             s2 <= query_trie_34;
             if (query_trie_34.valid && query_trie_34.is_first && !query_trie_34.drop && !query_trie_34.dont_touch)
->>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
             begin
                 case(query_trie_34.prot_type)
                     3'b000:
                     begin
-<<<<<<< HEAD
-                        query_nexthop_2 <= rt_o_nexthop.ip; 
-                        query_port_2 <= rt_o_nexthop.port;
-                        if(!rt_o_valid || !test_packet_valid)
-=======
                         liushui <= rt_o_ready;
                         query_nexthop_2 <= rt_o_nexthop.ip; 
                         query_port_2 <= rt_o_nexthop.port;
                         if( !rt_o_valid ||!test_packet_valid)
->>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
                         begin
                             s2.drop <= 1;
                         end
@@ -1030,15 +991,17 @@ end
             if (s5.valid && s5.is_first && !s5.drop && !s5.dont_touch)
             // Send the frame to the port from previous query.
             begin
-                if(ip_yes_5)
+                case(s5.prot_type)
+                3'b000:
                 begin
                     s6.dest <= query_port_5;
                 end
-                else if(arp_yes_5)
-                begin
+
+                3'b001:
                     s6.dest <= s5.id;
-                end
-                else
+                endcase
+
+                default:
                 begin
                     s6.dest <= 0;
                 end
