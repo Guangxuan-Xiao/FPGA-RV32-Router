@@ -233,7 +233,7 @@ module frame_datapath
                     //Start checkcum and query table if this is IP packet.
                     s1.prot_type <= 3'b000;
                     data_input_content <= in.data;
-                    rt_i_ip <= 32'hbbbbbbbb;   
+                    rt_i_ip <= in.data[`TRG_IP_IP];   
                     rt_i_ready <= 1;
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
