@@ -250,6 +250,7 @@ module frame_datapath
         end
     end
 
+    reg [383:0] manage;
     frame_data query_trie_1;
     wire query_trie_1_ready;
     assign s1_ready = query_trie_1_ready || !s1.valid;
@@ -262,7 +263,11 @@ module frame_datapath
         else if(query_trie_1_ready)
         begin
             query_trie_1 <= s1;
-            query_trie_1.store_data <= data_output_content;
+            if(s1.prot_type == 3'b000)
+            begin
+                manage <= data_output_content;
+                query_trie_1.data <= data_output_content;
+            end
         end
     end
 
@@ -822,7 +827,6 @@ end
                         else
                         begin
                             s2.drop <= 0;
-                            s2.data <= query_trie_34.store_data;
                         end
                     end
 
