@@ -34,7 +34,22 @@ module tb_route_trie ();
     
     initial begin
         #20
-        ip      = 32'h00005555;
+        ip      = 32'h0000aaaa;
+        i_ready = 1;
+        #20
+        i_ready = 0;
+        #20
+        ip      = 32'h0000bbbb;
+        i_ready = 1;
+        #20
+        i_ready = 0;
+        #20
+        ip      = 32'h0000cccc;
+        i_ready = 1;
+        #20
+        i_ready = 0;
+        #20
+        ip      = 32'h0000dddd;
         i_ready = 1;
         #20
         i_ready = 0;

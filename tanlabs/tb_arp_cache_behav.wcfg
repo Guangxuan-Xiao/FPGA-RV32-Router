@@ -3,24 +3,60 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="tb_route_trie_behav.wdb" id="1">
+      <db_ref path="tb_frame_datapath_behav.wdb" id="1">
          <top_modules>
-            <top_module name="\$unit_route_trie_sv " />
+            <top_module name="\$unit_arp_cache_sv " />
             <top_module name="glbl" />
-            <top_module name="tb_route_trie" />
+            <top_module name="tb_frame_datapath" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="97801fs"></ZoomEndTime>
-      <Cursor1Time time="28100fs"></Cursor1Time>
+<<<<<<< HEAD
+      <ZoomStartTime time="296830fs"></ZoomStartTime>
+      <ZoomEndTime time="366231fs"></ZoomEndTime>
+      <Cursor1Time time="325030fs"></Cursor1Time>
+=======
+<<<<<<< HEAD
+      <ZoomStartTime time="267800fs"></ZoomStartTime>
+      <ZoomEndTime time="494123fs"></ZoomEndTime>
+      <Cursor1Time time="10000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="241"></NameColumnWidth>
-      <ValueColumnWidth column_width="211"></ValueColumnWidth>
+      <ValueColumnWidth column_width="231"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="32" />
+   <WVObjectSize size="5" />
+   <wvobject fp_name="/tb_frame_datapath/dut/liushui" type="logic">
+      <obj_property name="ElementShortName">liushui</obj_property>
+      <obj_property name="ObjectShortName">liushui</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_frame_datapath/dut/query_trie_33.valid" type="logic">
+      <obj_property name="ElementShortName">.valid</obj_property>
+      <obj_property name="ObjectShortName">.valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_frame_datapath/dut/eth_clk" type="logic">
+      <obj_property name="ElementShortName">eth_clk</obj_property>
+      <obj_property name="ObjectShortName">eth_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_frame_datapath/dut/out_ready" type="logic">
+      <obj_property name="ElementShortName">out_ready</obj_property>
+      <obj_property name="ObjectShortName">out_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_frame_datapath/dut/rt_o_ready" type="logic">
+      <obj_property name="ElementShortName">rt_o_ready</obj_property>
+      <obj_property name="ObjectShortName">rt_o_ready</obj_property>
+=======
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="97801fs"></ZoomEndTime>
+      <Cursor1Time time="28100fs"></Cursor1Time>
+>>>>>>> 1789c3d3a381a34546c2e00af8b06cfa71997584
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="273"></NameColumnWidth>
+      <ValueColumnWidth column_width="199"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="15" />
    <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/clka">
       <obj_property name="ElementShortName">clka</obj_property>
       <obj_property name="ObjectShortName">clka</obj_property>
@@ -44,6 +80,7 @@
    <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/o_nexthop">
       <obj_property name="ElementShortName">o_nexthop</obj_property>
       <obj_property name="ObjectShortName">o_nexthop</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/o_valid">
       <obj_property name="ElementShortName">o_valid</obj_property>
@@ -56,7 +93,6 @@
    <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/next_node_addr">
       <obj_property name="ElementShortName">next_node_addr[32:0][12:0]</obj_property>
       <obj_property name="ObjectShortName">next_node_addr[32:0][12:0]</obj_property>
-      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/nexthop_addr">
       <obj_property name="ElementShortName">nexthop_addr[32:0][7:0]</obj_property>
@@ -82,6 +118,8 @@
       <obj_property name="ElementShortName">wea</obj_property>
       <obj_property name="ObjectShortName">wea</obj_property>
    </wvobject>
+<<<<<<< HEAD
+=======
    <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /clka">
       <obj_property name="ElementShortName">clka</obj_property>
       <obj_property name="ObjectShortName">clka</obj_property>
@@ -150,5 +188,7 @@
       <obj_property name="ElementShortName">current_node_data</obj_property>
       <obj_property name="ObjectShortName">current_node_data</obj_property>
       <obj_property name="isExpanded"></obj_property>
+>>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
    </wvobject>
+>>>>>>> 1789c3d3a381a34546c2e00af8b06cfa71997584
 </wave_config>

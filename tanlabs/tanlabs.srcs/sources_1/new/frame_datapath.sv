@@ -991,18 +991,22 @@ end
             if (s5.valid && s5.is_first && !s5.drop && !s5.dont_touch)
             // Send the frame to the port from previous query.
             begin
-                if(ip_yes_5)
+                case(s5.prot_type)
+                3'b000:
                 begin
                     s6.dest <= query_port_5;
                 end
-                else if(arp_yes_5)
+
+                3'b001:
                 begin
                     s6.dest <= s5.id;
                 end
-                else
+
+                default:
                 begin
                     s6.dest <= 0;
                 end
+                endcase
             end
         end
     end

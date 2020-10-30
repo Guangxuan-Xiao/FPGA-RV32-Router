@@ -51,10 +51,6 @@ module trie_layer(input wire clka,
     // - store it into nexthop_addr
     // - set o_valid to 1
     // next_node = bit ? current_node->lc : current_node->rc
-    // reg ip_bit_old; // To store ip bit of last interval.
-    // reg i_ready_old;
-    // reg[31:0] ip_old;
-    // reg[NEXTHOP_ADDR_WIDTH-1:0] i_nexthop_addr_old;
     // 32-stage pipeline
     reg ip_bit_old;
     reg[NEXTHOP_ADDR_WIDTH-1:0] i_nexthop_addr_old;
@@ -99,54 +95,4 @@ module trie_layer(input wire clka,
             o_valid        = i_valid_old;
         end
     end
-    
-    // always_comb begin
-    //     if (rst) begin
-    //         next_node_addr = 'b0;
-    //         o_nexthop_addr = 'b0;
-    //         o_valid        = 'b0;
-    //         o_ready        = 'b0;
-    //     end
-    //     else if (i_ready_old) begin
-    //         // $display("branch 0 %d",i_ready_old);
-    //         if (ip_bit_old) begin
-    //             next_node_addr = current_node_data.rc_addr;
-    //         end
-    //         else begin
-    //             next_node_addr = current_node_data.lc_addr;
-    //         end
-    //         if (current_node_data.nexthop_addr) begin
-    //             o_nexthop_addr = current_node_data.nexthop_addr;
-    //             o_valid        = 'b1;
-    //         end
-    //         else begin
-    //             o_nexthop_addr = i_nexthop_addr_old;
-    //             o_valid        = i_valid;
-    //         end
-    //         o_ready = 'b1;
-    //     end
-    //     else begin
-    //         // $display("branch 1 %d",i_ready_old);
-    //         next_node_addr = 'b0;
-    //         o_nexthop_addr = 'b0;
-    //         o_valid        = i_valid;
-    //         o_ready        = 'b0;
-    //     end
-    // end
-    
-    // 64-stage pipeline
-    // always_ff @(posedge clka, posedge rst) begin
-    //     if (rst) begin
-    //         next_node_addr <= 'b0;
-    //         nexthop_addr   <= 'b0;
-    //         o_valid        <= 'b0;
-    //         ip_bit_old     <= 'b0;
-    //     end
-    //     else begin
-    //         ip_bit_old     <= ip_bit;
-    //         next_node_addr <= ip_bit_old?current_node_data.rc_addr:current_node_data.lc_addr;
-    //         nexthop_addr   <= current_node_data.nexhop_addr;
-    //         o_valid        <= current_node_data.nexthop_addr?1:0;
-    //     end
-    // end
 endmodule
