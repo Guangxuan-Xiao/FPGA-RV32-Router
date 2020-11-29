@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 localparam TRIE_ADDR_WIDTH    = 13;
-localparam NEXTHOP_ADDR_WIDTH = 8;
+localparam NEXTHOP_ADDR_WIDTH = 6;
 //typedef struct packed
 //{
 //logic [2:0] port;

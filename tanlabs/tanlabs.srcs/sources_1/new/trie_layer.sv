@@ -37,7 +37,7 @@ module trie_layer(input wire clka,
     .wea(wea),      // input wire [0 : 0] wea, which is read-only.
     .addra(current_node_addr),  // input wire [13 : 0] addra
     // .dina(dina),     // input wire [33 : 0] dina
-    .douta(current_node_data)  // output wire [33 : 0] douta
+    .douta(current_node_data)  // output wire [31 : 0] douta
     // .clkb(clkb),    // input wire clkb
     // .enb(enb),      // input wire enb
     // .web(web),      // input wire [0 : 0] web
