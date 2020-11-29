@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 /* Tsinghua Advanced Networking Labs */
-
+`include "frame_datapath.vh"
 module tanlabs(
     input wire RST,
 
@@ -453,6 +453,14 @@ module tanlabs(
     wire dp_tx_valid;
 
     // README: Instantiate your datapath.
+    wire[32:0] trie_web;
+    wire nexthop_web;
+    wire[TRIE_ADDR_WIDTH-1:0] node_addr_b[32:0];
+    trie_node_t node_dinb[32:0];
+    trie_node_t node_doutb[32:0];
+    wire[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr_b;
+    nexthop_t nexthop_dinb;
+    nexthop_t nexthop_doutb;
     frame_datapath
     #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -476,8 +484,15 @@ module tanlabs(
         .m_user(dp_tx_user),
         .m_dest(dp_tx_dest),
         .m_valid(dp_tx_valid),
-        .m_ready(1'b1)
-
+        .m_ready(1'b1),
+        .trie_web,
+        .nexthop_web,
+        .node_addr_b,
+        .node_dinb,
+        .node_doutb,
+        .nexthop_addr_b,
+        .nexthop_dinb,
+        .nexthop_doutb
         // README: You will need to add some signals for your CPU to control the datapath,
         // or access the forwarding table or the address resolution cache.
     );
@@ -609,7 +624,7 @@ module tanlabs(
     wire ram_we, ram_oe, ram_req, ram_ready;
     
     // PLL分频示例
-    wire locked, clk_1, clk_2, clk_3;
+    wire locked2, clk_1, clk_2, clk_3;
     pll_example clock_gen
     (
     // Clock in ports
@@ -620,25 +635,25 @@ module tanlabs(
     .clk_out3(clk_3), // 时钟输出3，频率在IP配置界面中设置
     // Status and control signals
     .reset(reset_btn), // PLL复位输入
-    .locked(locked)    // PLL锁定指示输出，"1"表示时钟稳定，
+    .locked(locked2)    // PLL锁定指示输出，"1"表示时钟稳定，
     // 后级电路复位信号应当由它生成（见下）
     );
     
     reg reset_of_1;
-    always @(posedge clk_1, negedge locked) begin
-        if (~locked) reset_of_1 <= 1'b1;
+    always @(posedge clk_1, negedge locked2) begin
+        if (~locked2) reset_of_1 <= 1'b1;
         else reset_of_1 <= 1'b0;
     end
 
     reg reset_of_2;
-    always @(posedge clk_2, negedge locked) begin
-        if (~locked) reset_of_2 <= 1'b1;
+    always @(posedge clk_2, negedge locked2) begin
+        if (~locked2) reset_of_2 <= 1'b1;
         else reset_of_2 <= 1'b0;
     end
 
     reg reset_of_3;
-    always @(posedge clk_3, negedge locked) begin
-        if (~locked) reset_of_3 <= 1'b1;
+    always @(posedge clk_3, negedge locked2) begin
+        if (~locked2) reset_of_3 <= 1'b1;
         else reset_of_3 <= 1'b0;
     end
 
@@ -685,7 +700,15 @@ module tanlabs(
     .flash_ce_n(flash_ce_n),
     .flash_oe_n(flash_oe_n),
     .flash_we_n(flash_we_n),
-    .flash_byte_n(flash_byte_n)
+    .flash_byte_n(flash_byte_n),
+    .trie_web,
+    .nexthop_web,
+    .node_addr_b,
+    .node_dinb,
+    .node_doutb,
+    .nexthop_addr_b,
+    .nexthop_dinb,
+    .nexthop_doutb
     );
     
     

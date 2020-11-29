@@ -24,7 +24,15 @@ module frame_datapath #(
     output wire [DATA_WIDTH / 8 - 1:0] m_user,
     output wire [ID_WIDTH - 1:0] m_dest,
     output wire m_valid,
-    input wire m_ready
+    input wire m_ready,
+    input wire[32:0] trie_web,
+    input wire nexthop_web,
+    input wire[TRIE_ADDR_WIDTH-1:0] node_addr_b[32:0],
+    input trie_node_t node_dinb[32:0],
+    output trie_node_t node_doutb[32:0],
+    input wire[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr_b,
+    input nexthop_t nexthop_dinb,
+    output nexthop_t nexthop_doutb
 );
 
     frame_data in;
@@ -144,12 +152,21 @@ module frame_datapath #(
 
     route_trie route_trie_table(
         .clka(eth_clk),
+        .clkb(eth_clk),
         .rst(reset),
         .i_ready(rt_i_ready),
         .i_ip(rt_i_ip),
         .o_valid(rt_o_valid),
         .o_ready(rt_o_ready),
-        .o_nexthop(rt_o_nexthop)
+        .o_nexthop(rt_o_nexthop),
+        .trie_web,
+        .nexthop_web,
+        .node_addr_b,
+        .node_dinb,
+        .node_doutb,
+        .nexthop_addr_b,
+        .nexthop_dinb,
+        .nexthop_doutb
     );
 
     // Track frames and figure out when it is the first beat.

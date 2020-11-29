@@ -1,4 +1,5 @@
 `default_nettype none
+`include "frame_datapath.vh"
 module bus(input wire clk,
     input wire rst,
     inout wire[31:0] base_ram_data, // BaseRAM数据，低8位与CPLD串口控制器共享
@@ -33,7 +34,15 @@ module bus(input wire clk,
     output reg flash_ce_n,         // Flash片选信号，低有效
     output reg flash_oe_n,         // Flash读使能信号，低有效
     output reg flash_we_n,         // Flash写使能信号，低有效
-    output reg flash_byte_n        // Flash 8bit模式选择，低有效。在使用flash的16位模式时请设为1
+    output reg flash_byte_n,       // Flash 8bit模式选择，低有效。在使用flash的16位模式时请设为1
+    output reg [32:0] trie_web,
+    output reg nexthop_web,
+    output reg [TRIE_ADDR_WIDTH-1:0] node_addr_b[32:0],
+    output trie_node_t node_dinb[32:0],
+    input trie_node_t node_doutb[32:0],
+    output reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr_b,
+    output nexthop_t nexthop_dinb,
+    input nexthop_t nexthop_doutb
     );
     // | 0x80000000-0x800FFFFF | 监控程序代码 |
     // | 0x80100000-0x803FFFFF | 用户程序代码 |

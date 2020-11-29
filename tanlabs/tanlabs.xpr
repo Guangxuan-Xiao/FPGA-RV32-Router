@@ -37,13 +37,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="151"/>
-    <Option Name="WTModelSimExportSim" Val="151"/>
-    <Option Name="WTQuestaExportSim" Val="151"/>
-    <Option Name="WTIesExportSim" Val="151"/>
-    <Option Name="WTVcsExportSim" Val="151"/>
-    <Option Name="WTRivieraExportSim" Val="151"/>
-    <Option Name="WTActivehdlExportSim" Val="151"/>
+    <Option Name="WTXSimExportSim" Val="153"/>
+    <Option Name="WTModelSimExportSim" Val="153"/>
+    <Option Name="WTQuestaExportSim" Val="153"/>
+    <Option Name="WTIesExportSim" Val="153"/>
+    <Option Name="WTVcsExportSim" Val="153"/>
+    <Option Name="WTRivieraExportSim" Val="153"/>
+    <Option Name="WTActivehdlExportSim" Val="153"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -164,7 +164,13 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/new/cpu/bus.sv">
+      <File Path="$PSRCDIR/sources_1/new/frame_datapath.vh">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/bus.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -175,12 +181,6 @@
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/new/frame_datapath.vh">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
@@ -240,7 +240,7 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/new/tanlabs.v">
+      <File Path="$PSRCDIR/sources_1/new/tanlabs.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
