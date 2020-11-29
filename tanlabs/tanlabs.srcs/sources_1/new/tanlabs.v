@@ -3,10 +3,10 @@
 /* Tsinghua Advanced Networking Labs */
 
 module tanlabs(
-    input RST,
+    input wire RST,
 
-    input gtrefclk_p,
-    input gtrefclk_n,
+    input wire gtrefclk_p,
+    input wire gtrefclk_n,
 
     output wire [15:0] led,
 
@@ -16,17 +16,48 @@ module tanlabs(
     // +-+-+
     // |1|3|
     // +-+-+
-    input [3:0] sfp_rx_los,
-    input [3:0] sfp_rx_p,
-    input [3:0] sfp_rx_n,
+    input wire [3:0] sfp_rx_los,
+    input wire [3:0] sfp_rx_p,
+    input wire [3:0] sfp_rx_n,
     output wire [3:0] sfp_tx_disable,
     output wire [3:0] sfp_tx_p,
     output wire [3:0] sfp_tx_n,
     output wire [7:0] sfp_led,  // 0 1  2 3  4 5  6 7
 
-    // unused.
-    input sfp_sda,
-    input sfp_scl
+    input wire clk_50M,              //50MHz 时钟输入
+    input wire clk_11M0592,          //11.0592MHz 时钟输入（备用，可不用）
+    input wire clock_btn,            //BTN5手动时钟按钮开关，带消抖电路，按下时为1
+    input wire reset_btn,            //BTN6手动复位按钮开关，带消抖电路，按下时为1
+    input wire[3:0] touch_btn,       //BTN1~BTN4，按钮开关，按下时为1
+    input wire[31:0] dip_sw,         //32位拨码开关，拨到“ON”时为1
+    output wire[15:0] leds,          //16位LED，输出时1点亮
+    output wire[7:0] dpy0,           //数码管低位信号，包括小数点，输出1点亮
+    output wire[7:0] dpy1,           //数码管高位信号，包括小数点，输出1点亮
+    output wire uart_rdn,            //读串口信号，低有效
+    output wire uart_wrn,            //写串口信号，低有效
+    input wire uart_dataready,       //串口数据准备好
+    input wire uart_tbre,            //发送数据标志
+    input wire uart_tsre,            //数据发送完毕标志
+    inout wire[31:0] base_ram_data,  //BaseRAM数据，低8位与CPLD串口控制器共享
+    output wire[19:0] base_ram_addr, //BaseRAM地址
+    output wire[3:0] base_ram_be_n,  //BaseRAM字节使能，低有效。如果不使用字节使能，请保持为0
+    output wire base_ram_ce_n,       //BaseRAM片选，低有效
+    output wire base_ram_oe_n,       //BaseRAM读使能，低有效
+    output wire base_ram_we_n,       //BaseRAM写使能，低有效
+    inout wire[31:0] ext_ram_data,   //ExtRAM数据
+    output wire[19:0] ext_ram_addr,  //ExtRAM地址
+    output wire[3:0] ext_ram_be_n,   //ExtRAM字节使能，低有效。如果不使用字节使能，请保持为0
+    output wire ext_ram_ce_n,        //ExtRAM片选，低有效
+    output wire ext_ram_oe_n,        //ExtRAM读使能，低有效
+    output wire ext_ram_we_n,        //ExtRAM写使能，低有效
+    output wire [22:0]flash_a,       //Flash地址，a0仅在8bit模式有效，16bit模式无意义
+    inout wire [15:0]flash_d,        //Flash数据
+    output wire flash_rp_n,          //Flash复位信号，低有效
+    output wire flash_vpen,          //Flash写保护信号，低电平时不能擦除、烧写
+    output wire flash_ce_n,          //Flash片选信号，低有效
+    output wire flash_oe_n,          //Flash读使能信号，低有效
+    output wire flash_we_n,          //Flash写使能信号，低有效
+    output wire flash_byte_n         //Flash 8bit模式选择，低有效。在使用flash的16位模式时请设为1
 );
 
     wire [4:0] debug_ingress_interconnect_ready;
@@ -572,4 +603,102 @@ module tanlabs(
     );
 
     // README: Your code here.
+
+    wire[31:0] ram_data_ram, ram_data_cpu, ram_addr;
+    wire[3:0] ram_be;
+    wire ram_we, ram_oe, ram_req, ram_ready;
+    
+    // PLL分频示例
+    wire locked, clk_1, clk_2, clk_3;
+    pll_example clock_gen
+    (
+    // Clock in ports
+    .clk_in1(clk_50M),  // 外部时钟输入
+    // Clock out ports
+    .clk_out1(clk_1), // 时钟输出1，频率在IP配置界面中设置
+    .clk_out2(clk_2), // 时钟输出2，频率在IP配置界面中设置
+    .clk_out3(clk_3), // 时钟输出3，频率在IP配置界面中设置
+    // Status and control signals
+    .reset(reset_btn), // PLL复位输入
+    .locked(locked)    // PLL锁定指示输出，"1"表示时钟稳定，
+    // 后级电路复位信号应当由它生成（见下）
+    );
+    
+    reg reset_of_1;
+    always @(posedge clk_1, negedge locked) begin
+        if (~locked) reset_of_1 <= 1'b1;
+        else reset_of_1 <= 1'b0;
+    end
+
+    reg reset_of_2;
+    always @(posedge clk_2, negedge locked) begin
+        if (~locked) reset_of_2 <= 1'b1;
+        else reset_of_2 <= 1'b0;
+    end
+
+    reg reset_of_3;
+    always @(posedge clk_3, negedge locked) begin
+        if (~locked) reset_of_3 <= 1'b1;
+        else reset_of_3 <= 1'b0;
+    end
+
+    wire rst = reset_of_2;
+    wire clk = clk_2;
+
+    bus bus(
+    .clk(clk),
+    .rst(rst),
+    
+    .base_ram_data(base_ram_data),
+    .base_ram_addr(base_ram_addr),
+    .base_ram_be_n(base_ram_be_n),
+    .base_ram_we_n(base_ram_we_n),
+    .base_ram_oe_n(base_ram_oe_n),
+    .base_ram_ce_n(base_ram_ce_n),
+    
+    .ext_ram_data(ext_ram_data),
+    .ext_ram_addr(ext_ram_addr),
+    .ext_ram_be_n(ext_ram_be_n),
+    .ext_ram_we_n(ext_ram_we_n),
+    .ext_ram_oe_n(ext_ram_oe_n),
+    .ext_ram_ce_n(ext_ram_ce_n),
+    
+    .ram_data_cpu(ram_data_cpu),
+    .ram_data_ram(ram_data_ram),
+    .ram_addr_i(ram_addr),
+    .ram_be_i(ram_be),
+    .ram_oe_i(ram_oe),
+    .ram_we_i(ram_we),
+    .ram_req(ram_req),
+    .ram_ready(ram_ready),
+    
+    .uart_dataready(uart_dataready),
+    .uart_tsre(uart_tsre),
+    .uart_tbre(uart_tbre),
+    .uart_rdn(uart_rdn),
+    .uart_wrn(uart_wrn),
+
+    .flash_a(flash_a),
+    .flash_d(flash_d),
+    .flash_rp_n(flash_rp_n),
+    .flash_vpen(flash_vpen),
+    .flash_ce_n(flash_ce_n),
+    .flash_oe_n(flash_oe_n),
+    .flash_we_n(flash_we_n),
+    .flash_byte_n(flash_byte_n)
+    );
+    
+    
+    cpu cpu(
+    .clk(clk),
+    .rst(rst),
+    .ram_data_o(ram_data_cpu),
+    .ram_data_i(ram_data_ram),
+    .ram_addr_o(ram_addr),
+    .ram_be_o(ram_be),
+    .ram_we_o(ram_we),
+    .ram_oe_o(ram_oe),
+    .ram_req(ram_req),
+    .ram_ready(ram_ready)
+    );
 endmodule

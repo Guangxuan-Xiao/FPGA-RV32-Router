@@ -2,20 +2,20 @@
 `include "frame_datapath.vh"
 
 // Example Frame Data Path.
-module frame_datapath # (
-    parameter DATA_WIDTH = 64,
-    parameter ID_WIDTH = 3
+module frame_datapath #(
+    parameter ID_WIDTH = 3,
+    parameter DATA_WIDTH = 64
 )
 (
-    input eth_clk,
-    input reset,
+    input wire eth_clk,
+    input wire reset,
 
-    input [DATA_WIDTH - 1:0] s_data,
-    input [DATA_WIDTH / 8 - 1:0] s_keep,
-    input s_last,
-    input [DATA_WIDTH / 8 - 1:0] s_user,
-    input [ID_WIDTH - 1:0] s_id,
-    input s_valid,
+    input wire [DATA_WIDTH - 1:0] s_data,
+    input wire [DATA_WIDTH / 8 - 1:0] s_keep,
+    input wire s_last,
+    input wire [DATA_WIDTH / 8 - 1:0] s_user,
+    input wire [ID_WIDTH - 1:0] s_id,
+    input wire s_valid,
     output wire s_ready,
 
     output wire [DATA_WIDTH - 1:0] m_data,
@@ -24,7 +24,7 @@ module frame_datapath # (
     output wire [DATA_WIDTH / 8 - 1:0] m_user,
     output wire [ID_WIDTH - 1:0] m_dest,
     output wire m_valid,
-    input m_ready
+    input wire m_ready
 );
 
     frame_data in;
@@ -903,7 +903,7 @@ end
     reg [2:0] query_port_4;  
     frame_data s4;
     wire s4_ready;
-    assign test_mac = trg_mac_addr;
+//    assign test_mac = trg_mac_addr;
     assign s3_ready = s4_ready || !s3.valid;
     always @ (posedge eth_clk or posedge reset)
     begin

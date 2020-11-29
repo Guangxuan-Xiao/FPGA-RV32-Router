@@ -1,0 +1,88 @@
+// ID: Instruction Decode
+`define EXE_CAL_FUNC    7'b0110011 // for ADD SUB SLL SLT SLTU XOR SRL SRA OR AND
+`define EXE_ADD_FUNC    3'b000     // for ADD SUB
+`define EXE_SUB_FUNC    7'b0100000
+`define EXE_SLL_FUNC    3'b001
+`define EXE_SLT_FUNC    3'b010
+`define EXE_SLTU_FUNC   3'b011
+`define EXE_XOR_FUNC    3'b100
+`define EXE_SRL_FUNC    3'b101     // for SRL SRA
+`define EXE_SRA_FUNC    7'b0100000
+`define EXE_OR_FUNC     3'b110
+`define EXE_AND_FUNC    3'b111
+
+`define EXE_CALI_FUNC   7'b0010011 // for ADDI SLLI SLTI SLTIU XORI SRLI SRAI ORI ANDI
+`define EXE_ADDI_FUNC   3'b000
+`define EXE_SLLI_FUNC   3'b001
+`define EXE_SLTI_FUNC   3'b010
+`define EXE_SLTIU_FUNC  3'b011
+`define EXE_XORI_FUNC   3'b100
+`define EXE_SRLI_FUNC   3'b101     // for SRLI SRAI
+`define EXE_SRAI_FUNC   7'b0100000
+`define EXE_ORI_FUNC    3'b110
+`define EXE_ANDI_FUNC   3'b111
+
+`define EXE_LOAD_FUNC   7'b0000011 // for LB LH LW LBU LHU
+`define EXE_LB_FUNC     3'b000
+`define EXE_LH_FUNC     3'b001
+`define EXE_LW_FUNC     3'b010
+`define EXE_LBU_FUNC    3'b100
+`define EXE_LHU_FUNC    3'b101
+
+`define EXE_STORE_FUNC  7'b0100011 // for SB SH SW
+`define EXE_SB_FUNC     3'b000
+`define EXE_SH_FUNC     3'b001
+`define EXE_SW_FUNC     3'b010
+
+`define EXE_BRANCH_FUNC 7'b1100011 // for BEQ BNE BLT BGE BLTU BGEU
+`define EXE_BEQ_FUNC    3'b000
+`define EXE_BNE_FUNC    3'b001
+`define EXE_BLT_FUNC    3'b100
+`define EXE_BGE_FUNC    3'b101
+`define EXE_BLTU_FUNC   3'b110
+`define EXE_BGEU_FUNC   3'b111
+
+`define EXE_JAL_FUNC    7'b1101111
+`define EXE_JALR_FUNC   7'b1100111
+`define EXE_LUI_FUNC    7'b0110111
+`define EXE_AUIPC_FUNC  7'b0010111
+`define EXE_NOP_FUNC    7'b0000000
+
+// EX: EXecute
+// ALU Selection
+`define EXE_RES_NOP        3'b000
+`define EXE_RES_LOGIC      3'b001
+`define EXE_RES_SHIFT      3'b010
+`define EXE_RES_ARITHMETIC 3'b011
+`define EXE_RES_BRANCH     3'b100
+`define EXE_RES_RAM        3'b101
+`define EXE_RES_MOVE       3'b110
+
+// ALU Operation
+`define EXE_ADD_OP    8'b00000000 // EXE_RES_ARITHMETIC
+`define EXE_SUB_OP    8'b00000001 // EXE_RES_ARITHMETIC
+`define EXE_SLL_OP    8'b00000010 // EXE_RES_SHIFT
+`define EXE_SLT_OP    8'b00000011 // EXE_RES_LOGIC
+`define EXE_SLTU_OP   8'b00000100 // EXE_RES_LOGIC
+`define EXE_XOR_OP    8'b00000101 // EXE_RES_LOGIC
+`define EXE_SRL_OP    8'b00000110 // EXE_RES_SHIFT
+`define EXE_SRA_OP    8'b00000111 // EXE_RES_SHIFT
+`define EXE_OR_OP     8'b00001000 // EXE_RES_LOGIC
+`define EXE_AND_OP    8'b00001001 // EXE_RES_LOGIC
+
+`define EXE_LB_OP     8'b00001010 // EXE_RES_RAM
+`define EXE_LH_OP     8'b00001011 // EXE_RES_RAM
+`define EXE_LW_OP     8'b00001100 // EXE_RES_RAM
+`define EXE_LBU_OP    8'b00001101 // EXE_RES_RAM
+`define EXE_LHU_OP    8'b00001110 // EXE_RES_RAM
+
+`define EXE_SB_OP     8'b00001111 // EXE_RES_RAM
+`define EXE_SH_OP     8'b00010000 // EXE_RES_RAM
+`define EXE_SW_OP     8'b00010001 // EXE_RES_RAM
+
+`define EXE_BRANCH_OP 8'b00010010 // EXE_RES_BRANCH
+
+`define EXE_LUI_OP    8'b00010011 // EXE_RES_ARITHMETIC
+`define EXE_AUIPC_OP  8'b00010100 // EXE_RES_ARITHMETIC
+
+`define EXE_NOP_OP    8'b11111111 // EXE_RES_NOP

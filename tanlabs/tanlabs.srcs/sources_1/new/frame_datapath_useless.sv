@@ -5,14 +5,14 @@
 
 module frame_datapath_useless #(parameter DATA_WIDTH = 64,
                                 parameter ID_WIDTH = 3)
-                               (input eth_clk,
-                                input reset,
-                                input [DATA_WIDTH - 1:0] s_data,
-                                input [DATA_WIDTH / 8 - 1:0] s_keep,
-                                input s_last,
-                                input [DATA_WIDTH / 8 - 1:0] s_user,
-                                input [ID_WIDTH - 1:0] s_id,
-                                input s_valid,
+                               (input wire eth_clk,
+                                input wire reset,
+                                input wire [DATA_WIDTH - 1:0] s_data,
+                                input wire [DATA_WIDTH / 8 - 1:0] s_keep,
+                                input wire s_last,
+                                input wire [DATA_WIDTH / 8 - 1:0] s_user,
+                                input wire [ID_WIDTH - 1:0] s_id,
+                                input wire s_valid,
                                 output wire s_ready,
                                 output wire [DATA_WIDTH - 1:0] m_data,
                                 output wire [DATA_WIDTH / 8 - 1:0] m_keep,
@@ -20,7 +20,7 @@ module frame_datapath_useless #(parameter DATA_WIDTH = 64,
                                 output wire [DATA_WIDTH / 8 - 1:0] m_user,
                                 output wire [ID_WIDTH - 1:0] m_dest,
                                 output wire m_valid,
-                                input m_ready);
+                                input wire m_ready);
     
     `include "frame_datapath.vh"
     
