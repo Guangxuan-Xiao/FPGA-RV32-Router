@@ -1,3 +1,9 @@
+`ifndef FRAME_DATAPATH_VH
+`define FRAME_DATAPATH_VH
+
+localparam DATA_WIDTH = 64;
+localparam ID_WIDTH = 3;
+
 // 'w' means wide.
 localparam DATAW_WIDTH        = 8 * 48;
 localparam CACHE_ADDR_WIDTH   = 4;
@@ -99,3 +105,20 @@ function [15:0] ip4_update_checksum;
         ip4_update_checksum = 0;
     end
 endfunction
+
+localparam TRIE_ADDR_WIDTH    = 13;
+localparam NEXTHOP_ADDR_WIDTH = 6;
+
+typedef struct packed
+{
+logic [2:0] port;
+logic [31:0] ip;
+} nexthop_t;
+
+typedef struct packed
+{
+logic[TRIE_ADDR_WIDTH-1:0] lc_addr;
+logic[TRIE_ADDR_WIDTH-1:0] rc_addr;
+logic[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr;
+} trie_node_t;
+`endif

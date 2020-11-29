@@ -1,12 +1,5 @@
 `timescale 1ns/1ps
-typedef struct packed
-{
-logic[TRIE_ADDR_WIDTH-1:0] lc_addr;
-logic[TRIE_ADDR_WIDTH-1:0] rc_addr;
-logic[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr;
-} trie_node_t;
-
-
+`include "frame_datapath.vh"
 module trie_layer(input wire clka,
                   input wire clkb,
                   input wire rst,
@@ -14,36 +7,35 @@ module trie_layer(input wire clka,
                   input wire[31:0] i_ip,
                   input wire i_ready,
                   input wire i_valid,
-                  input wire[TRIE_ADDR_WIDTH-1:0] current_node_addr,
+                  input wire[TRIE_ADDR_WIDTH-1:0] current_node_addr_a,
                   input wire[NEXTHOP_ADDR_WIDTH-1:0] i_nexthop_addr,
                   output reg[TRIE_ADDR_WIDTH-1:0] next_node_addr,
                   output reg[NEXTHOP_ADDR_WIDTH-1:0] o_nexthop_addr,
                   output reg[31:0] o_ip,
                   output reg o_valid,
-                  output reg o_ready);
+                  output reg o_ready,
+                  input wire web,
+                  input wire[TRIE_ADDR_WIDTH-1:0] node_addr_b,
+                  input trie_node_t node_dinb,
+                  output trie_node_t node_doutb
+                  );
     // A is for hardware reading.
     // B is for software manipulation, which has not been implemented yet.
-    reg ena, wea;
-    always_comb begin
-        ena = 1; // currently we only use hardware side interface.
-        wea = 0; // hardware manipulation is read-only.
-    end
-    
     trie_node_t current_node_data;
     
     blk_mem_gen_2 trie_bram (
     .clka(clka),    // input wire clka
-    .ena(ena),      // input wire ena
-    .wea(wea),      // input wire [0 : 0] wea, which is read-only.
-    .addra(current_node_addr),  // input wire [13 : 0] addra
-    // .dina(dina),     // input wire [33 : 0] dina
-    .douta(current_node_data)  // output wire [31 : 0] douta
-    // .clkb(clkb),    // input wire clkb
-    // .enb(enb),      // input wire enb
-    // .web(web),      // input wire [0 : 0] web
-    // .addrb(addrb),  // input wire [13 : 0] addrb
-    // .dinb(dinb),    // input wire [33 : 0] dinb
-    // .doutb(doutb)  // output wire [33 : 0] doutb
+    .ena(1),      // input wire ena
+    .wea(0),      // input wire [0 : 0] wea, which is read-only.
+    .addra(current_node_addr_a),  // input wire [13 : 0] addra
+    // .dina(dina),     // input wire [31 : 0] dina
+    .douta(current_node_data),  // output wire [31 : 0] douta
+    .clkb(clkb),    // input wire clkb
+    .enb(1),      // input wire enb
+    .web(web),      // input wire [0 : 0] web
+    .addrb(node_addr_b),  // input wire [13 : 0] addrb
+    .dinb(node_dinb),    // input wire [31 : 0] dinb
+    .doutb(node_doutb)  // output wire [31 : 0] doutb
     );
     
     // Get current node information
@@ -62,7 +54,6 @@ module trie_layer(input wire clka,
             ip_bit_old         <= 'b0;
             i_valid_old        <= 'b0;
             i_nexthop_addr_old <= 'b0;
-            
         end
         else if (i_ready)begin
             o_ready            <= 'b1;
@@ -79,6 +70,7 @@ module trie_layer(input wire clka,
             i_nexthop_addr_old <= 'b0;
         end
     end
+
     always_comb begin
         if (ip_bit_old) begin
             next_node_addr = current_node_data.rc_addr;

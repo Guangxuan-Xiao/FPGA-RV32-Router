@@ -1,12 +1,8 @@
 `timescale 1ns / 1ps
-typedef struct packed
-{
-logic [2:0] port;
-logic [31:0] ip;
-} nexthop_t;
+`include "frame_datapath.vh"
+
 // Example Frame Data Path.
-module frame_datapath
-#(
+module frame_datapath # (
     parameter DATA_WIDTH = 64,
     parameter ID_WIDTH = 3
 )
@@ -30,8 +26,6 @@ module frame_datapath
     output wire m_valid,
     input m_ready
 );
-
-    `include "frame_datapath.vh"
 
     frame_data in;
     wire in_ready;

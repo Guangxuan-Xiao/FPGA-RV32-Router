@@ -1,14 +1,5 @@
 `timescale 1ns/1ps
-
-localparam TRIE_ADDR_WIDTH    = 13;
-localparam NEXTHOP_ADDR_WIDTH = 6;
-//typedef struct packed
-//{
-//logic [2:0] port;
-//logic [31:0] ip;
-//} nexthop_t;
-
-
+`include "frame_datapath.vh"
 module route_trie (input wire clka,
                    input wire clkb,
                    input wire rst,
@@ -16,7 +7,16 @@ module route_trie (input wire clka,
                    input wire [31:0] i_ip,
                    output nexthop_t o_nexthop,
                    output reg o_valid,
-                   output reg o_ready);
+                   output reg o_ready,
+                   input wire[32:0] trie_web,
+                   input wire nexthop_web,
+                   input wire[TRIE_ADDR_WIDTH-1:0] node_addr_b[32:0],
+                   input trie_node_t node_dinb[32:0],
+                   output trie_node_t node_doutb[32:0],
+                   input wire[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr_b,
+                   input nexthop_t nexthop_dinb,
+                   output nexthop_t nexthop_doutb
+                   );
     reg [TRIE_ADDR_WIDTH-1:0] next_node_addr[32:0];
     reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr[32:0];
     reg [32:0] layer_o_valid;
@@ -31,13 +31,17 @@ module route_trie (input wire clka,
     .i_ip(i_ip),
     .i_ready,
     .i_valid(0),
-    .current_node_addr(1),
+    .current_node_addr_a(1),
     .i_nexthop_addr(0),
     .next_node_addr(next_node_addr[0]),
     .o_nexthop_addr(nexthop_addr[0]),
     .o_ip(ip_t[0]),
     .o_valid(layer_o_valid[0]),
-    .o_ready(layer_o_ready[0])
+    .o_ready(layer_o_ready[0]),
+    .web(trie_web[0]),
+    .node_addr_b(node_addr_b[0]),
+    .node_dinb(node_dinb[0]),
+    .node_doutb(node_doutb[0])
     );
     
     genvar i;
@@ -51,13 +55,17 @@ module route_trie (input wire clka,
         .i_ip(ip_t[i-1]),
         .i_ready(layer_o_ready[i-1]),
         .i_valid(layer_o_valid[i-1]),
-        .current_node_addr(next_node_addr[i-1]),
+        .current_node_addr_a(next_node_addr[i-1]),
         .i_nexthop_addr(nexthop_addr[i-1]),
         .next_node_addr(next_node_addr[i]),
         .o_nexthop_addr(nexthop_addr[i]),
         .o_ip(ip_t[i]),
         .o_valid(layer_o_valid[i]),
-        .o_ready(layer_o_ready[i])
+        .o_ready(layer_o_ready[i]),
+        .web(trie_web[i]),
+        .node_addr_b(node_addr_b[i]),
+        .node_dinb(node_dinb[i]),
+        .node_doutb(node_doutb[i])
         );
     end
     endgenerate
@@ -73,24 +81,18 @@ module route_trie (input wire clka,
         end
     end
     
-    
-    reg ena, wea;
-    always_comb begin
-        ena = 1; // currently we only use hardware side interface.
-        wea = 0; // hardware manipulation is read-only.
-    end
     blk_mem_gen_1 nexthop_bram(
     .clka,    // input wire clka
-    .ena,      // input wire ena
-    .wea,      // input wire [0 : 0] wea
-    .addra(nexthop_addr[32]),  // input wire [7 : 0] addra
+    .ena(1),      // input wire ena
+    .wea(0),      // input wire [0 : 0] wea
+    .addra(nexthop_addr[32]),  // input wire [5 : 0] addra
     // .dina(dina),    // input wire [34 : 0] dina
-    .douta(o_nexthop)  //, output wire [34 : 0] douta
-    // .clkb(clkb),    // input wire clkb
-    // .enb(enb),      // input wire enb
-    // .web(web),      // input wire [0 : 0] web
-    // .addrb(addrb),  // input wire [7 : 0] addrb
-    // .dinb(dinb),    // input wire [34 : 0] dinb
-    // .doutb(doutb)  // output wire [34 : 0] doutb
+    .douta(o_nexthop),  //, output wire [34 : 0] douta
+    .clkb(clkb),    // input wire clkb
+    .enb(1),      // input wire enb
+    .web(nexthop_web),      // input wire [0 : 0] web
+    .addrb(nexthop_addr_b),  // input wire [5 : 0] addrb
+    .dinb(nexthop_dinb),    // input wire [34 : 0] dinb
+    .doutb(nexthop_doutb)  // output wire [34 : 0] doutb
     );
 endmodule
