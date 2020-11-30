@@ -81,7 +81,7 @@ module bus(input wire clk,
     // E.g.2
     // | 0x20200018-0x2020001B | IP[3] |
     // | 0x2020001C-0x2020001F | {24'b0, port[3]} |
-    
+
     localparam NEXTHOP_ADDR_START = 32'h20200000;
     localparam NEXTHOP_ADDR_END   = 32'h202001FF;
 
@@ -107,6 +107,12 @@ module bus(input wire clk,
     trie_node_t trie_data_reg;
     wire [TRIE_ADDR_WIDTH-1:0] trie_phy_addr = ram_addr_i[TRIE_ADDR_WIDTH+1:2];
 
+    wire nexthop_req = ram_req && (ram_addr_i >= NEXTHOP_ADDR_START) && (ram_addr_i <= NEXTHOP_ADDR_END);
+    wire nexthop_ip_req = nexthop_req && (~ram_addr_i[2]);
+    wire nexthop_port_req = nexthop_req && ram_addr_i[2];
+    wire [NEXTHOP_ADDR_WIDTH-1:0] nexthop_phy_addr = ram_addr_i[NEXTHOP_ADDR_WIDTH+2:3];
+    nexthop_t nexthop_data_reg;
+
     // set base ram data not zzz only on writing it.
     assign base_ram_data = (base_ram_req || uart_data_req) && ram_we_i ? base_ram_data_reg : 32'bz;
     assign base_ram_data_o = base_ram_data;
@@ -119,6 +125,7 @@ module bus(input wire clk,
         node_data_cpu[trie_layer_req] = trie_data_reg;
     end
 
+    assign nexthop_data_cpu = nexthop_data_reg;
 
     // SRAM State Machine
     typedef enum reg[1:0] { START, ACCESS, END } sram_state_t;
@@ -160,7 +167,7 @@ module bus(input wire clk,
     end
 
     assign ram_data_ram = ram_data_reg;
-    assign ram_ready = sram_ready | flash_ready | trie_req;
+    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req;
 
     // CPU Reading RAM control
     always_comb begin
@@ -178,6 +185,10 @@ module bus(input wire clk,
             ram_data_reg = {16'b0, flash_d};
         end else if (trie_req) begin
             ram_data_reg = node_data_router[trie_layer_req];
+        end else if (nexthop_port_req) begin
+            ram_data_reg = {24'b0, nexthop_data_router.port};
+        end else if (nexthop_ip_req) begin
+            ram_data_reg = nexthop_data_router.ip;
         end
         else begin
             ram_data_reg = 32'b0;
@@ -265,13 +276,28 @@ module bus(input wire clk,
         end
     end
 
+    // Trie writing control
     always_comb begin
         node_addr = '{default: 0};
         node_addr[trie_layer_req] = trie_phy_addr;
         trie_data_reg = ram_data_cpu;
         trie_web = '{default: 0};
-        if (trie_req) begin
-            trie_web[trie_layer_req] = {ram_we_i, ram_we_i, ram_we_i, ram_we_i} & ram_be_i;
+        if (trie_req & ram_we_i) begin
+            trie_web[trie_layer_req] = ram_be_i;
+        end
+    end
+
+    // Next-hop writing control
+    always_comb begin
+        nexthop_addr = nexthop_phy_addr;
+        nexthop_data_reg = 0;
+        nexthop_web = 0;
+        if (nexthop_ip_req & ram_we_i) begin
+            nexthop_web = 5'b01111 & {1'b0, ram_be_i};
+            nexthop_data_reg.ip = ram_data_cpu;
+        end else if (nexthop_port_req & ram_we_i) begin
+            nexthop_data_reg.port = ram_data_cpu[7:0];
+            nexthop_web = 5'b10000;
         end
     end
 endmodule
