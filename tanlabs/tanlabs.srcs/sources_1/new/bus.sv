@@ -69,17 +69,12 @@ module bus(input wire clk,
     // | 0x20100000-0x20107FFF | layer 32 |
     localparam TRIE_ADDR_START = 32'h20000000;
     localparam TRIE_ADDR_END   = 32'h20107FFF;
-    wire trie_req = ram_req && (ram_addr_i >= TRIE_ADDR_START) && (ram_addr_i <= TRIE_ADDR_END);
-    wire[5:0] trie_layer_req = ram_addr_i[TRIE_ADDR_WIDTH+7:TRIE_ADDR_WIDTH+2];
-    trie_node_t trie_data;
-    wire [TRIE_ADDR_WIDTH-1:0] trie_phy_addr = ram_addr_i[TRIE_ADDR_WIDTH+1:2];
 
     wire base_ram_req            = ram_req && (ram_addr_i >= BASE_ADDR_START) && (ram_addr_i <= BASE_ADDR_END);
     wire ext_ram_req             = ram_req && (ram_addr_i >= EXT_ADDR_START) && (ram_addr_i <= EXT_ADDR_END);
     wire uart_state_req = ram_req && ram_addr_i == UART_CTRL_ADDRESS;
     wire uart_data_req  = ram_req && ram_addr_i == UART_DATA_ADDRESS;
     wire sram_req = base_ram_req || ext_ram_req || uart_state_req || uart_data_req;
-
     wire flash_req = ram_req && ram_addr_i >= FLASH_ADDR_START && ram_addr_i <= FLASH_ADDR_END;
 
     reg[31:0] base_ram_data_reg, ext_ram_data_reg, ram_data_reg;
@@ -92,12 +87,22 @@ module bus(input wire clk,
     
     reg[31:0] uart_status1, uart_status2;
     
+    wire trie_req = ram_req && (ram_addr_i >= TRIE_ADDR_START) && (ram_addr_i <= TRIE_ADDR_END);
+    wire[5:0] trie_layer_req = ram_addr_i[TRIE_ADDR_WIDTH+7:TRIE_ADDR_WIDTH+2];
+    trie_node_t trie_data_reg;
+    wire [TRIE_ADDR_WIDTH-1:0] trie_phy_addr = ram_addr_i[TRIE_ADDR_WIDTH+1:2];
+
     // set base ram data not zzz only on writing it.
     assign base_ram_data = (base_ram_req || uart_data_req) && ram_we_i ? base_ram_data_reg : 32'bz;
     assign base_ram_data_o = base_ram_data;
     assign ext_ram_data = (ext_ram_req && ram_we_i) ? ext_ram_data_reg : 32'hz;
     assign ext_ram_data_o = ext_ram_data;
     assign flash_d = (flash_req && ram_we_i) ? flash_data_reg : 16'hz;
+    
+    always_comb begin
+        node_data_cpu = '{default:32'hz};
+        node_data_cpu[trie_layer_req] = trie_data_reg;
+    end
 
 
     // SRAM State Machine
@@ -140,7 +145,7 @@ module bus(input wire clk,
     end
 
     assign ram_data_ram = ram_data_reg;
-    assign ram_ready = sram_ready | flash_ready;
+    assign ram_ready = sram_ready | flash_ready | trie_req;
 
     // CPU Reading RAM control
     always_comb begin
@@ -157,7 +162,7 @@ module bus(input wire clk,
         end else if (flash_req) begin
             ram_data_reg = {16'b0, flash_d};
         end else if (trie_req) begin
-            ram_data_reg = node_doutb[trie_layer_req];
+            ram_data_reg = node_data_router[trie_layer_req];
         end
         else begin
             ram_data_reg = 32'b0;
@@ -246,6 +251,12 @@ module bus(input wire clk,
     end
 
     always_comb begin
-        
+        node_addr = '{default: 0};
+        node_addr[trie_layer_req] = trie_phy_addr;
+        trie_data_reg = ram_data_cpu;
+        trie_web = '{default: 0};
+        if (trie_req) begin
+            trie_web[trie_layer_req] = {ram_we_i, ram_we_i, ram_we_i, ram_we_i} & ram_be_i;
+        end
     end
 endmodule
