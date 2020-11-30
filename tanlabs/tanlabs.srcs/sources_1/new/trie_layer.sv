@@ -14,7 +14,7 @@ module trie_layer(input wire clka,
                   output reg[31:0] o_ip,
                   output reg o_valid,
                   output reg o_ready,
-                  input wire web,
+                  input wire[3:0] web,
                   input wire[TRIE_ADDR_WIDTH-1:0] node_addr_b,
                   input trie_node_t node_dinb,
                   output trie_node_t node_doutb
@@ -27,13 +27,13 @@ module trie_layer(input wire clka,
     .clka(clka),    // input wire clka
     .ena(1),      // input wire ena
     .wea(0),      // input wire [0 : 0] wea, which is read-only.
-    .addra(current_node_addr_a),  // input wire [13 : 0] addra
+    .addra(current_node_addr_a),  // input wire [12 : 0] addra
     // .dina(dina),     // input wire [31 : 0] dina
     .douta(current_node_data),  // output wire [31 : 0] douta
     .clkb(clkb),    // input wire clkb
     .enb(1),      // input wire enb
-    .web(web),      // input wire [0 : 0] web
-    .addrb(node_addr_b),  // input wire [13 : 0] addrb
+    .web(web),      // input wire [3 : 0] web
+    .addrb(node_addr_b),  // input wire [12 : 0] addrb
     .dinb(node_dinb),    // input wire [31 : 0] dinb
     .doutb(node_doutb)  // output wire [31 : 0] doutb
     );

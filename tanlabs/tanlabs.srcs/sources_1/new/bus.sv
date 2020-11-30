@@ -35,14 +35,14 @@ module bus(input wire clk,
     output reg flash_oe_n,         // Flash读使能信号，低有效
     output reg flash_we_n,         // Flash写使能信号，低有效
     output reg flash_byte_n,       // Flash 8bit模式选择，低有效。在使用flash的16位模式时请设为1
-    output reg [32:0] trie_web,
-    output reg nexthop_web,
-    output reg [TRIE_ADDR_WIDTH-1:0] node_addr_b[32:0],
-    output trie_node_t node_dinb[32:0],
-    input trie_node_t node_doutb[32:0],
-    output reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr_b,
-    output nexthop_t nexthop_dinb,
-    input nexthop_t nexthop_doutb
+    output reg[3:0] trie_web[32:0],
+    output reg [4:0] nexthop_web,
+    output reg [TRIE_ADDR_WIDTH-1:0] node_addr[32:0],
+    output trie_node_t node_data_cpu[32:0],
+    input trie_node_t node_data_router[32:0],
+    output reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr,
+    output nexthop_t nexthop_data_cpu,
+    input nexthop_t nexthop_data_router
     );
     // | 0x80000000-0x800FFFFF | 监控程序代码 |
     // | 0x80100000-0x803FFFFF | 用户程序代码 |
@@ -60,6 +60,20 @@ module bus(input wire clk,
     localparam FLASH_ADDR_START = 32'h40000000;
     localparam FLASH_ADDR_END = 32'h407FFFFF;
     
+    // Trie BRAM Address
+    // | 0x20000000-0x20007FFF | layer 0 |
+    // | 0x20008000-0x2000FFFF | layer 1 |
+    // | 0x20010000-0x20017FFF | layer 2 |
+    // | 0x20018000-0x2001FFFF | layer 3 |
+    // ...
+    // | 0x20100000-0x20107FFF | layer 32 |
+    localparam TRIE_ADDR_START = 32'h20000000;
+    localparam TRIE_ADDR_END   = 32'h20107FFF;
+    wire trie_req = ram_req && (ram_addr_i >= TRIE_ADDR_START) && (ram_addr_i <= TRIE_ADDR_END);
+    wire[5:0] trie_layer_req = ram_addr_i[TRIE_ADDR_WIDTH+7:TRIE_ADDR_WIDTH+2];
+    trie_node_t trie_data;
+    wire [TRIE_ADDR_WIDTH-1:0] trie_phy_addr = ram_addr_i[TRIE_ADDR_WIDTH+1:2];
+
     wire base_ram_req            = ram_req && (ram_addr_i >= BASE_ADDR_START) && (ram_addr_i <= BASE_ADDR_END);
     wire ext_ram_req             = ram_req && (ram_addr_i >= EXT_ADDR_START) && (ram_addr_i <= EXT_ADDR_END);
     wire uart_state_req = ram_req && ram_addr_i == UART_CTRL_ADDRESS;
@@ -92,11 +106,6 @@ module bus(input wire clk,
     reg sram_we;
     wire sram_ready = ram_req & sram_state == END;
     
-    // Routing Table Controller
-    // route_ctrl route_ctrl(
-    //     .*
-    // );
-
     always_ff @(posedge clk, posedge rst) begin
         if (rst || !sram_req) begin
             sram_state <= START;
@@ -147,6 +156,8 @@ module bus(input wire clk,
             ram_data_reg = uart_status2;
         end else if (flash_req) begin
             ram_data_reg = {16'b0, flash_d};
+        end else if (trie_req) begin
+            ram_data_reg = node_doutb[trie_layer_req];
         end
         else begin
             ram_data_reg = 32'b0;
@@ -232,5 +243,9 @@ module bus(input wire clk,
             flash_oe_n = 1'b1;
             flash_we_n = 1'b1;
         end
+    end
+
+    always_comb begin
+        
     end
 endmodule

@@ -453,14 +453,14 @@ module tanlabs(
     wire dp_tx_valid;
 
     // README: Instantiate your datapath.
-    wire[32:0] trie_web;
-    wire nexthop_web;
-    wire[TRIE_ADDR_WIDTH-1:0] node_addr_b[32:0];
-    trie_node_t node_dinb[32:0];
-    trie_node_t node_doutb[32:0];
-    wire[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr_b;
-    nexthop_t nexthop_dinb;
-    nexthop_t nexthop_doutb;
+    wire[3:0] trie_web[32:0];
+    wire[4:0] nexthop_web;
+    wire[TRIE_ADDR_WIDTH-1:0] node_addr[32:0];
+    trie_node_t node_data_cpu[32:0];
+    trie_node_t node_data_router[32:0];
+    wire[NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr;
+    nexthop_t nexthop_data_cpu;
+    nexthop_t nexthop_data_router;
     frame_datapath
     #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -487,12 +487,12 @@ module tanlabs(
         .m_ready(1'b1),
         .trie_web,
         .nexthop_web,
-        .node_addr_b,
-        .node_dinb,
-        .node_doutb,
-        .nexthop_addr_b,
-        .nexthop_dinb,
-        .nexthop_doutb
+        .node_addr_b(node_addr),
+        .node_dinb(node_data_cpu),
+        .node_doutb(node_data_router),
+        .nexthop_addr_b(nexthop_addr),
+        .nexthop_dinb(nexthop_data_cpu),
+        .nexthop_doutb(nexthop_data_router)
         // README: You will need to add some signals for your CPU to control the datapath,
         // or access the forwarding table or the address resolution cache.
     );
@@ -666,12 +666,12 @@ module tanlabs(
     .flash_byte_n(flash_byte_n),
     .trie_web,
     .nexthop_web,
-    .node_addr_b,
-    .node_dinb,
-    .node_doutb,
-    .nexthop_addr_b,
-    .nexthop_dinb,
-    .nexthop_doutb
+    .node_addr(node_addr),
+    .node_data_cpu(node_data_cpu),
+    .node_data_router(node_data_router),
+    .nexthop_addr(nexthop_addr),
+    .nexthop_data_cpu(nexthop_data_cpu),
+    .nexthop_data_router(nexthop_data_router)
     );
     
     

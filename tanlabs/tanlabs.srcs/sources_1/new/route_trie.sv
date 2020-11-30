@@ -8,8 +8,8 @@ module route_trie (input wire clka,
                    output nexthop_t o_nexthop,
                    output reg o_valid,
                    output reg o_ready,
-                   input wire[32:0] trie_web,
-                   input wire nexthop_web,
+                   input wire[3:0] trie_web[32:0],
+                   input wire[4:0] nexthop_web,
                    input wire[TRIE_ADDR_WIDTH-1:0] node_addr_b[32:0],
                    input trie_node_t node_dinb[32:0],
                    output trie_node_t node_doutb[32:0],
@@ -84,15 +84,15 @@ module route_trie (input wire clka,
     blk_mem_gen_1 nexthop_bram(
     .clka,    // input wire clka
     .ena(1),      // input wire ena
-    .wea(0),      // input wire [0 : 0] wea
+    .wea(0),      // input wire [4 : 0] wea
     .addra(nexthop_addr[32]),  // input wire [5 : 0] addra
-    // .dina(dina),    // input wire [34 : 0] dina
-    .douta(o_nexthop),  //, output wire [34 : 0] douta
+    // .dina(dina),    // input wire [39 : 0] dina
+    .douta(o_nexthop),  //, output wire [39 : 0] douta
     .clkb(clkb),    // input wire clkb
     .enb(1),      // input wire enb
-    .web(nexthop_web),      // input wire [0 : 0] web
+    .web(nexthop_web),      // input wire [4 : 0] web
     .addrb(nexthop_addr_b),  // input wire [5 : 0] addrb
-    .dinb(nexthop_dinb),    // input wire [34 : 0] dinb
-    .doutb(nexthop_doutb)  // output wire [34 : 0] doutb
+    .dinb(nexthop_dinb),    // input wire [39 : 0] dinb
+    .doutb(nexthop_doutb)  // output wire [39 : 0] doutb
     );
 endmodule
