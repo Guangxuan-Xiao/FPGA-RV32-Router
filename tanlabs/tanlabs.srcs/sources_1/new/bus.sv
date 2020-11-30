@@ -70,6 +70,21 @@ module bus(input wire clk,
     localparam TRIE_ADDR_START = 32'h20000000;
     localparam TRIE_ADDR_END   = 32'h20107FFF;
 
+    // Nexthop BRAM Address
+    // | 0x20200000-0x202001FF | Next-hop BRAM Data |
+    // 第2位地址（Addr[2]）为0（第偶数个字）表示IP地址
+    // 第2位地址（Addr[2]）为1（第奇数个字）表示Port（低对齐）。
+    // 第3-8位地址（n = Addr[8:3]）表示第n个IP地址或Port。
+    // E.g.1
+    // | 0x20200000-0x20200003 | IP[0] |
+    // | 0x20200004-0x20200007 | {24'b0, port[0]} |
+    // E.g.2
+    // | 0x20200018-0x2020001B | IP[3] |
+    // | 0x2020001C-0x2020001F | {24'b0, port[3]} |
+    
+    localparam NEXTHOP_ADDR_START = 32'h20200000;
+    localparam NEXTHOP_ADDR_END   = 32'h202001FF;
+
     wire base_ram_req            = ram_req && (ram_addr_i >= BASE_ADDR_START) && (ram_addr_i <= BASE_ADDR_END);
     wire ext_ram_req             = ram_req && (ram_addr_i >= EXT_ADDR_START) && (ram_addr_i <= EXT_ADDR_END);
     wire uart_state_req = ram_req && ram_addr_i == UART_CTRL_ADDRESS;
