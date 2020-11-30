@@ -59,8 +59,7 @@ module bus(input wire clk,
     localparam UART_CTRL_ADDRESS = 32'h10000005;
     localparam FLASH_ADDR_START = 32'h40000000;
     localparam FLASH_ADDR_END = 32'h407FFFFF;
-
-
+    
     wire base_ram_req            = ram_req && (ram_addr_i >= BASE_ADDR_START) && (ram_addr_i <= BASE_ADDR_END);
     wire ext_ram_req             = ram_req && (ram_addr_i >= EXT_ADDR_START) && (ram_addr_i <= EXT_ADDR_END);
     wire uart_state_req = ram_req && ram_addr_i == UART_CTRL_ADDRESS;
@@ -93,6 +92,11 @@ module bus(input wire clk,
     reg sram_we;
     wire sram_ready = ram_req & sram_state == END;
     
+    // Routing Table Controller
+    // route_ctrl route_ctrl(
+    //     .*
+    // );
+
     always_ff @(posedge clk, posedge rst) begin
         if (rst || !sram_req) begin
             sram_state <= START;

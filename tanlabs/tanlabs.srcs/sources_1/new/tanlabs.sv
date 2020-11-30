@@ -622,47 +622,10 @@ module tanlabs(
     wire[31:0] ram_data_ram, ram_data_cpu, ram_addr;
     wire[3:0] ram_be;
     wire ram_we, ram_oe, ram_req, ram_ready;
-    
-    // PLL分频示例
-    wire locked2, clk_1, clk_2, clk_3;
-    pll_example clock_gen
-    (
-    // Clock in ports
-    .clk_in1(clk_50M),  // 外部时钟输入
-    // Clock out ports
-    .clk_out1(clk_1), // 时钟输出1，频率在IP配置界面中设置
-    .clk_out2(clk_2), // 时钟输出2，频率在IP配置界面中设置
-    .clk_out3(clk_3), // 时钟输出3，频率在IP配置界面中设置
-    // Status and control signals
-    .reset(reset_btn), // PLL复位输入
-    .locked(locked2)    // PLL锁定指示输出，"1"表示时钟稳定，
-    // 后级电路复位信号应当由它生成（见下）
-    );
-    
-    reg reset_of_1;
-    always @(posedge clk_1, negedge locked2) begin
-        if (~locked2) reset_of_1 <= 1'b1;
-        else reset_of_1 <= 1'b0;
-    end
-
-    reg reset_of_2;
-    always @(posedge clk_2, negedge locked2) begin
-        if (~locked2) reset_of_2 <= 1'b1;
-        else reset_of_2 <= 1'b0;
-    end
-
-    reg reset_of_3;
-    always @(posedge clk_3, negedge locked2) begin
-        if (~locked2) reset_of_3 <= 1'b1;
-        else reset_of_3 <= 1'b0;
-    end
-
-    wire rst = reset_of_2;
-    wire clk = clk_2;
 
     bus bus(
-    .clk(clk),
-    .rst(rst),
+    .clk(core_clk),
+    .rst(reset_core),
     
     .base_ram_data(base_ram_data),
     .base_ram_addr(base_ram_addr),
@@ -713,8 +676,8 @@ module tanlabs(
     
     
     cpu cpu(
-    .clk(clk),
-    .rst(rst),
+    .clk(core_clk),
+    .rst(reset_core),
     .ram_data_o(ram_data_cpu),
     .ram_data_i(ram_data_ram),
     .ram_addr_o(ram_addr),
