@@ -29,9 +29,6 @@ reg[31:0] moveres, logicout, shiftout, arithout, ramout;
 assign excepttype_o = excepttype_i;
 assign current_inst_address_o = current_inst_address_i;
 
-wire signed [31:0] reg1_i_signed;
-assign reg1_i_signed = reg2_i;
-
 always @(*) begin
     case (aluop_i)
         `EXE_ADD_OP: begin
@@ -61,7 +58,7 @@ always @(*) begin
             shiftout <= reg1_i >> reg2_i[4:0];
         end
         `EXE_SRA_OP: begin
-            shiftout <= reg1_i_signed >>> reg2_i[4:0];
+            shiftout <= ($signed(reg1_i)) >>> reg2_i[4:0];
         end
         default: begin
             shiftout <= 0;

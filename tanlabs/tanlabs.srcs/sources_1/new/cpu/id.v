@@ -281,24 +281,28 @@ module id(input wire rst,
                         instvalid   = INSTVALID;
                     end
                     `EXE_SRLI_FUNC: begin
-                        wreg_o      = 1;
-                        aluop_o     = `EXE_SRL_OP;
-                        alusel_o    = `EXE_RES_SHIFT;
-                        reg1_read_o = 1;
-                        reg2_read_o = 0;
-                        imm_reg     = imm_i_shamt;
-                        wd_o        = ins_rd;
-                        instvalid   = INSTVALID;
-                    end
-                    `EXE_SRAI_FUNC: begin
-                        wreg_o      = 1;
-                        aluop_o     = `EXE_SRA_OP;
-                        alusel_o    = `EXE_RES_SHIFT;
-                        reg1_read_o = 1;
-                        reg2_read_o = 0;
-                        imm_reg     = imm_i_shamt;
-                        wd_o        = ins_rd;
-                        instvalid   = INSTVALID;
+                        case (ins_funct7)
+                            `EXE_SRAI_FUNC: begin
+                                wreg_o      = 1;
+                                aluop_o     = `EXE_SRA_OP;
+                                alusel_o    = `EXE_RES_SHIFT;
+                                reg1_read_o = 1;
+                                reg2_read_o = 0;
+                                imm_reg     = imm_i_shamt;
+                                wd_o        = ins_rd;
+                                instvalid   = INSTVALID;
+                            end
+                            default: begin
+                                wreg_o      = 1;
+                                aluop_o     = `EXE_SRL_OP;
+                                alusel_o    = `EXE_RES_SHIFT;
+                                reg1_read_o = 1;
+                                reg2_read_o = 0;
+                                imm_reg     = imm_i_shamt;
+                                wd_o        = ins_rd;
+                                instvalid   = INSTVALID;
+                            end
+                        endcase
                     end
                     `EXE_ORI_FUNC: begin
                         wreg_o      = 1;
