@@ -666,7 +666,7 @@ module id(input wire rst,
                 wd_o                 = ins_rd;
                 link_addr_o          = pc_next;
                 branch_flag_o        = 1;
-                branch_target_addr_o = (reg1_o + imm_b_signed) & (~1);
+                branch_target_addr_o = (reg1_o + imm_i_signed) & (~1);
                 stall_branch         = 1;
                 instvalid            = INSTINVALID;
             end
