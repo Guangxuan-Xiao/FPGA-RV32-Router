@@ -8,6 +8,7 @@ module frame_datapath #(
 )
 (
     input wire eth_clk,
+    input wire cpu_clk,
     input wire reset,
 
     input wire [DATA_WIDTH - 1:0] s_data,
@@ -152,7 +153,7 @@ module frame_datapath #(
 
     route_trie route_trie_table(
         .clka(eth_clk),
-        .clkb(eth_clk),
+        .clkb(cpu_clk),
         .rst(reset),
         .i_ready(rt_i_ready),
         .i_ip(rt_i_ip),

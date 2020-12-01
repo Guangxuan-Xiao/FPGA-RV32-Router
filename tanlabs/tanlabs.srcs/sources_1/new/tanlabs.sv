@@ -468,6 +468,7 @@ module tanlabs(
     )
     frame_datapath_i(
         .eth_clk(eth_clk),
+        .cpu_clk(core_clk),
         .reset(reset_eth),
 
         .s_data(dp_rx_data),
