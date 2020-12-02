@@ -32,7 +32,7 @@ struct RoutingTableEntry
 };
 
 void insert(struct RoutingTableEntry entry);
-void remove(struct RoutingTableEntry entry);
+void remove(uint32_t ip, uint32_t prefix_len);
 uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port);
 
 #endif
