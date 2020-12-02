@@ -39,6 +39,8 @@ reg [ADDRLEW:0] cpu_addr;           // The address for cpu to visit BRAM.
 
 reg[7:0] bram_data;                 // Data send to BRAM.
 
+reg packet_transmit_en;
+
 always_ff @ (posedge clk_router or posedge rst)
 begin
     if(rst)
