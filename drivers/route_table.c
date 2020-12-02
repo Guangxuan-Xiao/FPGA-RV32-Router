@@ -50,6 +50,34 @@ void remove(struct RoutingTableEntry entry)
 {
 }
 
-void search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port)
+uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port)
 {
+    struct trie_node_t parent;
+    uint32_t nexthop_idx;
+    uint32_t *current_node = ROOT_ADDR;
+    parse_node(current_node, &parent);
+    for (int i = 0; i < 32; ++i)
+    {
+        int bit = (ip >> i) & 1;
+        if (bit)
+        {
+            if (parent.rc_ptr)
+                current_node = parent.rc_ptr;
+            else
+                break;
+        }
+        else
+        {
+            if (parent.lc_ptr)
+                current_node = parent.lc_ptr;
+            else
+                break;
+        }
+        parse_node(current_node, &parent);
+        if (parent.nexthop_idx)
+            nexthop_idx = parent.nexthop_idx;
+    }
+    *nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
+    *port = *get_nexthop_port_addr(nexthop_idx);
+    return nexthop_idx;
 }

@@ -15,9 +15,7 @@ struct trie_node_t
 {
     uint32_t *lc_ptr;
     uint32_t *rc_ptr;
-    uint32_t *nexthop_ip_ptr;
-    uint32_t *nexthop_port_ptr;
-    uint32_t hit;
+    uint32_t nexthop_idx;
     uint32_t layer;
 };
 

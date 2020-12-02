@@ -23,7 +23,8 @@
   你可以在全局变量中把路由表以一定的数据结构格式保存下来。
 */
 
-struct RoutingTableEntry {
+struct RoutingTableEntry
+{
     uint32_t ip;
     uint32_t prefix_len;
     uint32_t port;
@@ -32,6 +33,6 @@ struct RoutingTableEntry {
 
 void insert(struct RoutingTableEntry entry);
 void remove(struct RoutingTableEntry entry);
-void search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port);
+uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port);
 
 #endif
