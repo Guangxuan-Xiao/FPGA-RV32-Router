@@ -50,7 +50,7 @@ void remove(uint32_t ip, uint32_t prefix_len)
 {
     struct trie_node_t parent;
     uint32_t *current_node = ROOT_ADDR;
-    uint32_t *path[32] = {0};
+    uint32_t *path[33] = {current_node, 0};
     for (int i = 0; i < prefix_len; ++i)
     {
         parse_node(current_node, &parent);
@@ -69,19 +69,23 @@ void remove(uint32_t ip, uint32_t prefix_len)
             else
                 return;
         }
-        path[i] = current_node;
+        path[i + 1] = current_node;
     }
-    *current_node = 0;
+    *current_node = 0; 
     // Trace back
-    for (int i = prefix_len - 1; i >= 0; --i)
+    for (int i = prefix_len-1; i >= 0; --i)
     {
         int bit = (ip >> i) & 1;
-        if (*path[i] == 0) {
+        if (*path[i] == 0)
+        {
             --layer_size[i];
-            if (bit) set_rc(path[i-1], 0);
-            else set_lc(path[i-1], 0);
+            if (bit)
+                set_rc(path[i - 1], 0);
+            else
+                set_lc(path[i - 1], 0);
         }
-        else return;
+        else
+            return;
     }
 }
 
