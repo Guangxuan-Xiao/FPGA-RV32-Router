@@ -25,10 +25,10 @@
 
 struct RoutingTableEntry
 {
-    uint32_t ip;
-    uint32_t prefix_len;
-    uint32_t port;
-    uint32_t nexthop_ip;
+  uint32_t ip;
+  uint32_t prefix_len;
+  uint32_t port;
+  uint32_t nexthop_ip;
 };
 
 void insert(struct RoutingTableEntry entry);

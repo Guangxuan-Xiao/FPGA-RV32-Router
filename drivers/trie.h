@@ -2,7 +2,7 @@
 #define TRIE_H
 #define TRIE_BASE_ADDR 0x20000000
 #define TRIE_LAYER_SIZE 0x00008000
-#define TRIE_LAYER_WIDTH 14
+#define TRIE_LAYER_WIDTH 15
 #define TRIE_LAYER_CAPACITY 0x00002000
 #define TRIE_NODE_WIDTH 2
 #define TRIE_NODE_SIZE 0x4
@@ -19,13 +19,11 @@ struct trie_node_t
     uint32_t layer;
 };
 
-void parse_node(uint32_t *node_addr, struct trie_node_t *node);
-
 inline uint32_t *get_node_addr(uint32_t layer, uint32_t idx)
 {
     if (idx == 0)
         return 0;
-    return (TRIE_BASE_ADDR + (layer << TRIE_LAYER_WIDTH) + (idx << TRIE_NODE_WIDTH);
+    return TRIE_BASE_ADDR + (layer << TRIE_LAYER_WIDTH) + (idx << TRIE_NODE_WIDTH);
 }
 
 inline uint32_t *get_nexthop_ip_addr(int idx)
@@ -69,5 +67,15 @@ inline void set_nexthop(uint32_t *node_addr, uint32_t nexthop_idx)
 {
     *node_addr &= 0xFFFFFFC0;
     *node_addr |= (nexthop_idx & 0x3F);
+}
+
+inline void parse_node(uint32_t *node_ptr, struct trie_node_t *node)
+{
+    node->layer = ((uint32_t)node_ptr - TRIE_BASE_ADDR) >> TRIE_LAYER_WIDTH;
+    uint32_t node_data = *node_ptr;
+    uint32_t lc = parse_lc(node_data), rc = parse_rc(node_data), nexthop = parse_nexthop(node_data);
+    node->lc_ptr = get_node_addr(node->layer + 1, lc);
+    node->rc_ptr = get_node_addr(node->layer + 1, rc);
+    node->nexthop_idx = nexthop;
 }
 #endif

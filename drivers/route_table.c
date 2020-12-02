@@ -71,9 +71,9 @@ void remove(uint32_t ip, uint32_t prefix_len)
         }
         path[i + 1] = current_node;
     }
-    *current_node = 0; 
+    *current_node = 0;
     // Trace back
-    for (int i = prefix_len-1; i >= 0; --i)
+    for (int i = prefix_len - 1; i >= 0; --i)
     {
         int bit = (ip >> i) & 1;
         if (*path[i] == 0)
