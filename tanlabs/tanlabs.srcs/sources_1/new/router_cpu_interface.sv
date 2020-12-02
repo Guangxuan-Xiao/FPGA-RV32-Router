@@ -12,7 +12,7 @@ module router_cpu_interface(
     input internal_rx_valid, 
     input internal_rx_ready,
 
-    output [7:0] internel_tx_data,
+    output [7:0] internal_tx_data,
     output internal_tx_last,
     output internal_tx_user,
     output internal_tx_valid, 
