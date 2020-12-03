@@ -76,13 +76,13 @@ void remove(uint32_t ip, uint32_t prefix_len)
     for (int i = prefix_len - 1; i >= 0; --i)
     {
         int bit = (ip >> i) & 1;
-        if (*path[i] == 0)
+        if (*path[i + 1] == 0)
         {
             --layer_size[i];
             if (bit)
-                set_rc(path[i - 1], 0);
+                set_rc(path[i], 0);
             else
-                set_lc(path[i - 1], 0);
+                set_lc(path[i], 0);
         }
         else
             return;
@@ -92,7 +92,7 @@ void remove(uint32_t ip, uint32_t prefix_len)
 uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port)
 {
     struct trie_node_t parent;
-    uint32_t nexthop_idx;
+    uint32_t nexthop_idx = 0;
     uint32_t *current_node = ROOT_ADDR;
     parse_node(current_node, &parent);
     for (int i = 0; i < 32; ++i)
