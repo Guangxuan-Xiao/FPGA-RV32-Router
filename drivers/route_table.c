@@ -71,7 +71,7 @@ void remove(uint32_t ip, uint32_t prefix_len)
         }
         path[i + 1] = current_node;
     }
-    *current_node = 0;
+    set_nexthop(current_node, 0);
     // Trace back
     for (int i = prefix_len - 1; i >= 0; --i)
     {
