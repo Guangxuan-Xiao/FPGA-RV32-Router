@@ -1,16 +1,16 @@
 #ifndef TRIE_H
 #define TRIE_H
-#define TRIE_BASE_ADDR 0x20000000
-#define TRIE_LAYER_SIZE 0x00008000
-#define TRIE_LAYER_WIDTH 15
-#define TRIE_LAYER_CAPACITY 0x00002000
-#define TRIE_NODE_WIDTH 2
-#define TRIE_NODE_SIZE 0x4
-#define NEXTHOP_BASE_ADDR 0x20200000
-#define NEXTHOP_SIZE 0x200
-#define NEXTHOP_WIDTH 3
-#define ROOT_ADDR 0x20000004
 #include <stdint.h>
+const uint32_t TRIE_BASE_ADDR = 0x20000000;
+const uint32_t TRIE_LAYER_SIZE = 0x00008000;
+const uint32_t TRIE_LAYER_WIDTH = 15;
+const uint32_t TRIE_LAYER_CAPACITY = 0x00002000;
+const uint32_t TRIE_NODE_WIDTH = 2;
+const uint32_t TRIE_NODE_SIZE = 0x4;
+const uint32_t NEXTHOP_BASE_ADDR = 0x20200000;
+const uint32_t NEXTHOP_SIZE = 0x200;
+const uint32_t NEXTHOP_WIDTH = 3;
+const uint32_t ROOT_ADDR = 0x20000004;
 struct trie_node_t
 {
     uint32_t *lc_ptr;

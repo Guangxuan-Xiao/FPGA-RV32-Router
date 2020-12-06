@@ -32,7 +32,7 @@ module route_ctrl(
     wire trie_ram_req = ram_req && (ram_addr_i >= TRIE_ADDR_START) && (ram_addr_i <= TRIE_ADDR_END);
     wire[5:0] trie_layer_req = ram_addr_i[TRIE_ADDR_WIDTH+7:TRIE_ADDR_WIDTH+2];
     trie_node_t trie_ram_data;
-    wire [TRIE_ADDR_WIDTH-1:0] trie_ram_phy_addr = ram_addr_i[TRIE_ADDR_WIDTH+1:2]
+    wire [TRIE_ADDR_WIDTH-1:0] trie_ram_phy_addr = ram_addr_i[TRIE_ADDR_WIDTH+1:2];
     always_comb begin
         
     end
