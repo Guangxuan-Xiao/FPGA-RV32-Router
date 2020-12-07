@@ -12,6 +12,7 @@ from scapy import *
 from scapy.utils import *
 from scapy.layers.l2 import *
 from scapy.layers.inet import *
+from scapy.all import *
 import sys
 import struct
 
@@ -158,6 +159,13 @@ write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0, type='ARP') /
             b'BeLrYEeECrHIsbxfm734+jLpfJshQTmHsz+NJrYR8PCKodcW9OU8p+jPotD00016')
 
 # You can construct more frames to test your datapath.
+
+# RIP packet test.
+write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
+            IP(src=IP_TESTER0, dst=IP_TEST_DST, id=0xaf1a, ttl=64) /
+            UDP(sport=7, dport=7) /
+            RIP(cmd=2, version=2) /
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0"))
 
 fout.close()
 pout.close()
