@@ -12,7 +12,7 @@ typedef unsigned int uint32_t;
 typedef int32_t intptr_t;
 typedef uint32_t uintptr_t;
 //typedef int32_t ptrdiff_t;
-//typedef uint32_t size_t;
+typedef uint32_t size_t;
 typedef int32_t ssize_t;
 
 typedef long intmax_t;
