@@ -35,7 +35,7 @@ reg bram_router_r_en;               // the enable signal for router to read BRAM
 reg bram_cpu_r_en;                  // the enable signal for cpu to read BRAM data, zero disabled.
 
 reg [ADDRLEN:0] router_addr;        // The address for router to visit BRAM.
-reg [ADDRLEW:0] cpu_addr;           // The address for cpu to visit BRAM.
+reg [ADDRLEN:0] cpu_addr;           // The address for cpu to visit BRAM.
 
 reg[7:0] bram_data;                 // Data send to BRAM.
 
