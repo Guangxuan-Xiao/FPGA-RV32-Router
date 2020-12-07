@@ -4,7 +4,7 @@ ori x3, zero, 33
 lui x4, 0x12345
 ori x4, x4, 0x678
 trie:
-sw x4, 0(x1)
+sw x3, 0(x1)
 lw x5, 0(x1)
 add x1, x1, x2
 addi x3, x3, -1
