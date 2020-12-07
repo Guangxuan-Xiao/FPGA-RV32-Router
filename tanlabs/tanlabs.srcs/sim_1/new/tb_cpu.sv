@@ -2,7 +2,7 @@
 `default_nettype none
 module tb_cpu;
 
-wire clk_50M, clk_11M0592;
+wire clk_125M, clk_50M, clk_11M0592;
 
 reg clock_btn = 0;         //BTN5手动时钟按钮开关，带消抖电路，按下时为1
 reg reset_btn = 0;         //BTN6手动复位按钮开关，带消抖电路，按下时为1
@@ -12,9 +12,6 @@ reg[31:0] dip_sw;     //32位拨码开关，拨到“ON”时为1
 
 wire[7:0]  dpy0;       //数码管低位信号，包括小数点，输出1点亮
 wire[7:0]  dpy1;       //数码管高位信号，包括小数点，输出1点亮
-
-wire txd;  //直连串口发送端
-wire rxd;  //直连串口接收端
 
 wire[31:0] base_ram_data; //BaseRAM数据，低8位与CPLD串口控制器共享
 wire[19:0] base_ram_addr; //BaseRAM地址
@@ -50,7 +47,6 @@ parameter BASE_RAM_INIT_FILE = "C:/Files/Documents/2020-2021Autumn/Learning/Comp
 parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路径
 parameter FLASH_INIT_FILE = "/media/xgx/OS/Files/Documents/2020-2021Autumn/Learning/Computer_Organization/cod20-grp04/program/rand_8M.bin";    //Flash初始化文件，请修改为实际的绝对路径
 
-assign rxd = 1'b1; //idle state
 
 initial begin 
     //在这里可以自定义测试输入序列，例如：
@@ -69,6 +65,8 @@ end
 
 // 待测试用户设计
 tanlabs dut(
+    .gtrefclk_p(clk_125M),
+    .gtrefclk_n(~clk_125M),
     .clk_50M(clk_50M),
     .clk_11M0592(clk_11M0592),
     .clock_btn(clock_btn),
@@ -106,7 +104,8 @@ tanlabs dut(
 // 时钟源
 clock osc(
     .clk_11M0592(clk_11M0592),
-    .clk_50M    (clk_50M)
+    .clk_50M    (clk_50M),
+    .clk_125M(clk_125M)
 );
 // CPLD 串口仿真模型
 cpld_model cpld(
