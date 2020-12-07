@@ -14,15 +14,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="6187666fs"></ZoomStartTime>
-      <ZoomEndTime time="9341667fs"></ZoomEndTime>
-      <Cursor1Time time="8816000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="3154001fs"></ZoomEndTime>
+      <Cursor1Time time="1000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="442"></NameColumnWidth>
       <ValueColumnWidth column_width="355"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="31" />
+   <WVObjectSize size="35" />
    <wvobject fp_name="/tb_cpu/dut/bus/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -107,26 +107,41 @@
       <obj_property name="ElementShortName">base_ram_we_n</obj_property>
       <obj_property name="ObjectShortName">base_ram_we_n</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/trie_data_reg" type="array">
-      <obj_property name="ElementShortName">trie_data_reg</obj_property>
-      <obj_property name="ObjectShortName">trie_data_reg</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_addr" type="array">
+      <obj_property name="ElementShortName">nexthop_addr[5:0]</obj_property>
+      <obj_property name="ObjectShortName">nexthop_addr[5:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/trie_layer_req" type="array">
-      <obj_property name="ElementShortName">trie_layer_req[5:0]</obj_property>
-      <obj_property name="ObjectShortName">trie_layer_req[5:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_data_cpu" type="array">
+      <obj_property name="ElementShortName">nexthop_data_cpu</obj_property>
+      <obj_property name="ObjectShortName">nexthop_data_cpu</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/trie_phy_addr" type="array">
-      <obj_property name="ElementShortName">trie_phy_addr[12:0]</obj_property>
-      <obj_property name="ObjectShortName">trie_phy_addr[12:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_data_reg" type="array">
+      <obj_property name="ElementShortName">nexthop_data_reg</obj_property>
+      <obj_property name="ObjectShortName">nexthop_data_reg</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/trie_req" type="logic">
-      <obj_property name="ElementShortName">trie_req</obj_property>
-      <obj_property name="ObjectShortName">trie_req</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_data_router" type="array">
+      <obj_property name="ElementShortName">nexthop_data_router</obj_property>
+      <obj_property name="ObjectShortName">nexthop_data_router</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/trie_web" type="array">
-      <obj_property name="ElementShortName">trie_web[32:0][3:0]</obj_property>
-      <obj_property name="ObjectShortName">trie_web[32:0][3:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_ip_req" type="logic">
+      <obj_property name="ElementShortName">nexthop_ip_req</obj_property>
+      <obj_property name="ObjectShortName">nexthop_ip_req</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_phy_addr" type="array">
+      <obj_property name="ElementShortName">nexthop_phy_addr[5:0]</obj_property>
+      <obj_property name="ObjectShortName">nexthop_phy_addr[5:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_port_req" type="logic">
+      <obj_property name="ElementShortName">nexthop_port_req</obj_property>
+      <obj_property name="ObjectShortName">nexthop_port_req</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_req" type="logic">
+      <obj_property name="ElementShortName">nexthop_req</obj_property>
+      <obj_property name="ObjectShortName">nexthop_req</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_web" type="array">
+      <obj_property name="ElementShortName">nexthop_web[4:0]</obj_property>
+      <obj_property name="ObjectShortName">nexthop_web[4:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/tb_cpu/dut/cpu/REGFILE/regs[5]" type="array">
       <obj_property name="ElementShortName">[5][31:0]</obj_property>

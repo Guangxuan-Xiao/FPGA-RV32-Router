@@ -1,13 +1,25 @@
-lui x1, 0x20000
-lui x2, 0x00008
-ori x3, zero, 33
-lui x4, 0x12345
-ori x4, x4, 0x678
-trie:
+lui x1, 0x20200
+ori x2, zero, 10
+lui x3, 0x12345
+ori x3, x3, 0x600
+write:
 sw x3, 0(x1)
-lw x5, 0(x1)
-add x1, x1, x2
-addi x3, x3, -1
-bnez x3, trie
+sw x3, 4(x1)
+lw x4, 0(x1)
+lw x4, 4(x1)
+addi x1, x1, 8
+addi x2, x2, -1
+addi x3, x3, 1
+bnez x2, write
+
+lui x1, 0x20200
+ori x2, zero, 64
+
+read:
+lw x4, 0(x1)
+lw x4, 4(x1)
+addi x1, x1, 8
+addi x2, x2, -1
+bnez x2, read
 end:
 j end
