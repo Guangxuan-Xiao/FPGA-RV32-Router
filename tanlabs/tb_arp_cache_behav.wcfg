@@ -3,192 +3,156 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="tb_frame_datapath_behav.wdb" id="1">
+      <db_ref path="tb_cpu_behav.wdb" id="1">
          <top_modules>
             <top_module name="\$unit_arp_cache_sv " />
             <top_module name="glbl" />
-            <top_module name="tb_frame_datapath" />
+            <top_module name="ipif_pkg" />
+            <top_module name="tb_cpu" />
+            <top_module name="vcomponents" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-<<<<<<< HEAD
-      <ZoomStartTime time="296830fs"></ZoomStartTime>
-      <ZoomEndTime time="366231fs"></ZoomEndTime>
-      <Cursor1Time time="325030fs"></Cursor1Time>
-=======
-<<<<<<< HEAD
-      <ZoomStartTime time="267800fs"></ZoomStartTime>
-      <ZoomEndTime time="494123fs"></ZoomEndTime>
-      <Cursor1Time time="10000000fs"></Cursor1Time>
+      <ZoomStartTime time="9999989fs"></ZoomStartTime>
+      <ZoomEndTime time="10000003fs"></ZoomEndTime>
+      <Cursor1Time time="9999992fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="241"></NameColumnWidth>
-      <ValueColumnWidth column_width="231"></ValueColumnWidth>
+      <NameColumnWidth column_width="442"></NameColumnWidth>
+      <ValueColumnWidth column_width="355"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="5" />
-   <wvobject fp_name="/tb_frame_datapath/dut/liushui" type="logic">
-      <obj_property name="ElementShortName">liushui</obj_property>
-      <obj_property name="ObjectShortName">liushui</obj_property>
+   <WVObjectSize size="33" />
+   <wvobject fp_name="/tb_cpu/dut/bus/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_frame_datapath/dut/query_trie_33.valid" type="logic">
-      <obj_property name="ElementShortName">.valid</obj_property>
-      <obj_property name="ObjectShortName">.valid</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/ram_addr_i" type="array">
+      <obj_property name="ElementShortName">ram_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_addr_i[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_frame_datapath/dut/eth_clk" type="logic">
-      <obj_property name="ElementShortName">eth_clk</obj_property>
-      <obj_property name="ObjectShortName">eth_clk</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/ram_be_i" type="array">
+      <obj_property name="ElementShortName">ram_be_i[3:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_be_i[3:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_frame_datapath/dut/out_ready" type="logic">
-      <obj_property name="ElementShortName">out_ready</obj_property>
-      <obj_property name="ObjectShortName">out_ready</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/ram_data_cpu" type="array">
+      <obj_property name="ElementShortName">ram_data_cpu[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_data_cpu[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_frame_datapath/dut/rt_o_ready" type="logic">
-      <obj_property name="ElementShortName">rt_o_ready</obj_property>
-      <obj_property name="ObjectShortName">rt_o_ready</obj_property>
-=======
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="97801fs"></ZoomEndTime>
-      <Cursor1Time time="28100fs"></Cursor1Time>
->>>>>>> 1789c3d3a381a34546c2e00af8b06cfa71997584
-   </zoom_setting>
-   <column_width_setting>
-      <NameColumnWidth column_width="273"></NameColumnWidth>
-      <ValueColumnWidth column_width="199"></ValueColumnWidth>
-   </column_width_setting>
-   <WVObjectSize size="15" />
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/clka">
-      <obj_property name="ElementShortName">clka</obj_property>
-      <obj_property name="ObjectShortName">clka</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/ram_data_ram" type="array">
+      <obj_property name="ElementShortName">ram_data_ram[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_data_ram[31:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/clkb">
-      <obj_property name="ElementShortName">clkb</obj_property>
-      <obj_property name="ObjectShortName">clkb</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/ram_data_reg" type="array">
+      <obj_property name="ElementShortName">ram_data_reg[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_data_reg[31:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/rst">
-      <obj_property name="ElementShortName">rst</obj_property>
-      <obj_property name="ObjectShortName">rst</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/ram_oe_i" type="logic">
+      <obj_property name="ElementShortName">ram_oe_i</obj_property>
+      <obj_property name="ObjectShortName">ram_oe_i</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/i_ready">
-      <obj_property name="ElementShortName">i_ready</obj_property>
-      <obj_property name="ObjectShortName">i_ready</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/ram_ready" type="logic">
+      <obj_property name="ElementShortName">ram_ready</obj_property>
+      <obj_property name="ObjectShortName">ram_ready</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/i_ip">
-      <obj_property name="ElementShortName">i_ip[31:0]</obj_property>
-      <obj_property name="ObjectShortName">i_ip[31:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/ram_req" type="logic">
+      <obj_property name="ElementShortName">ram_req</obj_property>
+      <obj_property name="ObjectShortName">ram_req</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/o_nexthop">
-      <obj_property name="ElementShortName">o_nexthop</obj_property>
-      <obj_property name="ObjectShortName">o_nexthop</obj_property>
-      <obj_property name="isExpanded"></obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/ram_we_i" type="logic">
+      <obj_property name="ElementShortName">ram_we_i</obj_property>
+      <obj_property name="ObjectShortName">ram_we_i</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/o_valid">
-      <obj_property name="ElementShortName">o_valid</obj_property>
-      <obj_property name="ObjectShortName">o_valid</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_addr" type="array">
+      <obj_property name="ElementShortName">base_ram_addr[19:0]</obj_property>
+      <obj_property name="ObjectShortName">base_ram_addr[19:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/o_ready">
-      <obj_property name="ElementShortName">o_ready</obj_property>
-      <obj_property name="ObjectShortName">o_ready</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_be_n" type="array">
+      <obj_property name="ElementShortName">base_ram_be_n[3:0]</obj_property>
+      <obj_property name="ObjectShortName">base_ram_be_n[3:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/next_node_addr">
-      <obj_property name="ElementShortName">next_node_addr[32:0][12:0]</obj_property>
-      <obj_property name="ObjectShortName">next_node_addr[32:0][12:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_ce_n" type="logic">
+      <obj_property name="ElementShortName">base_ram_ce_n</obj_property>
+      <obj_property name="ObjectShortName">base_ram_ce_n</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/nexthop_addr">
-      <obj_property name="ElementShortName">nexthop_addr[32:0][7:0]</obj_property>
-      <obj_property name="ObjectShortName">nexthop_addr[32:0][7:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_data" type="array">
+      <obj_property name="ElementShortName">base_ram_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">base_ram_data[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/layer_o_valid">
-      <obj_property name="ElementShortName">layer_o_valid[32:0]</obj_property>
-      <obj_property name="ObjectShortName">layer_o_valid[32:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_data_o" type="array">
+      <obj_property name="ElementShortName">base_ram_data_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">base_ram_data_o[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/layer_o_ready">
-      <obj_property name="ElementShortName">layer_o_ready[32:0]</obj_property>
-      <obj_property name="ObjectShortName">layer_o_ready[32:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_data_reg" type="array">
+      <obj_property name="ElementShortName">base_ram_data_reg[31:0]</obj_property>
+      <obj_property name="ObjectShortName">base_ram_data_reg[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/ip_t">
-      <obj_property name="ElementShortName">ip_t[32:0][31:0]</obj_property>
-      <obj_property name="ObjectShortName">ip_t[32:0][31:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_oe_n" type="logic">
+      <obj_property name="ElementShortName">base_ram_oe_n</obj_property>
+      <obj_property name="ObjectShortName">base_ram_oe_n</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/ena">
-      <obj_property name="ElementShortName">ena</obj_property>
-      <obj_property name="ObjectShortName">ena</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_req" type="logic">
+      <obj_property name="ElementShortName">base_ram_req</obj_property>
+      <obj_property name="ObjectShortName">base_ram_req</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/wea">
-      <obj_property name="ElementShortName">wea</obj_property>
-      <obj_property name="ObjectShortName">wea</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_we_n" type="logic">
+      <obj_property name="ElementShortName">base_ram_we_n</obj_property>
+      <obj_property name="ObjectShortName">base_ram_we_n</obj_property>
    </wvobject>
-<<<<<<< HEAD
-=======
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /clka">
-      <obj_property name="ElementShortName">clka</obj_property>
-      <obj_property name="ObjectShortName">clka</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/trie_data_reg" type="array">
+      <obj_property name="ElementShortName">trie_data_reg</obj_property>
+      <obj_property name="ObjectShortName">trie_data_reg</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /clkb">
-      <obj_property name="ElementShortName">clkb</obj_property>
-      <obj_property name="ObjectShortName">clkb</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/trie_layer_req" type="array">
+      <obj_property name="ElementShortName">trie_layer_req[5:0]</obj_property>
+      <obj_property name="ObjectShortName">trie_layer_req[5:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /rst">
-      <obj_property name="ElementShortName">rst</obj_property>
-      <obj_property name="ObjectShortName">rst</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/trie_phy_addr" type="array">
+      <obj_property name="ElementShortName">trie_phy_addr[12:0]</obj_property>
+      <obj_property name="ObjectShortName">trie_phy_addr[12:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /ip_bit">
-      <obj_property name="ElementShortName">ip_bit</obj_property>
-      <obj_property name="ObjectShortName">ip_bit</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/trie_req" type="logic">
+      <obj_property name="ElementShortName">trie_req</obj_property>
+      <obj_property name="ObjectShortName">trie_req</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /i_ip">
-      <obj_property name="ElementShortName">i_ip[31:0]</obj_property>
-      <obj_property name="ObjectShortName">i_ip[31:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/trie_web" type="array">
+      <obj_property name="ElementShortName">trie_web[32:0][3:0]</obj_property>
+      <obj_property name="ObjectShortName">trie_web[32:0][3:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /i_ready">
-      <obj_property name="ElementShortName">i_ready</obj_property>
-      <obj_property name="ObjectShortName">i_ready</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_addr" type="array">
+      <obj_property name="ElementShortName">nexthop_addr[5:0]</obj_property>
+      <obj_property name="ObjectShortName">nexthop_addr[5:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /i_valid">
-      <obj_property name="ElementShortName">i_valid</obj_property>
-      <obj_property name="ObjectShortName">i_valid</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_data_cpu" type="array">
+      <obj_property name="ElementShortName">nexthop_data_cpu</obj_property>
+      <obj_property name="ObjectShortName">nexthop_data_cpu</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /current_node_addr">
-      <obj_property name="ElementShortName">current_node_addr[12:0]</obj_property>
-      <obj_property name="ObjectShortName">current_node_addr[12:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_data_reg" type="array">
+      <obj_property name="ElementShortName">nexthop_data_reg</obj_property>
+      <obj_property name="ObjectShortName">nexthop_data_reg</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /i_nexthop_addr">
-      <obj_property name="ElementShortName">i_nexthop_addr[7:0]</obj_property>
-      <obj_property name="ObjectShortName">i_nexthop_addr[7:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_data_router" type="array">
+      <obj_property name="ElementShortName">nexthop_data_router</obj_property>
+      <obj_property name="ObjectShortName">nexthop_data_router</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /next_node_addr">
-      <obj_property name="ElementShortName">next_node_addr[12:0]</obj_property>
-      <obj_property name="ObjectShortName">next_node_addr[12:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_ip_req" type="logic">
+      <obj_property name="ElementShortName">nexthop_ip_req</obj_property>
+      <obj_property name="ObjectShortName">nexthop_ip_req</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /o_nexthop_addr">
-      <obj_property name="ElementShortName">o_nexthop_addr[7:0]</obj_property>
-      <obj_property name="ObjectShortName">o_nexthop_addr[7:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_phy_addr" type="array">
+      <obj_property name="ElementShortName">nexthop_phy_addr[5:0]</obj_property>
+      <obj_property name="ObjectShortName">nexthop_phy_addr[5:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /o_ip">
-      <obj_property name="ElementShortName">o_ip[31:0]</obj_property>
-      <obj_property name="ObjectShortName">o_ip[31:0]</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_port_req" type="logic">
+      <obj_property name="ElementShortName">nexthop_port_req</obj_property>
+      <obj_property name="ObjectShortName">nexthop_port_req</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /o_valid">
-      <obj_property name="ElementShortName">o_valid</obj_property>
-      <obj_property name="ObjectShortName">o_valid</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_req" type="logic">
+      <obj_property name="ElementShortName">nexthop_req</obj_property>
+      <obj_property name="ObjectShortName">nexthop_req</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /o_ready">
-      <obj_property name="ElementShortName">o_ready</obj_property>
-      <obj_property name="ObjectShortName">o_ready</obj_property>
+   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_web" type="array">
+      <obj_property name="ElementShortName">nexthop_web[4:0]</obj_property>
+      <obj_property name="ObjectShortName">nexthop_web[4:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /ena">
-      <obj_property name="ElementShortName">ena</obj_property>
-      <obj_property name="ObjectShortName">ena</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /wea">
-      <obj_property name="ElementShortName">wea</obj_property>
-      <obj_property name="ObjectShortName">wea</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb_route_trie/route_trie_module/\genblk1[1].trie_layerx /current_node_data">
-      <obj_property name="ElementShortName">current_node_data</obj_property>
-      <obj_property name="ObjectShortName">current_node_data</obj_property>
-      <obj_property name="isExpanded"></obj_property>
->>>>>>> f27b1bbaace67315cc240b2293326b9e17f86198
-   </wvobject>
->>>>>>> 1789c3d3a381a34546c2e00af8b06cfa71997584
 </wave_config>
