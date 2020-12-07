@@ -55,7 +55,6 @@ module id(input wire rst,
 
     // Instruction Decode process result
     wire [31:0] imm_i_signed = {{20{ins_imm_i[11]}}, ins_imm_i};
-    wire [31:0] imm_i_unsign = {20'b0, ins_imm_i};
     wire [31:0] imm_i_shamt  = {27'b0, ins_shamt};
     wire [31:0] imm_s_signed = {{20{ins_imm_s[11]}}, ins_imm_s};
     wire [31:0] pc_next      = pc_i + 32'h00000004;
@@ -310,7 +309,7 @@ module id(input wire rst,
                         alusel_o    = `EXE_RES_LOGIC;
                         reg1_read_o = 1;
                         reg2_read_o = 0;
-                        imm_reg     = imm_i_unsign;
+                        imm_reg     = imm_i_signed;
                         wd_o        = ins_rd;
                         instvalid   = INSTVALID;
                     end
@@ -320,7 +319,7 @@ module id(input wire rst,
                         alusel_o    = `EXE_RES_LOGIC;
                         reg1_read_o = 1;
                         reg2_read_o = 0;
-                        imm_reg     = imm_i_unsign;
+                        imm_reg     = imm_i_signed;
                         wd_o        = ins_rd;
                         instvalid   = INSTVALID;
                     end
