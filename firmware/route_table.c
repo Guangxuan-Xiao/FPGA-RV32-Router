@@ -2,11 +2,11 @@
 #include "trie.h"
 static int layer_size[32] = {0};
 static int nexthop_size = 0;
-void insert(struct RoutingTableEntry entry)
+void insert(RoutingTableEntry entry)
 {
-    struct trie_node_t parent;
-    uint32_t *current_node = ROOT_ADDR;
-    for (int i = 0; i < entry.prefix_len; ++i)
+    trie_node_t parent;
+    uint32_t *current_node = (uint32_t *)ROOT_ADDR;
+    for (uint32_t i = 0; i < entry.prefix_len; ++i)
     {
         parse_node(current_node, &parent);
         int bit = (entry.ip >> i) & 1;
@@ -48,10 +48,10 @@ void insert(struct RoutingTableEntry entry)
 
 void remove(uint32_t ip, uint32_t prefix_len)
 {
-    struct trie_node_t parent;
-    uint32_t *current_node = ROOT_ADDR;
+    trie_node_t parent;
+    uint32_t *current_node = (uint32_t *)ROOT_ADDR;
     uint32_t *path[33] = {current_node, 0};
-    for (int i = 0; i < prefix_len; ++i)
+    for (uint32_t i = 0; i < prefix_len; ++i)
     {
         parse_node(current_node, &parent);
         int bit = (ip >> i) & 1;
@@ -91,9 +91,9 @@ void remove(uint32_t ip, uint32_t prefix_len)
 
 uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port)
 {
-    struct trie_node_t parent;
+    trie_node_t parent;
     uint32_t nexthop_idx = 0;
-    uint32_t *current_node = ROOT_ADDR;
+    uint32_t *current_node = (uint32_t *)ROOT_ADDR;
     parse_node(current_node, &parent);
     for (int i = 0; i < 32; ++i)
     {
