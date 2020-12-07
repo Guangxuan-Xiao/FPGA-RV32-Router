@@ -12,6 +12,7 @@ from scapy import *
 from scapy.utils import *
 from scapy.layers.l2 import *
 from scapy.layers.inet import *
+from scapy.all import *
 import sys
 import struct
 
