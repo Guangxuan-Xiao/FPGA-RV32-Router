@@ -19,7 +19,7 @@ static void print_hello()
 int main()
 {
 	print_hello();
-	lookup_test();
+	// lookup_test();
 	clock_test();
 	return 233;
 }

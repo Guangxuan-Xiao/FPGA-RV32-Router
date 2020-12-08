@@ -5,7 +5,7 @@ static int nexthop_size = 0;
 void insert(RoutingTableEntry entry)
 {
     trie_node_t parent;
-    uint32_t *current_node = (uint32_t *)ROOT_ADDR;
+    volatile uint32_t *current_node = (volatile uint32_t *)ROOT_ADDR;
     for (uint32_t i = 0; i < entry.prefix_len; ++i)
     {
         parse_node(current_node, &parent);
@@ -49,8 +49,8 @@ void insert(RoutingTableEntry entry)
 void remove(uint32_t ip, uint32_t prefix_len)
 {
     trie_node_t parent;
-    uint32_t *current_node = (uint32_t *)ROOT_ADDR;
-    uint32_t *path[33] = {current_node, 0};
+    volatile uint32_t *current_node = (uint32_t *)ROOT_ADDR;
+    volatile uint32_t *path[33] = {current_node, 0};
     for (uint32_t i = 0; i < prefix_len; ++i)
     {
         parse_node(current_node, &parent);
@@ -93,7 +93,7 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port)
 {
     trie_node_t parent;
     uint32_t nexthop_idx = 0;
-    uint32_t *current_node = (uint32_t *)ROOT_ADDR;
+    volatile uint32_t *current_node = (uint32_t *)ROOT_ADDR;
     parse_node(current_node, &parent);
     for (int i = 0; i < 32; ++i)
     {
