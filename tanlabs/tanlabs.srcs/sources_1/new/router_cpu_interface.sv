@@ -2,188 +2,314 @@
 `include "frame_datapath.vh"
 
 module router_cpu_interface(
-    input clk_router;
-    input clk_cpu;
-    input rst;
+    input wire clk_router,
+    input wire clk_cpu,
+    input wire rst,
 
-    input [7:0] internal_rx_data,
-    input internal_rx_last,
-    input internal_rx_user,
-    input internal_rx_valid, 
-    input internal_rx_ready,
+    input wire [7:0] internal_rx_data,
+    input wire internal_rx_last,
+    input wire internal_rx_user,
+    input wire internal_rx_valid, 
+    input wire internal_rx_ready,
 
-    output [7:0] internal_tx_data,
-    output internal_tx_last,
-    output internal_tx_user,
-    output internal_tx_valid, 
-    output internal_tx_ready,
+    output wire [7:0] internal_tx_data,
+    output wire internal_tx_last,
+    output wire internal_tx_user,
+    output wire internal_tx_valid, 
+    output wire internal_tx_ready,
 
-    input [7:0] cpu_addr_i,
-    input [31:0] cpu_data_i,
+    input wire cpu_write_enb, // CPU2Router的使能
+    input wire [3:0] cpu_write_web, // CPU2Router的写使能
+    input wire [15:0] cpu_write_addrb, // CPU2Router的写地址
+    input wire [31:0] cpu_write_data, // CPU2Router写入的数据
+    input wire cpu_write_done,        // CPU2Router写入完毕
+    input wire [6:0] cpu_write_address, // 在写完的时候，表示这一帧是第几帧，从0开始
+    input wire [10:0] frame_len, // 表示这一帧有多长，用bytes作为单位
 
-    output cpu_read_en,
-    output cpu_write_en,
-    output [31:0] cpu_data_o,
-    output reg [7:0] cpu_state;
+    output wire cpu_start_enb, // 为1时，表示CPU当前可以进入读状态了
+    output wire [6:0] cpu_start_addrb, // 我们的BRAM有128个2048bytes，我们的这个表示我们现在读到第几个2048bytes了，从0开始
+    input wire cpu_read_enb, // CPU的读使能
+    input wire [15:0] cpu_read_addrb, // CPU的读地址
+    output wire [31:0] cpu_read_data, // CPU读到的数据
+    input wire cpu_finish_enb, // 为1时，表示CPU读完了！！！
+    input wire [6:0] cpu_finish_addrb // 在读完了之后，我们向这一字节写入当前读到的是第几帧，从0开始
 );
 
-typedef enum reg[1:0] { START, ACCESS, END } router_write_state;
-reg [3:0] router_w = 4'b0;
-reg [3:0] router_r = 4'b0; 
-assign cpu_state = {router_w, router_r};
+typedef enum reg[1:0] { START, ACCESS, END } router_write_state_t;
+router_write_state_t router_write_state = START;
+
+reg [6:0] router_pointer = 7'b0;
+reg [6:0] cpu_pointer = 7'b0;
+
+reg [7:0] router_write_data;
+reg [17:0] router_write_addr;
+reg router_write_en;
 
 // Showing the state of router write.
 always @ (posedge clk_router)
 begin
-   if (rst)
-   begin
-     router_write_state <= START;
-     router_w <= 0;
-   end
-   else
-   begin
-     if (!internal_rx_ready || !internal_rx_valid)
-     begin
-       router_write_state <= START;
-       router_w[2] <= 0;
-       router_w[3] <= 0;
-     end
-     else if (internal_rx_ready && internal_rx_valid && !internal_rx_last)
-     begin
-       router_write_state <= ACCESS;
-       router_w[2] <= 1;
-       router_w[3] <= 0;
-     end
-     else if (internal_rx_ready && internal_rx_valid && internal_rx_last)
-     begin
-       router_write_state <= END;
-       router_w[2] <= 0;
-       router_w[3] <= 1;
-     end
-     else
-     begin
-       router_write_state <= START;
-       router_w[2] <= 0;
-       router_w[3] <= 0;
-     end
-   end
-end
-
-reg cpu_done;
-reg router_is_last;
-reg [17:0] bram_b_addr;  //cpi -> router 
-reg [17:0] bram_b_pointer;
-reg [8:0]  bram_b_data;
-typedef enum reg[1:0] { START, ACCESS, END } router_read_state;
-//Showing the process of router read.
-always @ (posedge clk_router)
-begin
   if (rst)
   begin
-        internal_tx_ready <= 0;
-        internal_tx_valid <= 0;
-        internal_tx_last <= 0;
-        internal_tx_data <= 0;
-        bram_b_addr <= 0;
-        router_read_state <= START;
-        router_r[2] <= 0;
-        router_r[3] <= 0;
-  end 
+    router_write_state <= START;
+    router_pointer <= 0;
+    router_write_data <= 0;
+    router_write_addr <= 0;
+    router_write_en <= 0;
+  end
   else
   begin
-    if (cpu_done)
+    case (router_write_state)
+    START:
     begin
-      if (router_read_state == START)
+      if (internal_rx_ready && internal_rx_valid)
       begin
-        internal_tx_ready <= 1;
-        internal_tx_valid <= 1;
-        internal_tx_last <= 0;
-        internal_tx_data <= 0;
-        bram_b_addr <= bram_b_pointer;
-        router_read_state <= ACCESS;
-        router_r[2] <= 1;
-        router_r[3] <= 0;
+        router_write_state <= ACCESS;
+        router_write_data <= internal_rx_data;
+        router_write_en   <= 1;
       end
-      else if (router_read_state == ACCESS)
+      else
       begin
-        if (router_is_last)
+        router_write_state <= START;
+        router_write_en    <= 0;
+      end
+    end
+
+    ACCESS:
+    begin
+      if (internal_rx_ready && internal_rx_valid)
+      begin
+        if (internal_rx_last)
         begin
-          internal_tx_last <= 1;
-          internal_tx_data <= bram_b_data;
-          bram_b_addr <= bram_b_addr + 4 ; // Uncertain.
-          router_read_state <= END;
-          router_r[2] <= 0;
-          router_r[3] <= 1;
+          router_write_state <= END;
+          router_write_data  <= internal_rx_data;
+          router_write_en    <= 1;
+          router_write_addr  <= router_write_addr + 1;
+          router_pointer     <= router_pointer + 1;
         end
-        else 
+        else
         begin
-          internal_tx_last <= 1;
-          internal_tx_data <= bram_b_data;
-          bram_b_addr <= bram_b_addr + 4 ; // Uncertain.
-          router_read_state <= ACCESS;
-          router_r[2] <= 1;
-          router_r[3] <= 0;
+          router_write_state <= ACCESS;
+          router_write_data  <= internal_rx_data;
+          router_write_addr  <= router_write_addr + 1;
+          router_write_en    <= 1;
         end
       end
       else
       begin
-        internal_tx_last <= 0;
-        internal_tx_ready <= 0;
-        internal_tx_valid <= 0;
-        internal_tx_data  <= 0;
-        bram_b_addr <= 0;
-        router_read_state <= START;
-        router_r[2] <= 0;
-        router_r[3] <= 0;
+        router_write_state <= ACCESS;
+        router_write_en    <= 0;
       end
+    end
+
+    END:
+    begin
+      router_write_addr <= router_pointer << 11;
+      if (internal_rx_ready && internal_rx_valid)
+      begin
+        router_write_state <= ACCESS;
+        router_write_data  <= internal_rx_data;
+        router_write_en    <= 1;
+      end
+      else
+      begin
+        router_write_state <= START;
+        router_write_en    <= 0;
+      end
+    end  
+    endcase
+  end
+end
+
+
+always @ (posedge clk_cpu)
+begin
+  if (rst)
+  begin
+    cpu_pointer <= 0;
+  end
+  else
+  begin
+    if (cpu_finish_enb && (cpu_finish_addrb == cpu_pointer))
+    begin
+      cpu_pointer <= cpu_pointer + 1;
     end
     else
     begin
-        internal_tx_ready <= 0;
-        internal_tx_valid <= 0;
-        internal_tx_last <= 0;
-        internal_tx_data <= 0;
-        bram_b_addr <= 0;
-        router_read_state <= START;
-        router_r[2] <= 0;
-        router_r[3] <= 0;
+      cpu_pointer <= cpu_pointer;
     end
   end
 end
 
-reg [7:0] cpu_state;
+assign cpu_start_enb = (router_pointer != cpu_pointer) ? 1'b1 : 1'b0;
 
 // A for router, B for CPU
 blk_mem_gen_3 router2CPU 
 (
   .clka(clk_router),    // input wire clka
-  .ena(ena),      // input wire ena
-  .wea(wea),      // input wire [0 : 0] wea
-  .addra(addra),  // input wire [17 : 0] addra
-  .dina(dina),    // input wire [7 : 0] dina
-  .douta(douta),  // output wire [7 : 0] douta
+  .ena(1),      // input wire ena
+  .wea(router_write_en),      // input wire [0 : 0] wea
+  .addra(router_write_addr),  // input wire [17 : 0] addra
+  .dina(router_write_data),    // input wire [7 : 0] dina
+  //.douta(douta),  // output wire [7 : 0] douta
   .clkb(clk_cpu),    // input wire clkb
-  .enb(enb),      // input wire enb
-  .web(web),      // input wire [3 : 0] web
-  .addrb(addrb),  // input wire [15 : 0] addrb
-  .dinb(dinb),    // input wire [31 : 0] dinb
-  .doutb(doutb)   // output wire [31 : 0] doutb
+  .enb(cpu_read_enb),      // input wire enb
+  //.web(web),      // input wire [3 : 0] web
+  .addrb(cpu_read_addrb),  // input wire [15 : 0] addrb
+  //.dinb(dinb),    // input wire [31 : 0] dinb
+  .doutb(cpu_read_data)   // output wire [31 : 0] doutb
 );
+
+
+// Above is all about BRAM 1, where CPU can read and Router can write. 
+// ============================================================================================================
+// Below is all about BRAM 2, where CPU can write and Router can read.
+
+typedef enum reg[2:0] { START, PREP1, PREP2, PREP3, ACCESS, END } router_read_state_t;
+router_write_state_t router_read_state = START;
+reg [6:0] cpu_pointer_2;
+reg [6:0] router_pointer_2;
+reg [7:0] router_read_data;
+reg [7:0] internal_tx_data_i;
+reg internal_tx_last_i;
+reg internal_tx_user_i;
+reg internal_tx_valid_i;
+reg internal_tx_ready_i;
+
+assign internal_tx_data = internal_tx_data_i;
+assign internal_tx_last = internal_tx_last_i;
+assign internal_tx_user = internal_tx_user_i;
+assign internal_tx_valid = internal_tx_valid_i;
+assign internal_tx_ready = internal_tx_ready_i;
+
+wire router_start_enb = (router_pointer_2 != cpu_pointer_2) ? 1'b1 : 1'b0;
+reg[10:0] counter;
+
+always @ (posedge clk_router)
+begin
+  if (rst)
+  begin
+    internal_tx_data_i  <= 0;
+    internal_tx_valid_i <= 0;
+    internal_tx_ready_i <= 0;
+    internal_tx_user_i  <= 0;
+    internal_tx_last_i  <= 0;
+    router_read_addr    <= 0;
+    router_read_state   <= START;
+  end
+  else if (router_start_enb)
+  begin
+    case (router_read_state)
+    START:
+    begin
+      internal_tx_data_i  <= 0;
+      internal_tx_valid_i <= 0;
+      internal_tx_ready_i <= 0;
+      internal_tx_last_i  <= 0;
+      router_read_state   <= IDLE1;
+    end
+    IDLE1:
+    begin
+      internal_tx_data_i  <= 0;
+      internal_tx_valid_i <= 0;
+      internal_tx_ready_i <= 0;
+      internal_tx_last_i  <= 0;
+      router_read_state   <= IDLE2;
+      counter[7:0]        <= router_read_data;
+      router_read_addr    <= router_read_addr - 1;
+    end
+    IDLE2:
+    begin
+      internal_tx_data_i     <= 0;
+      internal_tx_valid_i    <= 0;
+      internal_tx_ready_i    <= 0;
+      internal_tx_last_i     <= 0;
+      router_read_state      <= IDLE3;
+      counter[10:8]          <= router_read_data[2:0];
+      router_read_addr[10:0] <= 11'b0;
+    end
+    IDLE3:
+    begin
+      internal_tx_data_i  <= 0;
+      internal_tx_valid_i <= 0;
+      internal_tx_ready_i <= 0;
+      internal_tx_last_i  <= 0;
+      router_read_state   <= ACCESS;
+      counter             <= counter - 1;
+    end
+    ACCESS:
+    begin
+      internal_tx_data_i  <= router_read_data;
+      internal_tx_valid_i <= 1;
+      internal_tx_ready_i <= 1;
+      if (counter == 0)
+      begin
+        internal_tx_last_i <= 1;
+        router_read_state  <= END;
+        router_pointer_2   <= router_pointer_2 + 1;
+      end
+      else 
+      begin
+        internal_tx_last_i <= 0; 
+        router_read_state  <= ACCESS;
+        router_read_addr   <= router_read_addr + 1;
+        counter            <= counter - 1;
+      end
+    end
+    END:
+    begin
+      router_read_addr_i  <= router_pointer_2 << 11 + 11'b11111111111;
+      internal_tx_data_i  <= 0;
+      internal_tx_valid_i <= 0;
+      internal_tx_ready_i <= 0;
+      internal_tx_last_i  <= 0;
+      internal_tx_user_i  <= 0;
+    end
+    endcase
+  end
+  else
+  begin
+    internal_tx_data_i  <= 0;
+    internal_tx_valid_i <= 0;
+    internal_tx_ready_i <= 0;
+    internal_tx_user_i  <= 0;
+    internal_tx_last_i  <= 0;
+    router_read_state   <= START;
+  end
+end
+
+always @ (posedge clk_cpu)
+begin
+  if (rst)
+  begin
+    cpu_pointer_2 <= 0;
+  end
+  else
+  begin
+    if (cpu_write_done && (cpu_write_address == cpu_pointer_2))
+    begin
+      cpu_pointer_2 <= cpu_pointer_2 + 1;
+    end
+    else
+    begin
+      cpu_pointer_2 <= cpu_pointer_2;
+    end
+  end
+end
 
 blk_mem_gen_3 CPU2router 
 (
   .clka(clk_router),    // input wire clka
-  .ena(ena),      // input wire ena
-  .wea(wea),      // input wire [0 : 0] wea
-  .addra(addra),  // input wire [17 : 0] addra
-  .dina(dina),    // input wire [7 : 0] dina
-  .douta(douta),  // output wire [7 : 0] douta
+  .ena(1),      // input wire ena
+  //.wea(wea),      // input wire [0 : 0] wea
+  .addra(router_read_addr),  // input wire [17 : 0] addra
+  //.dina(dina),    // input wire [7 : 0] dina
+  .douta(router_read_data),  // output wire [7 : 0] douta
   .clkb(clk_cpu),    // input wire clkb
-  .enb(enb),      // input wire enb
-  .web(web),      // input wire [3 : 0] web
-  .addrb(addrb),  // input wire [15 : 0] addrb
-  .dinb(dinb),    // input wire [31 : 0] dinb
-  .doutb(doutb)   // output wire [31 : 0] doutb
+  .enb(cpu_write_enb),      // input wire enb
+  .web(cpu_write_web),      // input wire [3 : 0] web
+  .addrb(cpu_write_addrb),  // input wire [15 : 0] addrb
+  .dinb(cpu_write_data),    // input wire [31 : 0] dinb
+  //.doutb(doutb)   // output wire [31 : 0] doutb
 );
 
 endmodule
