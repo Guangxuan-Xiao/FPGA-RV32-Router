@@ -164,8 +164,8 @@ blk_mem_gen_3 router2CPU
 // ============================================================================================================
 // Below is all about BRAM 2, where CPU can write and Router can read.
 
-typedef enum reg[2:0] { START, PREP1, PREP2, PREP3, ACCESS, END } router_read_state_t;
-router_write_state_t router_read_state = START;
+typedef enum reg[2:0] { START_O, PREP1, PREP2, PREP3, ACCESS_O, END_O } router_read_state_t;
+router_read_state_t router_read_state = START_O;
 reg [6:0] cpu_pointer_2;
 reg [6:0] router_pointer_2;
 reg [7:0] router_read_data;
@@ -183,6 +183,7 @@ assign internal_tx_ready = internal_tx_ready_i;
 
 wire router_start_enb = (router_pointer_2 != cpu_pointer_2) ? 1'b1 : 1'b0;
 reg[10:0] counter;
+reg[17:0] router_read_addr;
 
 always @ (posedge clk_router)
 begin
@@ -194,49 +195,49 @@ begin
     internal_tx_user_i  <= 0;
     internal_tx_last_i  <= 0;
     router_read_addr    <= 0;
-    router_read_state   <= START;
+    router_read_state   <= START_O;
   end
   else if (router_start_enb)
   begin
     case (router_read_state)
-    START:
+    START_O:
     begin
       internal_tx_data_i  <= 0;
       internal_tx_valid_i <= 0;
       internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
-      router_read_state   <= IDLE1;
+      router_read_state   <= PREP1;
     end
-    IDLE1:
+    PREP1:
     begin
       internal_tx_data_i  <= 0;
       internal_tx_valid_i <= 0;
       internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
-      router_read_state   <= IDLE2;
+      router_read_state   <= PREP2;
       counter[7:0]        <= router_read_data;
       router_read_addr    <= router_read_addr - 1;
     end
-    IDLE2:
+    PREP2:
     begin
       internal_tx_data_i     <= 0;
       internal_tx_valid_i    <= 0;
       internal_tx_ready_i    <= 0;
       internal_tx_last_i     <= 0;
-      router_read_state      <= IDLE3;
+      router_read_state      <= PREP3;
       counter[10:8]          <= router_read_data[2:0];
       router_read_addr[10:0] <= 11'b0;
     end
-    IDLE3:
+    PREP3:
     begin
       internal_tx_data_i  <= 0;
       internal_tx_valid_i <= 0;
       internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
-      router_read_state   <= ACCESS;
+      router_read_state   <= ACCESS_O;
       counter             <= counter - 1;
     end
-    ACCESS:
+    ACCESS_O:
     begin
       internal_tx_data_i  <= router_read_data;
       internal_tx_valid_i <= 1;
@@ -244,25 +245,26 @@ begin
       if (counter == 0)
       begin
         internal_tx_last_i <= 1;
-        router_read_state  <= END;
+        router_read_state  <= END_O;
         router_pointer_2   <= router_pointer_2 + 1;
       end
       else 
       begin
         internal_tx_last_i <= 0; 
-        router_read_state  <= ACCESS;
+        router_read_state  <= ACCESS_O;
         router_read_addr   <= router_read_addr + 1;
         counter            <= counter - 1;
       end
     end
-    END:
+    END_O:
     begin
-      router_read_addr_i  <= router_pointer_2 << 11 + 11'b11111111111;
+      router_read_addr    <= router_pointer_2 << 11 + 11'b11111111111;
       internal_tx_data_i  <= 0;
       internal_tx_valid_i <= 0;
       internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
       internal_tx_user_i  <= 0;
+      router_read_state   <= START_O;
     end
     endcase
   end
@@ -273,7 +275,7 @@ begin
     internal_tx_ready_i <= 0;
     internal_tx_user_i  <= 0;
     internal_tx_last_i  <= 0;
-    router_read_state   <= START;
+    router_read_state   <= START_O;
   end
 end
 
@@ -308,7 +310,7 @@ blk_mem_gen_3 CPU2router
   .enb(cpu_write_enb),      // input wire enb
   .web(cpu_write_web),      // input wire [3 : 0] web
   .addrb(cpu_write_addrb),  // input wire [15 : 0] addrb
-  .dinb(cpu_write_data),    // input wire [31 : 0] dinb
+  .dinb(cpu_write_data)    // input wire [31 : 0] dinb
   //.doutb(doutb)   // output wire [31 : 0] doutb
 );
 

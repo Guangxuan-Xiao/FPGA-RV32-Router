@@ -3,32 +3,45 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="tb_cpu_behav.wdb" id="1">
+      <db_ref path="tb_interface_behav.wdb" id="1">
          <top_modules>
-            <top_module name="\$unit_arp_cache_sv " />
             <top_module name="glbl" />
-            <top_module name="ipif_pkg" />
-            <top_module name="tb_cpu" />
-            <top_module name="vcomponents" />
+            <top_module name="tb_interface" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="201246166fs"></ZoomStartTime>
-      <ZoomEndTime time="201593167fs"></ZoomEndTime>
-      <Cursor1Time time="201710566fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="455401fs"></ZoomEndTime>
+      <Cursor1Time time="300000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="155"></NameColumnWidth>
-      <ValueColumnWidth column_width="102"></ValueColumnWidth>
+      <ValueColumnWidth column_width="96"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="2" />
-   <wvobject fp_name="/tb_cpu/dut/bus/clk" type="logic">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
+   <WVObjectSize size="6" />
+   <wvobject fp_name="/tb_interface/clk_125M" type="logic">
+      <obj_property name="ElementShortName">clk_125M</obj_property>
+      <obj_property name="ObjectShortName">clk_125M</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/rst" type="logic">
-      <obj_property name="ElementShortName">rst</obj_property>
-      <obj_property name="ObjectShortName">rst</obj_property>
+   <wvobject fp_name="/tb_interface/router_module/internal_rx_data" type="array">
+      <obj_property name="ElementShortName">internal_rx_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/internal_rx_last" type="logic">
+      <obj_property name="ElementShortName">internal_rx_last</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_last</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/internal_rx_user" type="logic">
+      <obj_property name="ElementShortName">internal_rx_user</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_user</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/internal_rx_valid" type="logic">
+      <obj_property name="ElementShortName">internal_rx_valid</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/internal_rx_ready" type="logic">
+      <obj_property name="ElementShortName">internal_rx_ready</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_ready</obj_property>
    </wvobject>
 </wave_config>
