@@ -19,7 +19,7 @@ module router_cpu_interface(
     output internal_tx_ready,
 
     input [7:0] cpu_addr_i,
-    input [7:0] cpu_data_i,
+    input [31:0] cpu_data_i,
 
     output cpu_read_en,
     output cpu_write_en,
@@ -127,18 +127,34 @@ begin
 end
 
 // A for router, B for CPU
-blk_mem_gen_3 data_interface 
+blk_mem_gen_3 router2CPU 
 (
   .clka(clk_router),    // input wire clka
   .ena(ena),      // input wire ena
   .wea(wea),      // input wire [0 : 0] wea
-  .addra(addra),  // input wire [14 : 0] addra
+  .addra(addra),  // input wire [17 : 0] addra
   .dina(dina),    // input wire [7 : 0] dina
   .douta(douta),  // output wire [7 : 0] douta
   .clkb(clk_cpu),    // input wire clkb
   .enb(enb),      // input wire enb
   .web(web),      // input wire [3 : 0] web
-  .addrb(addrb),  // input wire [12 : 0] addrb
+  .addrb(addrb),  // input wire [15 : 0] addrb
+  .dinb(dinb),    // input wire [31 : 0] dinb
+  .doutb(doutb)   // output wire [31 : 0] doutb
+);
+
+blk_mem_gen_3 CPU2router 
+(
+  .clka(clk_router),    // input wire clka
+  .ena(ena),      // input wire ena
+  .wea(wea),      // input wire [0 : 0] wea
+  .addra(addra),  // input wire [17 : 0] addra
+  .dina(dina),    // input wire [7 : 0] dina
+  .douta(douta),  // output wire [7 : 0] douta
+  .clkb(clk_cpu),    // input wire clkb
+  .enb(enb),      // input wire enb
+  .web(web),      // input wire [3 : 0] web
+  .addrb(addrb),  // input wire [15 : 0] addrb
   .dinb(dinb),    // input wire [31 : 0] dinb
   .doutb(doutb)   // output wire [31 : 0] doutb
 );
