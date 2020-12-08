@@ -259,6 +259,10 @@ module frame_datapath #(
                     s1.drop <= 0;
                 end
             end
+            else if (in.valid && !in.is_first && !in.drop && !in.dont_touch)
+            begin
+                s1.prot_type <= 3'b110;
+            end
         end
     end
 
@@ -834,6 +838,7 @@ end
                         query_port_2 <= rt_o_nexthop.port;
                         if( !rt_o_valid ||!test_packet_valid)
                         begin
+                            // TODO: drop!
                             s2.drop <= 1;
                         end
                         else
@@ -847,6 +852,10 @@ end
                         op <= query_trie_34.data[`OP];
                     end
                 endcase
+            end
+            else if (!query_trie_34.is_first)
+            begin
+                
             end
         end
     end
@@ -908,6 +917,10 @@ end
                 src_mac_addr <= 0;
                 arp_cache_wr_en <= 0;
             end
+        end
+        else if (!s2.is_first)
+        begin
+            
         end
         else
         begin 
@@ -989,8 +1002,14 @@ end
                     end
                 endcase
             end
+            else if (!s4.is_first)
+            begin
+                
+            end
         end
     end
+
+    reg [2:0] store_dst;
 
     frame_data s6;
     wire s6_ready;
@@ -1011,6 +1030,7 @@ end
                 3'b000:
                 begin
                     s6.dest <= query_port_5;
+                    store_dst <= query_port_5;
                 end
 
                 3'b001:
@@ -1023,6 +1043,10 @@ end
                     s6.dest <= 0;
                 end
                 endcase
+            end
+            else if (!s5.is_first)
+            begin
+                s6.dest <= store_dst;
             end
         end
     end
@@ -1062,7 +1086,9 @@ end
         begin
             if (out_is_first && out.valid && out_ready)
             begin
+                //TODO : change to out.dest.
                 dest <= out.dest;
+                //dest <= 4;
                 drop_by_prev <= out.drop_next;
             end
         end

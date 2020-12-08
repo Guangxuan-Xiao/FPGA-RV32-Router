@@ -23,47 +23,27 @@ module router_cpu_interface(
 
     output cpu_read_en,
     output cpu_write_en,
-    output [DATAW_WIDTH - 1 : 0] cpu_data_o
+    output [31:0] cpu_data_o
 );
 
-localparam ADDRLEN = 7;
 
-reg [1:0] use_state;               // 2'b01 for ROUTER use, 2'b10 for CPU use, else for IDLE state.
-reg bram_router_w_en;                // the enable signal for router to write BRAM data, zero disabled.
-reg bram_cpu_w_en;                   // the enable signal for cpu to write BRAM data, zero disabled.
-reg bram_router_r_en;               // the enable signal for router to read BRAM data, zero disabled.
-reg bram_cpu_r_en;                  // the enable signal for cpu to read BRAM data, zero disabled.
 
-reg [ADDRLEN:0] router_addr;        // The address for router to visit BRAM.
-reg [ADDRLEW:0] cpu_addr;           // The address for cpu to visit BRAM.
 
-reg[7:0] bram_data;                 // Data send to BRAM.
-
-reg packet_transmit_en;
-
-always_ff @ (posedge clk_router or posedge rst)
-begin
-    if(rst)
-    begin
-        use_state <= 2'b00;
-        bram_router_w_en <= 0;
-        bram_cpu_w_en <= 0;
-        bram_router_r_en <= 0;
-        bram_cpu_r_en <= 0;
-    end
-    else
-    begin
-        if (internal_rx_valid && internal_rx_ready)
-        begin
-            bram_router_w_en <= 1;
-            bram_router_r_en <= 0;
-            bram_cpu_w_en <= 0;
-            bram_cpu_r_en <= 0;
-            bram_data <= internal_rx_data;
-            router_addr <= 0;
-        end
-        // TODO
-    end
-end
+// A for router, B for CPU
+blk_mem_gen_3 data_interface 
+(
+  .clka(clk_router),    // input wire clka
+  .ena(ena),      // input wire ena
+  .wea(wea),      // input wire [0 : 0] wea
+  .addra(addra),  // input wire [14 : 0] addra
+  .dina(dina),    // input wire [7 : 0] dina
+  .douta(douta),  // output wire [7 : 0] douta
+  .clkb(clk_cpu),    // input wire clkb
+  .enb(enb),      // input wire enb
+  .web(web),      // input wire [3 : 0] web
+  .addrb(addrb),  // input wire [12 : 0] addrb
+  .dinb(dinb),    // input wire [31 : 0] dinb
+  .doutb(doutb)   // output wire [31 : 0] doutb
+);
 
 endmodule
