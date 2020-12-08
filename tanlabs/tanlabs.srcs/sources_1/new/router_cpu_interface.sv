@@ -23,10 +23,14 @@ module router_cpu_interface(
 
     output cpu_read_en,
     output cpu_write_en,
-    output [31:0] cpu_data_o
+    output [31:0] cpu_data_o,
+    output reg [7:0] cpu_state;
 );
 
 typedef enum reg[1:0] { START, ACCESS, END } router_write_state;
+reg [3:0] router_w = 4'b0;
+reg [3:0] router_r = 4'b0; 
+assign cpu_state = {router_w, router_r};
 
 // Showing the state of router write.
 always @ (posedge clk_router)
@@ -34,24 +38,33 @@ begin
    if (rst)
    begin
      router_write_state <= START;
+     router_w <= 0;
    end
    else
    begin
      if (!internal_rx_ready || !internal_rx_valid)
      begin
        router_write_state <= START;
+       router_w[2] <= 0;
+       router_w[3] <= 0;
      end
      else if (internal_rx_ready && internal_rx_valid && !internal_rx_last)
      begin
        router_write_state <= ACCESS;
+       router_w[2] <= 1;
+       router_w[3] <= 0;
      end
      else if (internal_rx_ready && internal_rx_valid && internal_rx_last)
      begin
        router_write_state <= END;
+       router_w[2] <= 0;
+       router_w[3] <= 1;
      end
      else
      begin
        router_write_state <= START;
+       router_w[2] <= 0;
+       router_w[3] <= 0;
      end
    end
 end
@@ -73,6 +86,8 @@ begin
         internal_tx_data <= 0;
         bram_b_addr <= 0;
         router_read_state <= START;
+        router_r[2] <= 0;
+        router_r[3] <= 0;
   end 
   else
   begin
@@ -86,6 +101,8 @@ begin
         internal_tx_data <= 0;
         bram_b_addr <= bram_b_pointer;
         router_read_state <= ACCESS;
+        router_r[2] <= 1;
+        router_r[3] <= 0;
       end
       else if (router_read_state == ACCESS)
       begin
@@ -95,6 +112,8 @@ begin
           internal_tx_data <= bram_b_data;
           bram_b_addr <= bram_b_addr + 4 ; // Uncertain.
           router_read_state <= END;
+          router_r[2] <= 0;
+          router_r[3] <= 1;
         end
         else 
         begin
@@ -102,6 +121,8 @@ begin
           internal_tx_data <= bram_b_data;
           bram_b_addr <= bram_b_addr + 4 ; // Uncertain.
           router_read_state <= ACCESS;
+          router_r[2] <= 1;
+          router_r[3] <= 0;
         end
       end
       else
@@ -112,6 +133,8 @@ begin
         internal_tx_data  <= 0;
         bram_b_addr <= 0;
         router_read_state <= START;
+        router_r[2] <= 0;
+        router_r[3] <= 0;
       end
     end
     else
@@ -122,9 +145,13 @@ begin
         internal_tx_data <= 0;
         bram_b_addr <= 0;
         router_read_state <= START;
+        router_r[2] <= 0;
+        router_r[3] <= 0;
     end
   end
 end
+
+reg [7:0] cpu_state;
 
 // A for router, B for CPU
 blk_mem_gen_3 router2CPU 
