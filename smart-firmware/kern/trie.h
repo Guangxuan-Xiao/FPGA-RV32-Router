@@ -18,57 +18,57 @@ typedef struct
     uint32_t nexthop_idx;
 } trie_node_t;
 
-inline uint32_t *get_node_addr(uint32_t layer, uint32_t idx)
+uint32_t *get_node_addr(uint32_t layer, uint32_t idx)
 {
     if (idx == 0)
         return 0;
-    return (uint32_t *)TRIE_BASE_ADDR + (layer << TRIE_LAYER_WIDTH) + (idx << TRIE_NODE_WIDTH);
+    return (uint32_t *)(TRIE_BASE_ADDR + (layer << TRIE_LAYER_WIDTH) + (idx << TRIE_NODE_WIDTH));
 }
 
-inline uint32_t *get_nexthop_ip_addr(int idx)
+uint32_t *get_nexthop_ip_addr(uint32_t idx)
 {
-    return (uint32_t *)NEXTHOP_BASE_ADDR + (idx << NEXTHOP_WIDTH);
+    return (uint32_t *)(NEXTHOP_BASE_ADDR + (idx << NEXTHOP_WIDTH));
 }
 
-inline uint32_t *get_nexthop_port_addr(int idx)
+uint32_t *get_nexthop_port_addr(uint32_t idx)
 {
-    return (uint32_t *)NEXTHOP_BASE_ADDR + (idx << NEXTHOP_WIDTH) + 4;
+    return (uint32_t *)(NEXTHOP_BASE_ADDR + (idx << NEXTHOP_WIDTH) + 4);
 }
 
-inline uint32_t parse_lc(uint32_t node_data)
+uint32_t parse_lc(uint32_t node_data)
 {
     return (node_data >> 19) & (0x1FFF);
 }
 
-inline uint32_t parse_rc(uint32_t node_data)
+uint32_t parse_rc(uint32_t node_data)
 {
     return (node_data >> 6) & (0x1FFF);
 }
 
-inline uint32_t parse_nexthop(uint32_t node_data)
+uint32_t parse_nexthop(uint32_t node_data)
 {
     return node_data & 0x3F;
 }
 
-inline void set_lc(uint32_t *node_addr, uint32_t lc_idx)
+void set_lc(uint32_t *node_addr, uint32_t lc_idx)
 {
     *node_addr &= 0x7FFFF;
     *node_addr |= (lc_idx & 0x1FFF) << 19;
 }
 
-inline void set_rc(uint32_t *node_addr, uint32_t rc_idx)
+void set_rc(uint32_t *node_addr, uint32_t rc_idx)
 {
     *node_addr &= 0xFFF8003F;
     *node_addr |= (rc_idx & 0x1FFF) << 6;
 }
 
-inline void set_nexthop(uint32_t *node_addr, uint32_t nexthop_idx)
+void set_nexthop(uint32_t *node_addr, uint32_t nexthop_idx)
 {
     *node_addr &= 0xFFFFFFC0;
     *node_addr |= (nexthop_idx & 0x3F);
 }
 
-inline void parse_node(uint32_t *node_ptr, trie_node_t *node)
+void parse_node(uint32_t *node_ptr, trie_node_t *node)
 {
     uint32_t layer = ((uint32_t)node_ptr - TRIE_BASE_ADDR) >> TRIE_LAYER_WIDTH;
     uint32_t node_data = *node_ptr;
