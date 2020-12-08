@@ -1,5 +1,5 @@
-#ifndef ROUTE_TABLE_H
-#define ROUTE_TABLE_H
+#ifndef LOOKUP_H
+#define LOOKUP_H
 #include <stdint.h>
 
 /*
