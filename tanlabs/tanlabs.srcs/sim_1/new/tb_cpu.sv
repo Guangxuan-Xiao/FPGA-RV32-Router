@@ -43,7 +43,7 @@ wire uart_tbre;          //发�?�数据标�?
 wire uart_tsre;          //数据发�?�完毕标�?
 
 //Windows�?要注意路径分隔符的转义，例如"D:\\foo\\bar.bin"
-parameter BASE_RAM_INIT_FILE = "C:/Files/Documents/2020-2021Autumn/Learning/Computer_Network/hardware_router/joint-lab-g4/program/trie_4M.bin";
+parameter BASE_RAM_INIT_FILE = "C:/Files/Documents/2020-2021Autumn/Learning/Computer_Network/hardware_router/joint-lab-g4/firmware/kernel_4M.bin";
 parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路�?
 parameter FLASH_INIT_FILE = "/media/xgx/OS/Files/Documents/2020-2021Autumn/Learning/Computer_Organization/cod20-grp04/program/rand_8M.bin";    //Flash初始化文件，请修改为实际的绝对路�?
 
