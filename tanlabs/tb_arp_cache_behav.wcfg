@@ -12,17 +12,21 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="455401fs"></ZoomEndTime>
-      <Cursor1Time time="300000fs"></Cursor1Time>
+      <ZoomEndTime time="95101fs"></ZoomEndTime>
+      <Cursor1Time time="22700fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="155"></NameColumnWidth>
-      <ValueColumnWidth column_width="96"></ValueColumnWidth>
+      <NameColumnWidth column_width="279"></NameColumnWidth>
+      <ValueColumnWidth column_width="347"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="6" />
-   <wvobject fp_name="/tb_interface/clk_125M" type="logic">
-      <obj_property name="ElementShortName">clk_125M</obj_property>
-      <obj_property name="ObjectShortName">clk_125M</obj_property>
+   <WVObjectSize size="12" />
+   <wvobject fp_name="/tb_interface/router_module/clk_router" type="logic">
+      <obj_property name="ElementShortName">clk_router</obj_property>
+      <obj_property name="ObjectShortName">clk_router</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/clk_cpu" type="logic">
+      <obj_property name="ElementShortName">clk_cpu</obj_property>
+      <obj_property name="ObjectShortName">clk_cpu</obj_property>
    </wvobject>
    <wvobject fp_name="/tb_interface/router_module/internal_rx_data" type="array">
       <obj_property name="ElementShortName">internal_rx_data[7:0]</obj_property>
@@ -43,5 +47,25 @@
    <wvobject fp_name="/tb_interface/router_module/internal_rx_ready" type="logic">
       <obj_property name="ElementShortName">internal_rx_ready</obj_property>
       <obj_property name="ObjectShortName">internal_rx_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/router_write_state" type="array">
+      <obj_property name="ElementShortName">router_write_state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">router_write_state[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/router_write_data" type="array">
+      <obj_property name="ElementShortName">router_write_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">router_write_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/router_write_en" type="logic">
+      <obj_property name="ElementShortName">router_write_en</obj_property>
+      <obj_property name="ObjectShortName">router_write_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/router_write_addr" type="array">
+      <obj_property name="ElementShortName">router_write_addr[17:0]</obj_property>
+      <obj_property name="ObjectShortName">router_write_addr[17:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_interface/router_module/router_pointer" type="array">
+      <obj_property name="ElementShortName">router_pointer[6:0]</obj_property>
+      <obj_property name="ObjectShortName">router_pointer[6:0]</obj_property>
    </wvobject>
 </wave_config>

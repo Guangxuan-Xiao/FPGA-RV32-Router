@@ -146,7 +146,7 @@ assign cpu_start_enb = (router_pointer != cpu_pointer) ? 1'b1 : 1'b0;
 blk_mem_gen_3 router2CPU 
 (
   .clka(clk_router),    // input wire clka
-  .ena(1),      // input wire ena
+  .ena(1'b1),      // input wire ena
   .wea(router_write_en),      // input wire [0 : 0] wea
   .addra(router_write_addr),  // input wire [17 : 0] addra
   .dina(router_write_data),    // input wire [7 : 0] dina
