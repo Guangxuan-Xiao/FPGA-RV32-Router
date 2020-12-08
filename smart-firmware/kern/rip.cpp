@@ -1,5 +1,5 @@
 #include "rip.h"
-#include <inet.h>
+#include <arpa/inet.h>
 static const uint32_t TOP1 = 0x80000000;
 /*
   在头文件 rip.h 中定义了如下的结构体：
@@ -82,7 +82,7 @@ bool disassemble(const uint8_t *packet, uint32_t len, RipPacket *output)
     uint32_t num = (len - i) / 20;
     output->numEntries = num;
     output->command = command;
-    for (int j = 0; j < num; ++j)
+    for (uint32_t j = 0; j < num; ++j)
     {
         RipEntry &entry = output->entries[j];
         uint16_t family = (packet[i] << 8) | packet[i + 1];
@@ -133,7 +133,7 @@ uint32_t assemble(const RipPacket *rip, uint8_t *buffer)
     buffer[i] = buffer[i + 1] = 0;
     i += 2;
     uint8_t family = rip->command == 1 ? 0 : 2;
-    for (int j = 0; j < rip->numEntries; ++j)
+    for (uint32_t j = 0; j < rip->numEntries; ++j)
     {
         *(uint8_t *)(buffer + i) = 0;
         ++i;
