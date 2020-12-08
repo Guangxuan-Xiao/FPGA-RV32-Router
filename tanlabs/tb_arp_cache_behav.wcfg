@@ -14,15 +14,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="3154001fs"></ZoomEndTime>
-      <Cursor1Time time="1000000fs"></Cursor1Time>
+      <ZoomStartTime time="201246166fs"></ZoomStartTime>
+      <ZoomEndTime time="201593167fs"></ZoomEndTime>
+      <Cursor1Time time="201710566fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="442"></NameColumnWidth>
-      <ValueColumnWidth column_width="355"></ValueColumnWidth>
+      <NameColumnWidth column_width="155"></NameColumnWidth>
+      <ValueColumnWidth column_width="102"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="35" />
+   <WVObjectSize size="2" />
    <wvobject fp_name="/tb_cpu/dut/bus/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -30,139 +30,5 @@
    <wvobject fp_name="/tb_cpu/dut/bus/rst" type="logic">
       <obj_property name="ElementShortName">rst</obj_property>
       <obj_property name="ObjectShortName">rst</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/cpu/pc" type="array">
-      <obj_property name="ElementShortName">pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">pc[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/ram_addr_i" type="array">
-      <obj_property name="ElementShortName">ram_addr_i[31:0]</obj_property>
-      <obj_property name="ObjectShortName">ram_addr_i[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/ram_be_i" type="array">
-      <obj_property name="ElementShortName">ram_be_i[3:0]</obj_property>
-      <obj_property name="ObjectShortName">ram_be_i[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/ram_data_cpu" type="array">
-      <obj_property name="ElementShortName">ram_data_cpu[31:0]</obj_property>
-      <obj_property name="ObjectShortName">ram_data_cpu[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/ram_data_ram" type="array">
-      <obj_property name="ElementShortName">ram_data_ram[31:0]</obj_property>
-      <obj_property name="ObjectShortName">ram_data_ram[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/ram_data_reg" type="array">
-      <obj_property name="ElementShortName">ram_data_reg[31:0]</obj_property>
-      <obj_property name="ObjectShortName">ram_data_reg[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/ram_oe_i" type="logic">
-      <obj_property name="ElementShortName">ram_oe_i</obj_property>
-      <obj_property name="ObjectShortName">ram_oe_i</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/ram_ready" type="logic">
-      <obj_property name="ElementShortName">ram_ready</obj_property>
-      <obj_property name="ObjectShortName">ram_ready</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/ram_req" type="logic">
-      <obj_property name="ElementShortName">ram_req</obj_property>
-      <obj_property name="ObjectShortName">ram_req</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/ram_we_i" type="logic">
-      <obj_property name="ElementShortName">ram_we_i</obj_property>
-      <obj_property name="ObjectShortName">ram_we_i</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_addr" type="array">
-      <obj_property name="ElementShortName">base_ram_addr[19:0]</obj_property>
-      <obj_property name="ObjectShortName">base_ram_addr[19:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_be_n" type="array">
-      <obj_property name="ElementShortName">base_ram_be_n[3:0]</obj_property>
-      <obj_property name="ObjectShortName">base_ram_be_n[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_ce_n" type="logic">
-      <obj_property name="ElementShortName">base_ram_ce_n</obj_property>
-      <obj_property name="ObjectShortName">base_ram_ce_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_data" type="array">
-      <obj_property name="ElementShortName">base_ram_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">base_ram_data[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_data_o" type="array">
-      <obj_property name="ElementShortName">base_ram_data_o[31:0]</obj_property>
-      <obj_property name="ObjectShortName">base_ram_data_o[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_data_reg" type="array">
-      <obj_property name="ElementShortName">base_ram_data_reg[31:0]</obj_property>
-      <obj_property name="ObjectShortName">base_ram_data_reg[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_oe_n" type="logic">
-      <obj_property name="ElementShortName">base_ram_oe_n</obj_property>
-      <obj_property name="ObjectShortName">base_ram_oe_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_req" type="logic">
-      <obj_property name="ElementShortName">base_ram_req</obj_property>
-      <obj_property name="ObjectShortName">base_ram_req</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/base_ram_we_n" type="logic">
-      <obj_property name="ElementShortName">base_ram_we_n</obj_property>
-      <obj_property name="ObjectShortName">base_ram_we_n</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_addr" type="array">
-      <obj_property name="ElementShortName">nexthop_addr[5:0]</obj_property>
-      <obj_property name="ObjectShortName">nexthop_addr[5:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_data_cpu" type="array">
-      <obj_property name="ElementShortName">nexthop_data_cpu</obj_property>
-      <obj_property name="ObjectShortName">nexthop_data_cpu</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_data_reg" type="array">
-      <obj_property name="ElementShortName">nexthop_data_reg</obj_property>
-      <obj_property name="ObjectShortName">nexthop_data_reg</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_data_router" type="array">
-      <obj_property name="ElementShortName">nexthop_data_router</obj_property>
-      <obj_property name="ObjectShortName">nexthop_data_router</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_ip_req" type="logic">
-      <obj_property name="ElementShortName">nexthop_ip_req</obj_property>
-      <obj_property name="ObjectShortName">nexthop_ip_req</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_phy_addr" type="array">
-      <obj_property name="ElementShortName">nexthop_phy_addr[5:0]</obj_property>
-      <obj_property name="ObjectShortName">nexthop_phy_addr[5:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_port_req" type="logic">
-      <obj_property name="ElementShortName">nexthop_port_req</obj_property>
-      <obj_property name="ObjectShortName">nexthop_port_req</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_req" type="logic">
-      <obj_property name="ElementShortName">nexthop_req</obj_property>
-      <obj_property name="ObjectShortName">nexthop_req</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/bus/nexthop_web" type="array">
-      <obj_property name="ElementShortName">nexthop_web[4:0]</obj_property>
-      <obj_property name="ObjectShortName">nexthop_web[4:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/cpu/REGFILE/regs[5]" type="array">
-      <obj_property name="ElementShortName">[5][31:0]</obj_property>
-      <obj_property name="ObjectShortName">[5][31:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/cpu/REGFILE/regs[4]" type="array">
-      <obj_property name="ElementShortName">[4][31:0]</obj_property>
-      <obj_property name="ObjectShortName">[4][31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/cpu/REGFILE/regs[3]" type="array">
-      <obj_property name="ElementShortName">[3][31:0]</obj_property>
-      <obj_property name="ObjectShortName">[3][31:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/cpu/REGFILE/regs[2]" type="array">
-      <obj_property name="ElementShortName">[2][31:0]</obj_property>
-      <obj_property name="ObjectShortName">[2][31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_cpu/dut/cpu/REGFILE/regs[1]" type="array">
-      <obj_property name="ElementShortName">[1][31:0]</obj_property>
-      <obj_property name="ObjectShortName">[1][31:0]</obj_property>
    </wvobject>
 </wave_config>

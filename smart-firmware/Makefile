@@ -1,5 +1,6 @@
 kernel_elf := build/kernel.elf
 kernel_bin := build/kernel.bin
+kernel_asm := build/kernel.asm
 
 TARGET := riscv64-unknown-elf-
 
@@ -16,6 +17,7 @@ CXX += -static -nostdlib -fno-builtin -nostdinc
 LD := $(TARGET)ld -melf32lriscv -static -nostdlib
 
 OBJCOPY := $(TARGET)objcopy
+OBJDUMP := $(TARGET)objdump
 
 linker_script := linker.ld
 boot_asm_source_files := $(wildcard boot/*.S)
@@ -57,6 +59,9 @@ $(kernel_elf): $(boot_asm_object_files) $(kern_object_files) $(linker_script) $(
 $(kernel_bin): $(kernel_elf)
 	@echo + objcopy $@
 	@$(OBJCOPY) -S --adjust-vma -0x80000000 -O binary $< $@
+
+$(kernel_asm): $(kernel_elf)
+	$(OBJDUMP) -xd $< > $@
 
 build/boot/%.o: boot/%.S
 	@echo + as $@

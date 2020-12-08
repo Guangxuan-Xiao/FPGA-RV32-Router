@@ -13,3 +13,5 @@
 .Xil/
 in_frames.pcap
 out_frames.pcap
+*.lnk
+

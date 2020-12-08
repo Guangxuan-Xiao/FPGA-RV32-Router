@@ -85,10 +85,21 @@ module bus(input wire clk,
     localparam NEXTHOP_ADDR_START = 32'h20200000;
     localparam NEXTHOP_ADDR_END   = 32'h202001FF;
 
+    localparam CLOCK_ADDR = 32'h10000010;
+    reg[31:0] counter;
+    always_ff @(posedge clk, posedge rst) begin
+        if (rst) begin
+            counter <= 0;
+        end else begin
+            counter <= counter + 1;
+        end
+    end
+    
     wire base_ram_req            = ram_req && (ram_addr_i >= BASE_ADDR_START) && (ram_addr_i <= BASE_ADDR_END);
     wire ext_ram_req             = ram_req && (ram_addr_i >= EXT_ADDR_START) && (ram_addr_i <= EXT_ADDR_END);
     wire uart_state_req = ram_req && ram_addr_i == UART_CTRL_ADDRESS;
     wire uart_data_req  = ram_req && ram_addr_i == UART_DATA_ADDRESS;
+    wire clock_req  = ram_req && ram_addr_i == CLOCK_ADDR;
     wire sram_req = base_ram_req || ext_ram_req || uart_state_req || uart_data_req;
     wire flash_req = ram_req && ram_addr_i >= FLASH_ADDR_START && ram_addr_i <= FLASH_ADDR_END;
 
@@ -167,7 +178,7 @@ module bus(input wire clk,
     end
 
     assign ram_data_ram = ram_data_reg;
-    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req;
+    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req;
 
     // CPU Reading RAM control
     always_comb begin
@@ -181,6 +192,8 @@ module bus(input wire clk,
             ram_data_reg = ext_ram_data_o;
         end else if (uart_state_req) begin
             ram_data_reg = uart_status2;
+        end else if (clock_req) begin
+            ram_data_reg = counter;
         end else if (flash_req) begin
             ram_data_reg = {16'b0, flash_d};
         end else if (trie_req) begin
@@ -300,4 +313,6 @@ module bus(input wire clk,
             nexthop_web = 5'b10000;
         end
     end
+
+    // Clock
 endmodule
