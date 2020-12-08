@@ -15,23 +15,19 @@ void start(void)
 
     init_uart();
 
-    printf("hello, world\r\n");
+    printf("hello, world\n");
     RoutingTableEntry entry = {
         .ip = 0x12345678,
         .prefix_len = 24,
         .port = 3,
         .nexthop_ip = 0xabcdabcd};
-    printf("1\r\n");
     insert(entry);
-    printf("2\r\n");
     uint32_t nexthop_ip, port;
-    printf("3\r\n");
     search(entry.ip, &nexthop_ip, &port);
-    printf("Nexthop: %x\r\nPort: %x\r\n", nexthop_ip, port);
+    printf("Nexthop: %x\nPort: %x\n", nexthop_ip, port);
     remove(entry.ip, entry.prefix_len);
-    printf("4\r\n");
     search(entry.ip, &nexthop_ip, &port);
-    printf("Nexthop: %x\r\nPort: %x\r\n", nexthop_ip, port);
+    printf("Nexthop: %x\nPort: %x\n", nexthop_ip, port);
     while (true)
         ;
 }

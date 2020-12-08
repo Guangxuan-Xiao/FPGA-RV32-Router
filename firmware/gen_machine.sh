@@ -1,1 +1,1 @@
-riscv64-unknown-elf-objdump $1.elf -d > $1.d
+riscv64-unknown-elf-objdump $1.elf -D > $1.d
