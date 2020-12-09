@@ -22,12 +22,12 @@ static route_node_t route_nodes[ROUTE_NODES_NUM];
 void RoutingTableEntry::print()
 {
     printf("IP: %08x\n", ip);
-    printf("Prefix Len: %u\n", ip);
-    printf("IP: %08x\n", ip);
-    printf("IP: %08x\n", ip);
-    printf("IP: %08x\n", ip);
-
+    printf("Prefix Length: %u\n", prefix_len);
+    printf("Port: %u\n", port);
+    printf("Next-hop IP: %08x\n", nexthop_ip);
+    printf("Metric: %d\n", metric);
 }
+
 void init()
 {
     route_node_num = 1;
@@ -230,6 +230,11 @@ void lookup_test()
         .nexthop_ip = 0x0109a8c0,
         .metric = 3};
     insert(entry2);
+    RoutingTableEntry buffer[10];
+    uint32_t len = 0;
+    traverse(buffer, &len);
+    for (uint32_t i; i < len; ++i)
+        buffer[i].print();
     uint32_t nexthop_ip, port, metric;
     search(0x04030201, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
