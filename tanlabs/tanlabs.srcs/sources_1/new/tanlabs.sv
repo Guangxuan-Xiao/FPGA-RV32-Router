@@ -29,7 +29,7 @@ module tanlabs(
     input wire clock_btn,            //BTN5手动时钟按钮开关，带消抖电路，按下时为1
     input wire reset_btn,            //BTN6手动复位按钮开关，带消抖电路，按下时为1
     input wire[3:0] touch_btn,       //BTN1~BTN4，按钮开关，按下时为1
-    input wire[31:0] dip_sw,         //32位拨码开关，拨到“ON”时为1
+    input wire[15:0] dip_sw,         //32位拨码开关，拨到“ON”时为1
     output wire[7:0] dpy0,           //数码管低位信号，包括小数点，输出1点亮
     output wire[7:0] dpy1,           //数码管高位信号，包括小数点，输出1点亮
     output wire uart_rdn,            //读串口信号，低有效
@@ -452,6 +452,12 @@ module tanlabs(
     wire dp_tx_valid;
 
     // README: Instantiate your datapath.
+    reg [31:0] ip1_i;
+    reg [31:0] ip2_i;
+    reg [31:0] ip3_i;
+    reg [31:0] ip4_i;
+    reg [43:0] mac_i;
+
     wire[3:0] trie_web[32:0];
     wire[4:0] nexthop_web;
     wire[TRIE_ADDR_WIDTH-1:0] node_addr[32:0];
@@ -477,6 +483,13 @@ module tanlabs(
         .s_id(dp_rx_id),
         .s_valid(dp_rx_valid),
         .s_ready(dp_rx_ready),
+
+        .dip_sw(dip_sw),
+        .ip1_i(ip1_i),
+        .ip2_i(ip2_i),
+        .ip3_i(ip3_i),
+        .ip4_i(ip4_i),
+        .mac_i(mac_i),
 
         .m_data(dp_tx_data),
         .m_keep(dp_tx_keep),
@@ -671,7 +684,13 @@ module tanlabs(
     .node_data_router(node_data_router),
     .nexthop_addr(nexthop_addr),
     .nexthop_data_cpu(nexthop_data_cpu),
-    .nexthop_data_router(nexthop_data_router)
+    .nexthop_data_router(nexthop_data_router),
+
+    .ip1_o(ip1_i),
+    .ip2_o(ip2_i),
+    .ip3_o(ip3_i),
+    .ip4_o(ip4_i),
+    .mac_o(mac_i)
     );
     
     

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "router.h"
+#include "lookup.h"
 #include "timer.h"
 static void print_hello()
 {
