@@ -202,8 +202,8 @@ module frame_datapath #(
     
     reg[43:0] mac[2];
     reg[31:0] ip0[2], ip1[2], ip2[2], ip3[2];
-    always_ff @(posedge eth_clk, posedge rst) begin
-        if (rst) begin
+    always_ff @(posedge eth_clk, posedge reset) begin
+        if (reset) begin
             mac <= '{default:44'h10aaaaaaaaa};
             ip0 <= '{default:32'h0100000a};
             ip1 <= '{default:32'h0101000a};
