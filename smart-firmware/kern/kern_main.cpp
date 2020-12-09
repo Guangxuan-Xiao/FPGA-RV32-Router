@@ -20,8 +20,8 @@ static void print_hello()
 int main()
 {
 	print_hello();
-	init();
-	lookup_test();
-	// clock_test();
+	// lookup_test();
+	clock_test();
+	// router_rip();
 	return 233;
 }
