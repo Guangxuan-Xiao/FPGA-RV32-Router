@@ -19,6 +19,13 @@ module frame_datapath #(
     input wire s_valid,
     output wire s_ready,
 
+    input wire [31:0] dip_sw,
+    input wire [31:0] ip1_i,
+    input wire [31:0] ip2_i,
+    input wire [31:0] ip3_i,
+    input wire [31:0] ip4_i,
+    input wire [47:0] mac_i,
+
     output wire [DATA_WIDTH - 1:0] m_data,
     output wire [DATA_WIDTH / 8 - 1:0] m_keep,
     output wire m_last,
@@ -193,7 +200,39 @@ module frame_datapath #(
     reg test_packet_valid;
     assign test_packet_valid = 1;
 
-    
+    always@(*)
+    begin
+        // This block aims at getting my MAC and IP according to in.id.
+        case(in.id)
+            3'b000:
+            begin
+                my_mac <= {mac_i[47:4], dip_sw[15:12]};
+                my_ip  <= ip1_i;
+            end
+            3'b001:
+            begin
+                my_mac <= {mac_i[47:4], dip_sw[11:8]};
+                my_ip  <= ip2_i;
+            end
+            3'b010:
+            begin
+                my_mac <= {mac_i[47:4], dip_sw[7:4]};
+                my_ip  <= ip3_i;
+            end
+            3'b011:
+            begin
+                my_mac <= {mac_i[47:4], dip_sw[3:0]};
+                my_ip  <= ip4_i;
+            end
+            default:
+            begin
+                my_mac <= 48'h0;
+                my_ip <= 32'h0;
+            end
+        endcase
+    end
+
+    /*
     always@(*)
     begin
         // This block aims at getting my MAC and IP according to in.id.
@@ -225,7 +264,7 @@ module frame_datapath #(
             end
         endcase
     end
-
+    */
     frame_data s1;
     wire s1_ready;
     assign in_ready = s1_ready || !in.valid;

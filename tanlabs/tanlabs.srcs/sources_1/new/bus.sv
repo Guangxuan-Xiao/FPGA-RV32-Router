@@ -42,7 +42,12 @@ module bus(input wire clk,
     input trie_node_t node_data_router[32:0],
     output reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr,
     output nexthop_t nexthop_data_cpu,
-    input nexthop_t nexthop_data_router
+    input nexthop_t nexthop_data_router,
+    output reg [47:0] mac_o,
+    output reg [31:0] ip1_o,
+    output reg [31:0] ip2_o,
+    output reg [31:0] ip3_o,
+    output reg [31:0] ip4_o
     );
     // | 0x80000000-0x800FFFFF | 监控程序代码 |
     // | 0x80100000-0x803FFFFF | 用户程序代码 |
