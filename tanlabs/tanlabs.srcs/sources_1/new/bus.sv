@@ -57,10 +57,10 @@ module bus(input wire clk,
     output reg cpu_finish_enb,
     output reg [6:0] cpu_finish_addrb,
     output reg [43:0] mac_o,
+    output reg [31:0] ip0_o,
     output reg [31:0] ip1_o,
     output reg [31:0] ip2_o,
-    output reg [31:0] ip3_o,
-    output reg [31:0] ip4_o
+    output reg [31:0] ip3_o
     );
     // | 0x80000000-0x800FFFFF | 监控程序代码 |
     // | 0x80100000-0x803FFFFF | 用户程序代码 |
@@ -130,6 +130,12 @@ module bus(input wire clk,
     localparam BUFFER_END_WRITE  = 32'h70000002;
 
     localparam CLOCK_ADDR = 32'h10000010;
+    localparam IP0_ADDR = 32'h10000100;
+    localparam IP1_ADDR = 32'h10000110;
+    localparam IP2_ADDR = 32'h10000120;
+    localparam IP3_ADDR = 32'h10000130;
+    localparam MAC_ADDR = 32'h10000200;
+
     reg[31:0] counter;
     always_ff @(posedge clk, posedge rst) begin
         if (rst) begin
@@ -146,6 +152,11 @@ module bus(input wire clk,
     wire clock_req  = ram_req && ram_addr_i == CLOCK_ADDR;
     wire sram_req = base_ram_req || ext_ram_req || uart_state_req || uart_data_req;
     wire flash_req = ram_req && ram_addr_i >= FLASH_ADDR_START && ram_addr_i <= FLASH_ADDR_END;
+    wire ip0_req  = ram_req && ram_addr_i == IP0_ADDR;
+    wire ip1_req  = ram_req && ram_addr_i == IP1_ADDR;
+    wire ip2_req  = ram_req && ram_addr_i == IP2_ADDR;
+    wire ip3_req  = ram_req && ram_addr_i == IP3_ADDR;
+    wire mac_req  = ram_req && ram_addr_i == MAC_ADDR;
 
     reg[31:0] base_ram_data_reg, ext_ram_data_reg, ram_data_reg;
     wire[19:0] sram_phy_addr = ram_addr_i[21:2];
@@ -231,24 +242,30 @@ module bus(input wire clk,
     end
 
     assign ram_data_ram = ram_data_reg;
-    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req | buffer_req | read_end | write_end;
+    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req | buffer_req | read_end | write_end | ip0_req | ip1_req | ip2_req | ip3_req | mac_req;
 
     // CPU Reading RAM control
     always_comb begin
         if (base_ram_req) begin
             ram_data_reg = base_ram_data;
-            cpu_write_enb   = 0;
-            cpu_write_web   = 0;
-            cpu_write_addrb = buffer_addr;
-            cpu_write_data  = 0;
-            cpu_read_enb    = 0;
-            cpu_read_addrb  = buffer_addr;
+        end else if (uart_data_req) begin
+            ram_data_reg = base_ram_data;
         end else if (ext_ram_req) begin
             ram_data_reg = ext_ram_data_o;
         end else if (uart_state_req) begin
             ram_data_reg = uart_status2;
         end else if (clock_req) begin
             ram_data_reg = counter;
+        end else if (mac_req) begin
+            ram_data_reg = mac_o[31:0];
+        end else if (ip0_req) begin
+            ram_data_reg = ip0_o;
+        end else if (ip1_req) begin
+            ram_data_reg = ip1_o;
+        end else if (ip2_req) begin
+            ram_data_reg = ip2_o;
+        end else if (ip3_req) begin
+            ram_data_reg = ip3_o;
         end else if (flash_req) begin
             ram_data_reg = {16'b0, flash_d};
         end else if (trie_req) begin
@@ -404,4 +421,24 @@ module bus(input wire clk,
         end
     end
 
+    // IP and MAC management
+    always_ff @(posedge clk, posedge rst) begin
+        if (rst) begin
+            mac_o <= 44'h10aaaaaaaaa;
+            ip0_o <= 32'h0100000a;
+            ip1_o <= 32'h0101000a;
+            ip2_o <= 32'h0102000a;
+            ip3_o <= 32'h0103000a;
+        end else if (ip0_req & ram_we_i) begin
+            ip0_o <= ram_data_cpu;
+        end else if (ip1_req & ram_we_i) begin
+            ip1_o <= ram_data_cpu;
+        end else if (ip2_req & ram_we_i) begin
+            ip2_o <= ram_data_cpu;
+        end else if (ip3_req & ram_we_i) begin
+            ip3_o <= ram_data_cpu;
+        end else if (mac_req & ram_we_i) begin
+            mac_o[31:0] <= ram_data_cpu;
+        end
+    end
 endmodule
