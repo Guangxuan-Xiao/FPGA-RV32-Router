@@ -20,6 +20,6 @@ int main()
 {
 	print_hello();
 	lookup_test();
-	clock_test();
+	// clock_test();
 	return 233;
 }
