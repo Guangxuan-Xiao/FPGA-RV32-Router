@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "router.h"
+#include "lookup.h"
 #include "timer.h"
 static void print_hello()
 {
@@ -19,6 +20,7 @@ static void print_hello()
 int main()
 {
 	print_hello();
+	init();
 	lookup_test();
 	// clock_test();
 	return 233;

@@ -4,6 +4,7 @@
 static int layer_size[32] = {0};
 static int nexthop_size = 0;
 static const int ROUTE_NODES_NUM = 1 << 16;
+static int route_node_num;
 class route_node_t
 {
 public:
@@ -12,14 +13,20 @@ public:
     uint32_t metric;
     route_node_t() : lc(0), rc(0), metric(0xffffffff) {}
     static const uint32_t root = 1;
-    static int size;
     static uint32_t new_node()
     {
-        return ++size;
+        return ++route_node_num;
     }
 };
-int route_node_t::size = 1;
-route_node_t route_nodes[ROUTE_NODES_NUM];
+static route_node_t route_nodes[ROUTE_NODES_NUM];
+void init()
+{
+    route_node_num = 1;
+    nexthop_size = 0;
+    for (int i = 0; i < 32; ++i)
+        layer_size[i] = 0;
+}
+
 void insert(RoutingTableEntry entry)
 {
     trie_node_t parent;
@@ -176,4 +183,43 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
     *nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
     *port = *get_nexthop_port_addr(nexthop_idx);
     return nexthop_idx;
+}
+
+void lookup_test()
+{
+    RoutingTableEntry entry1 = {
+        .ip = 0x00030201,
+        .prefix_len = 24,
+        .port = 9,
+        .nexthop_ip = 0x0203a8c0,
+        .metric = 5};
+    insert(entry1);
+    RoutingTableEntry entry2 = {
+        .ip = 0x04030201,
+        .prefix_len = 32,
+        .port = 10,
+        .nexthop_ip = 0x0109a8c0,
+        .metric = 3};
+    insert(entry2);
+    uint32_t nexthop_ip, port, metric;
+    search(0x04030201, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
+    search(0x01030201, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
+    search(0x00000000, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
+    remove(0x04030201, 32);
+    search(0x04030201, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
+    search(0x01030201, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
+    search(0x00000000, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
+    remove(0x00030201, 24);
+    search(0x04030201, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
+    search(0x01030201, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
+    search(0x00000000, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
 }
