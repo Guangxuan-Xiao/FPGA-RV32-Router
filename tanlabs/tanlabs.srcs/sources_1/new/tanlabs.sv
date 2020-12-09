@@ -456,7 +456,7 @@ module tanlabs(
     reg [31:0] ip2_i;
     reg [31:0] ip3_i;
     reg [31:0] ip4_i;
-    reg [47:0] mac_i;
+    reg [43:0] mac_i;
 
     wire[3:0] trie_web[32:0];
     wire[4:0] nexthop_web;
