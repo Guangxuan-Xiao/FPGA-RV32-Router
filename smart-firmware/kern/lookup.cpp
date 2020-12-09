@@ -19,6 +19,15 @@ public:
     }
 };
 static route_node_t route_nodes[ROUTE_NODES_NUM];
+void RoutingTableEntry::print()
+{
+    printf("IP: %08x\n", ip);
+    printf("Prefix Length: %u\n", prefix_len);
+    printf("Port: %u\n", port);
+    printf("Next-hop IP: %08x\n", nexthop_ip);
+    printf("Metric: %d\n", metric);
+}
+
 void init()
 {
     route_node_num = 1;
@@ -167,13 +176,7 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
             else
                 break;
         }
-        // 如果不注释掉会有bug，可能是安全问题
-        // printf("Current Node_s: %d\n", current_node_s);
         parse_node(current_node, &parent);
-        // if (route_nodes[current_node_s].metric != 0xffffffff)
-        // {
-        //     printf("%d %d\n", current_node_s, route_nodes[current_node_s].metric);
-        // }
         if (parent.nexthop_idx)
         {
             nexthop_idx = parent.nexthop_idx;
@@ -183,6 +186,32 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
     *nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
     *port = *get_nexthop_port_addr(nexthop_idx);
     return nexthop_idx;
+}
+
+void traverse_node(uint32_t ip, uint8_t depth, volatile uint32_t *addr_h, uint32_t addr_s, RoutingTableEntry *buffer, uint32_t *len)
+{
+    if (!addr_h || !addr_s)
+        return;
+    trie_node_t node_h;
+    parse_node(addr_h, &node_h);
+    uint32_t nexthop_idx = node_h.nexthop_idx;
+    if (nexthop_idx)
+    {
+        buffer[*len].ip = ip;
+        buffer[*len].metric = route_nodes[addr_s].metric;
+        buffer[*len].nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
+        buffer[*len].port = *get_nexthop_port_addr(nexthop_idx);
+        buffer[*len].prefix_len = depth;
+        *len = (*len) + 1;
+    }
+    traverse_node(ip, depth + 1, node_h.lc_ptr, route_nodes[addr_s].lc, buffer, len);
+    traverse_node(ip | (1 << depth), depth + 1, node_h.rc_ptr, route_nodes[addr_s].rc, buffer, len);
+}
+
+void traverse(RoutingTableEntry *buffer, uint32_t *len)
+{
+    *len = 0;
+    traverse_node(0, 0, (uint32_t *)ROOT_ADDR, route_node_t::root, buffer, len);
 }
 
 void lookup_test()
@@ -201,6 +230,11 @@ void lookup_test()
         .nexthop_ip = 0x0109a8c0,
         .metric = 3};
     insert(entry2);
+    RoutingTableEntry buffer[10];
+    uint32_t len = 0;
+    traverse(buffer, &len);
+    for (uint32_t i; i < len; ++i)
+        buffer[i].print();
     uint32_t nexthop_ip, port, metric;
     search(0x04030201, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);

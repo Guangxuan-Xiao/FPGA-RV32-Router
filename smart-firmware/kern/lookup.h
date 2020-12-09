@@ -17,18 +17,19 @@
   当 nexthop 为零时这是一条直连路由。
   你可以在全局变量中把路由表以一定的数据结构格式保存下来。
 */
-
-typedef struct
+struct RoutingTableEntry
 {
   uint32_t ip;
   uint32_t prefix_len;
   uint32_t port;
   uint32_t nexthop_ip;
   uint32_t metric;
-} RoutingTableEntry;
+  void print();
+};
 void init();
 void insert(RoutingTableEntry entry);
 void remove(uint32_t ip, uint32_t prefix_len);
 uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *metric);
+void traverse(RoutingTableEntry *buffer, uint32_t *len);
 void lookup_test();
 #endif
