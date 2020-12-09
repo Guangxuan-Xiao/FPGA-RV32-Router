@@ -44,10 +44,10 @@ module bus(input wire clk,
     output nexthop_t nexthop_data_cpu,
     input nexthop_t nexthop_data_router,
     output reg [43:0] mac_o,
+    output reg [31:0] ip0_o,
     output reg [31:0] ip1_o,
     output reg [31:0] ip2_o,
-    output reg [31:0] ip3_o,
-    output reg [31:0] ip4_o
+    output reg [31:0] ip3_o
     );
     // | 0x80000000-0x800FFFFF | 监控程序代码 |
     // | 0x80100000-0x803FFFFF | 用户程序代码 |
@@ -91,6 +91,12 @@ module bus(input wire clk,
     localparam NEXTHOP_ADDR_END   = 32'h202001FF;
 
     localparam CLOCK_ADDR = 32'h10000010;
+    localparam IP0_ADDR = 32'h10000100;
+    localparam IP1_ADDR = 32'h10000110;
+    localparam IP2_ADDR = 32'h10000120;
+    localparam IP3_ADDR = 32'h10000130;
+    localparam MAC_ADDR = 32'h10000200;
+
     reg[31:0] counter;
     always_ff @(posedge clk, posedge rst) begin
         if (rst) begin
@@ -107,6 +113,11 @@ module bus(input wire clk,
     wire clock_req  = ram_req && ram_addr_i == CLOCK_ADDR;
     wire sram_req = base_ram_req || ext_ram_req || uart_state_req || uart_data_req;
     wire flash_req = ram_req && ram_addr_i >= FLASH_ADDR_START && ram_addr_i <= FLASH_ADDR_END;
+    wire ip0_req  = ram_req && ram_addr_i == IP0_ADDR;
+    wire ip1_req  = ram_req && ram_addr_i == IP1_ADDR;
+    wire ip2_req  = ram_req && ram_addr_i == IP2_ADDR;
+    wire ip3_req  = ram_req && ram_addr_i == IP3_ADDR;
+    wire mac_req  = ram_req && ram_addr_i == MAC_ADDR;
 
     reg[31:0] base_ram_data_reg, ext_ram_data_reg, ram_data_reg;
     wire[19:0] sram_phy_addr = ram_addr_i[21:2];
@@ -183,7 +194,7 @@ module bus(input wire clk,
     end
 
     assign ram_data_ram = ram_data_reg;
-    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req;
+    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req | ip0_req | ip1_req | ip2_req | ip3_req | mac_req;
 
     // CPU Reading RAM control
     always_comb begin
@@ -319,5 +330,13 @@ module bus(input wire clk,
         end
     end
 
-    // Clock
+    // IP and MAC management
+    always_ff @(posedge clk, posedge rst) begin
+        if (rst) begin
+            mac_o <= 44'h10aaaaaaaaa;
+            IP
+        end else begin
+            pass
+        end
+    end
 endmodule

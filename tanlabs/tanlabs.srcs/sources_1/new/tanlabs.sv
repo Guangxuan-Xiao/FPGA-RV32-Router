@@ -452,10 +452,10 @@ module tanlabs(
     wire dp_tx_valid;
 
     // README: Instantiate your datapath.
+    reg [31:0] ip0_i;
     reg [31:0] ip1_i;
     reg [31:0] ip2_i;
     reg [31:0] ip3_i;
-    reg [31:0] ip4_i;
     reg [43:0] mac_i;
 
     wire[3:0] trie_web[32:0];
@@ -485,10 +485,10 @@ module tanlabs(
         .s_ready(dp_rx_ready),
 
         .dip_sw(dip_sw),
+        .ip0_i(ip0_i),
         .ip1_i(ip1_i),
         .ip2_i(ip2_i),
         .ip3_i(ip3_i),
-        .ip4_i(ip4_i),
         .mac_i(mac_i),
 
         .m_data(dp_tx_data),
@@ -686,10 +686,10 @@ module tanlabs(
     .nexthop_data_cpu(nexthop_data_cpu),
     .nexthop_data_router(nexthop_data_router),
 
+    .ip0_o(ip0_i),
     .ip1_o(ip1_i),
     .ip2_o(ip2_i),
     .ip3_o(ip3_i),
-    .ip4_o(ip4_i),
     .mac_o(mac_i)
     );
     

@@ -20,10 +20,10 @@ module frame_datapath #(
     output wire s_ready,
 
     input wire [15:0] dip_sw,
+    input wire [31:0] ip0_i,
     input wire [31:0] ip1_i,
     input wire [31:0] ip2_i,
     input wire [31:0] ip3_i,
-    input wire [31:0] ip4_i,
     input wire [43:0] mac_i,
 
     output wire [DATA_WIDTH - 1:0] m_data,
@@ -207,22 +207,22 @@ module frame_datapath #(
             3'b000:
             begin
                 my_mac <= {mac_i, dip_sw[15:12]};
-                my_ip  <= ip1_i;
+                my_ip  <= ip0_i;
             end
             3'b001:
             begin
                 my_mac <= {mac_i, dip_sw[11:8]};
-                my_ip  <= ip2_i;
+                my_ip  <= ip1_i;
             end
             3'b010:
             begin
                 my_mac <= {mac_i, dip_sw[7:4]};
-                my_ip  <= ip3_i;
+                my_ip  <= ip2_i;
             end
             3'b011:
             begin
                 my_mac <= {mac_i, dip_sw[3:0]};
-                my_ip  <= ip4_i;
+                my_ip  <= ip3_i;
             end
             default:
             begin
