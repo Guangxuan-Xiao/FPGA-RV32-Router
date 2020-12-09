@@ -304,11 +304,11 @@ module tanlabs(
     // and you may need to write some logic to receive from internal_rx_*, store data to some memory,
     // read data from some memory, and send to internal_tx_*.
     // You can also transfer frames in other ways.
-    assign internal_tx_data = 0;
-    assign internal_tx_last = 0;
-    assign internal_tx_user = 0;
-    assign internal_tx_valid = 0;
-    assign internal_rx_ready = 0;
+    // assign internal_tx_data = 0;
+    // assign internal_tx_last = 0;
+    // assign internal_tx_user = 0;
+    // assign internal_tx_valid = 0;
+    // assign internal_rx_ready = 0;
 
     wire [7:0] out_led;
     led_delayer led_delayer_i(
@@ -636,6 +636,57 @@ module tanlabs(
     wire[3:0] ram_be;
     wire ram_we, ram_oe, ram_req, ram_ready;
 
+    // Interface here.
+
+    wire cpu_write_enb;
+    wire [3:0] cpu_write_web;
+    wire [15:0] cpu_write_addrb;
+    wire [31:0] cpu_write_data;
+    wire cpu_write_done;
+    wire [6:0] cpu_write_address;
+
+    wire cpu_start_enb;
+    wire [6:0] cpu_start_addrb;
+    wire cpu_read_enb;
+    wire [15:0] cpu_read_addrb;
+    wire [31:0] cpu_read_data;
+    wire cpu_finish_enb;
+    wire [6:0] cpu_finish_addrb;
+
+    router_cpu_interface(
+    .clk_router(eth_clk),
+    .clk_cpu(core_clk),
+    .rst_router(reset_eth),
+    .rst_cpu(reset_core),
+
+    .internal_rx_data(internal_rx_data),
+    .internal_rx_last(internal_rx_last),
+    .internal_rx_user(internal_rx_user),
+    .internal_rx_valid(internal_rx_valid), 
+    .internal_rx_ready(internal_rx_ready),
+
+    .internal_tx_data(internal_tx_data),
+    .internal_tx_last(internal_tx_last),
+    .internal_tx_user(internal_tx_user),
+    .internal_tx_valid(internal_tx_valid), 
+    .internal_tx_ready(internal_tx_ready),
+
+    .cpu_write_enb(cpu_write_enb),
+    .cpu_write_web(cpu_write_web),
+    .cpu_write_addrb(cpu_write_addrb),
+    .cpu_write_data(cpu_write_data),
+    .cpu_write_done(cpu_write_done),
+    .cpu_write_address(cpu_write_address),
+
+    .cpu_start_enb(cpu_start_enb),
+    .cpu_start_addrb(cpu_start_addrb),
+    .cpu_read_enb(cpu_read_enb),
+    .cpu_read_addrb(cpu_read_addrb),
+    .cpu_read_data(cpu_read_data),
+    .cpu_finish_enb(cpu_finish_enb),
+    .cpu_finish_addrb(cpu_finish_addrb)
+    );
+
     bus bus(
     .clk(core_clk),
     .rst(reset_core),
@@ -685,6 +736,21 @@ module tanlabs(
     .nexthop_addr(nexthop_addr),
     .nexthop_data_cpu(nexthop_data_cpu),
     .nexthop_data_router(nexthop_data_router),
+
+    .cpu_write_enb(cpu_write_enb),
+    .cpu_write_web(cpu_write_web),
+    .cpu_write_addrb(cpu_write_addrb),
+    .cpu_write_data(cpu_write_data),
+    .cpu_write_done(cpu_write_done),
+    .cpu_write_address(cpu_write_address),
+
+    .cpu_start_enb(cpu_start_enb),
+    .cpu_start_addrb(cpu_start_addrb),
+    .cpu_read_enb(cpu_read_enb),
+    .cpu_read_addrb(cpu_read_addrb),
+    .cpu_read_data(cpu_read_data),
+    .cpu_finish_enb(cpu_finish_enb),
+    .cpu_finish_addrb(cpu_finish_addrb),
 
     .ip1_o(ip1_i),
     .ip2_o(ip2_i),

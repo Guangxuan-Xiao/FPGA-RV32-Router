@@ -4,7 +4,8 @@
 module router_cpu_interface(
     input wire clk_router,
     input wire clk_cpu,
-    input wire rst,
+    input wire rst_router,
+    input wire rst_cpu,
 
     input wire [7:0] internal_rx_data,
     input wire internal_rx_last,
@@ -18,20 +19,20 @@ module router_cpu_interface(
     output wire internal_tx_valid, 
     output wire internal_tx_ready,
 
-    input wire cpu_write_enb, // CPU2Router的使能
-    input wire [3:0] cpu_write_web, // CPU2Router的写使能
-    input wire [15:0] cpu_write_addrb, // CPU2Router的写地址
-    input wire [31:0] cpu_write_data, // CPU2Router写入的数据
-    input wire cpu_write_done,        // CPU2Router写入完毕
-    input wire [6:0] cpu_write_address, // 在写完的时候，表示这一帧是第几帧，从0开始
+    input wire cpu_write_enb,
+    input wire [3:0] cpu_write_web,
+    input wire [15:0] cpu_write_addrb,
+    input wire [31:0] cpu_write_data,
+    input wire cpu_write_done,
+    input wire [6:0] cpu_write_address,
 
-    output wire cpu_start_enb, // 为1时，表示CPU当前可以进入读状态了
-    output wire [6:0] cpu_start_addrb, // 我们的BRAM有128个2048bytes，我们的这个表示我们现在读到第几个2048bytes了，从0开始
-    input wire cpu_read_enb, // CPU的读使能
-    input wire [15:0] cpu_read_addrb, // CPU的读地址
-    output wire [31:0] cpu_read_data, // CPU读到的数据
-    input wire cpu_finish_enb, // 为1时，表示CPU读完了！！！
-    input wire [6:0] cpu_finish_addrb // 在读完了之后，我们向这一字节写入当前读到的是第几帧，从0开始
+    output wire cpu_start_enb,
+    output wire [6:0] cpu_start_addrb,
+    input wire cpu_read_enb,
+    input wire [15:0] cpu_read_addrb,
+    output wire [31:0] cpu_read_data,
+    input wire cpu_finish_enb,
+    input wire [6:0] cpu_finish_addrb
 );
 
 typedef enum reg[1:0] { START, ACCESS, END } router_write_state_t;
@@ -47,7 +48,7 @@ reg router_write_en;
 // Showing the state of router write.
 always @ (posedge clk_router)
 begin
-  if (rst)
+  if (rst_router)
   begin
     router_write_state <= START;
     router_pointer <= 0;
@@ -122,7 +123,7 @@ end
 
 always @ (posedge clk_cpu)
 begin
-  if (rst)
+  if (rst_cpu)
   begin
     cpu_pointer <= 0;
   end
@@ -160,7 +161,7 @@ blk_mem_gen_3 router2CPU
 
 
 // Above is all about BRAM 1, where CPU can read and Router can write. 
-// ============================================================================================================
+// ====================================================================
 // Below is all about BRAM 2, where CPU can write and Router can read.
 
 typedef enum reg[2:0] { START_O, PREP1, PREP2, PREP3, ACCESS_O, END1, END2 } router_read_state_t;
@@ -186,7 +187,7 @@ reg[17:0] router_read_addr;
 
 always @ (posedge clk_router)
 begin
-  if (rst)
+  if (rst_router)
   begin
     internal_tx_data_i  <= 0;
     internal_tx_valid_i <= 0;
@@ -290,7 +291,7 @@ end
 
 always @ (posedge clk_cpu)
 begin
-  if (rst)
+  if (rst_cpu)
   begin
     cpu_pointer_2 <= 0;
   end
