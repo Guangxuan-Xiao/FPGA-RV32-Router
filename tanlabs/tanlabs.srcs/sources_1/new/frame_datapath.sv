@@ -199,6 +199,29 @@ module frame_datapath #(
     //THIS IS ONLY FOR TEST.
     reg test_packet_valid;
     assign test_packet_valid = 1;
+    
+    reg[43:0] mac[2];
+    reg[31:0] ip0[2], ip1[2], ip2[2], ip3[2];
+    always_ff @(posedge eth_clk, posedge rst) begin
+        if (rst) begin
+            mac <= '{default:44'h10aaaaaaaaa};
+            ip0 <= '{default:32'h0100000a};
+            ip1 <= '{default:32'h0101000a};
+            ip2 <= '{default:32'h0102000a};
+            ip3 <= '{default:32'h0103000a};
+        end else begin
+            mac[0] <= mac_i;
+            mac[1] <= mac[0];
+            ip0[0] <= ip0_i;
+            ip0[1] <= ip0[0];
+            ip1[0] <= ip1_i;
+            ip1[1] <= ip1[0]; 
+            ip2[0] <= ip2_i;
+            ip2[1] <= ip2[0];
+            ip3[0] <= ip3_i;
+            ip3[1] <= ip3[0];
+        end
+    end
 
     always@(*)
     begin
@@ -206,23 +229,23 @@ module frame_datapath #(
         case(in.id)
             3'b000:
             begin
-                my_mac <= {mac_i, dip_sw[15:12]};
-                my_ip  <= ip0_i;
+                my_mac <= {mac[1], dip_sw[15:12]};
+                my_ip  <= ip0[1];
             end
             3'b001:
             begin
-                my_mac <= {mac_i, dip_sw[11:8]};
-                my_ip  <= ip1_i;
+                my_mac <= {mac[1], dip_sw[11:8]};
+                my_ip  <= ip1[1];
             end
             3'b010:
             begin
-                my_mac <= {mac_i, dip_sw[7:4]};
-                my_ip  <= ip2_i;
+                my_mac <= {mac[1], dip_sw[7:4]};
+                my_ip  <= ip2[1];
             end
             3'b011:
             begin
-                my_mac <= {mac_i, dip_sw[3:0]};
-                my_ip  <= ip3_i;
+                my_mac <= {mac[1], dip_sw[3:0]};
+                my_ip  <= ip3[1];
             end
             default:
             begin

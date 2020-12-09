@@ -200,16 +200,24 @@ module bus(input wire clk,
     always_comb begin
         if (base_ram_req) begin
             ram_data_reg = base_ram_data;
-        end
-        else if (uart_data_req) begin
+        end else if (uart_data_req) begin
             ram_data_reg = base_ram_data;
-        end
-        else if (ext_ram_req) begin
+        end else if (ext_ram_req) begin
             ram_data_reg = ext_ram_data_o;
         end else if (uart_state_req) begin
             ram_data_reg = uart_status2;
         end else if (clock_req) begin
             ram_data_reg = counter;
+        end else if (mac_req) begin
+            ram_data_reg = mac_o[31:0];
+        end else if (ip0_req) begin
+            ram_data_reg = ip0_o;
+        end else if (ip1_req) begin
+            ram_data_reg = ip1_o;
+        end else if (ip2_req) begin
+            ram_data_reg = ip2_o;
+        end else if (ip3_req) begin
+            ram_data_reg = ip3_o;
         end else if (flash_req) begin
             ram_data_reg = {16'b0, flash_d};
         end else if (trie_req) begin
