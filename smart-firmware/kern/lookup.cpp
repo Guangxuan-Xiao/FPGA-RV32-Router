@@ -19,6 +19,15 @@ public:
     }
 };
 static route_node_t route_nodes[ROUTE_NODES_NUM];
+void RoutingTableEntry::print()
+{
+    printf("IP: %08x\n", ip);
+    printf("Prefix Len: %u\n", ip);
+    printf("IP: %08x\n", ip);
+    printf("IP: %08x\n", ip);
+    printf("IP: %08x\n", ip);
+
+}
 void init()
 {
     route_node_num = 1;

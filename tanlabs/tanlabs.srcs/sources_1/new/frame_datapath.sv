@@ -200,52 +200,49 @@ module frame_datapath #(
     reg test_packet_valid;
     assign test_packet_valid = 1;
     
-    reg[43:0] mac[2];
-    reg[31:0] ip0[2], ip1[2], ip2[2], ip3[2];
-    always_ff @(posedge eth_clk, posedge reset) begin
-        if (reset) begin
-            mac <= '{default:44'h10aaaaaaaaa};
-            ip0 <= '{default:32'h0100000a};
-            ip1 <= '{default:32'h0101000a};
-            ip2 <= '{default:32'h0102000a};
-            ip3 <= '{default:32'h0103000a};
-        end else begin
-            mac[0] <= mac_i;
-            mac[1] <= mac[0];
-            ip0[0] <= ip0_i;
-            ip0[1] <= ip0[0];
-            ip1[0] <= ip1_i;
-            ip1[1] <= ip1[0]; 
-            ip2[0] <= ip2_i;
-            ip2[1] <= ip2[0];
-            ip3[0] <= ip3_i;
-            ip3[1] <= ip3[0];
-        end
-    end
-
+    reg[43:0] mac;
+    reg[31:0] ip0, ip1, ip2, ip3;
+     xpm_cdc_array_single #(
+      .DEST_SYNC_FF(4),   // DECIMAL; range: 2-10
+      .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+      .SIM_ASSERT_CHK(0), // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+      .SRC_INPUT_REG(1),  // DECIMAL; 0=do not register input, 1=register input
+      .WIDTH(172)           // DECIMAL; range: 1-1024
+   )
+   xpm_cdc_array_single_inst (
+      .dest_out({mac, ip0, ip1, ip2, ip3}), // WIDTH-bit output: src_in synchronized to the destination clock domain. This
+                           // output is registered.
+      .dest_clk(eth_clk),  // 1-bit input: Clock signal for the destination clock domain.
+      .src_clk(cpu_clk),   // 1-bit input: optional; required when SRC_INPUT_REG = 1
+      .src_in({mac_i, ip0_i, ip1_i, ip2_i, ip3_i})      // WIDTH-bit input: Input single-bit array to be synchronized to destination clock
+                           // domain. It is assumed that each bit of the array is unrelated to the others. This
+                           // is reflected in the constraints applied to this macro. To transfer a binary value
+                           // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
+   );
+   
     always@(*)
     begin
         // This block aims at getting my MAC and IP according to in.id.
         case(in.id)
             3'b000:
             begin
-                my_mac <= {mac[1], dip_sw[15:12]};
-                my_ip  <= ip0[1];
+                my_mac <= {mac, dip_sw[15:12]};
+                my_ip  <= ip0;
             end
             3'b001:
             begin
-                my_mac <= {mac[1], dip_sw[11:8]};
-                my_ip  <= ip1[1];
+                my_mac <= {mac, dip_sw[11:8]};
+                my_ip  <= ip1;
             end
             3'b010:
             begin
-                my_mac <= {mac[1], dip_sw[7:4]};
-                my_ip  <= ip2[1];
+                my_mac <= {mac, dip_sw[7:4]};
+                my_ip  <= ip2;
             end
             3'b011:
             begin
-                my_mac <= {mac[1], dip_sw[3:0]};
-                my_ip  <= ip3[1];
+                my_mac <= {mac, dip_sw[3:0]};
+                my_ip  <= ip3;
             end
             default:
             begin
