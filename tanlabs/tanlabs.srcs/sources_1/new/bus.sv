@@ -43,6 +43,19 @@ module bus(input wire clk,
     output reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr,
     output nexthop_t nexthop_data_cpu,
     input nexthop_t nexthop_data_router,
+    output reg cpu_write_enb,
+    output reg [3:0] cpu_write_web,
+    output reg [15:0] cpu_write_addrb,
+    output reg [31:0] cpu_write_data,
+    output reg cpu_write_done,
+    output reg [6:0] cpu_write_address,
+    input wire cpu_start_enb,
+    input wire [6:0] cpu_start_addrb,
+    output reg cpu_read_enb,
+    output reg [15:0] cpu_read_addrb,
+    input wire [31:0] cpu_read_data,
+    output reg cpu_finish_enb,
+    output reg [6:0] cpu_finish_addrb,
     output reg [43:0] mac_o,
     output reg [31:0] ip0_o,
     output reg [31:0] ip1_o,
@@ -90,6 +103,32 @@ module bus(input wire clk,
     localparam NEXTHOP_ADDR_START = 32'h20200000;
     localparam NEXTHOP_ADDR_END   = 32'h202001FF;
 
+    // Interface BRAM Serial Port
+    // | 0x60000000-0x6003FFFF | CPU Read BRAM Data |
+    // | 0x60000000-0x600007FF | CPU Read buffer 0 |
+    // | 0x600007FE-0x600007FF | CPU Read buffer 0 length |
+    // | 0x60000800-0x60000FFF | CPU Read buffer 1 |
+    // ...
+    // | 0x6003F800-0x6003FFFF | CPU Read buffer 127 |
+    // ============================================= //
+    // | 0x60040000-0x6007FFFF | CPU Write BRAM Data |
+    // | 0x60040000-0x600407FF | CPU Write buffer 0 |
+    // | 0x60040800-0x60040FFF | CPU Write buffer 1 |
+    // ...
+    // | 0x6007F800-0x6007FFFF | CPU Write buffer 127 |
+
+    localparam BUFFER_READ_START  = 32'h60000000;
+    localparam BUFFER_READ_END    = 32'h6003FFFF;
+    localparam BUFFER_WRITE_START = 32'h60040000;
+    localparam BUFFER_WRITE_END   = 32'h6007FFFF;
+
+    // Interface BRAM Address
+    // | 0x70000000-0x70000002 | Buffer 串口数据及状态 |
+
+    localparam BUFFER_START_READ = 32'h70000000;
+    localparam BUFFER_END_READ   = 32'h70000001;
+    localparam BUFFER_END_WRITE  = 32'h70000002;
+
     localparam CLOCK_ADDR = 32'h10000010;
     localparam IP0_ADDR = 32'h10000100;
     localparam IP1_ADDR = 32'h10000110;
@@ -106,8 +145,8 @@ module bus(input wire clk,
         end
     end
     
-    wire base_ram_req            = ram_req && (ram_addr_i >= BASE_ADDR_START) && (ram_addr_i <= BASE_ADDR_END);
-    wire ext_ram_req             = ram_req && (ram_addr_i >= EXT_ADDR_START) && (ram_addr_i <= EXT_ADDR_END);
+    wire base_ram_req   = ram_req && (ram_addr_i >= BASE_ADDR_START) && (ram_addr_i <= BASE_ADDR_END);
+    wire ext_ram_req    = ram_req && (ram_addr_i >= EXT_ADDR_START) && (ram_addr_i <= EXT_ADDR_END);
     wire uart_state_req = ram_req && ram_addr_i == UART_CTRL_ADDRESS;
     wire uart_data_req  = ram_req && ram_addr_i == UART_DATA_ADDRESS;
     wire clock_req  = ram_req && ram_addr_i == CLOCK_ADDR;
@@ -139,6 +178,15 @@ module bus(input wire clk,
     wire nexthop_port_req = nexthop_req && ram_addr_i[2];
     wire [NEXTHOP_ADDR_WIDTH-1:0] nexthop_phy_addr = ram_addr_i[NEXTHOP_ADDR_WIDTH+2:3];
     nexthop_t nexthop_data_reg;
+
+    wire buffer_read  = ram_req && (ram_addr_i >= BUFFER_READ_START) && (ram_addr_i <= BUFFER_READ_END);
+    wire buffer_write = ram_req && (ram_addr_i >= BUFFER_WRITE_START) && (ram_addr_i <= BUFFER_WRITE_END);
+    wire buffer_req   = buffer_read || buffer_write;
+    wire buffer_addr  = ram_addr_i[17:2];
+
+    wire read_start = ram_req && (ram_addr_i == BUFFER_START_READ);
+    wire read_end   = ram_req && (ram_addr_i == BUFFER_END_READ);
+    wire write_end  = ram_req && (ram_addr_i == BUFFER_END_WRITE);
 
     // set base ram data not zzz only on writing it.
     assign base_ram_data = (base_ram_req || uart_data_req) && ram_we_i ? base_ram_data_reg : 32'bz;
@@ -194,7 +242,7 @@ module bus(input wire clk,
     end
 
     assign ram_data_ram = ram_data_reg;
-    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req | ip0_req | ip1_req | ip2_req | ip3_req | mac_req;
+    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req | buffer_req | read_end | write_end | ip0_req | ip1_req | ip2_req | ip3_req | mac_req;
 
     // CPU Reading RAM control
     always_comb begin
@@ -226,8 +274,11 @@ module bus(input wire clk,
             ram_data_reg = {24'b0, nexthop_data_router.port};
         end else if (nexthop_ip_req) begin
             ram_data_reg = nexthop_data_router.ip;
-        end
-        else begin
+        end else if (buffer_read) begin
+            ram_data_reg = cpu_read_data;
+        end else if (read_start) begin
+            ram_data_reg = {24'b0, cpu_start_enb, cpu_start_addrb};
+        end else begin
             ram_data_reg = 32'b0;
         end
     end
@@ -335,6 +386,38 @@ module bus(input wire clk,
         end else if (nexthop_port_req & ram_we_i) begin
             nexthop_data_reg.port = ram_data_cpu[7:0];
             nexthop_web = 5'b10000;
+        end
+    end
+
+    // Buffer writing control
+    always_comb begin
+        cpu_write_enb   = 0;
+        cpu_write_web   = 0;
+        cpu_write_addrb = buffer_addr;
+        cpu_write_data  = 0;
+        cpu_read_enb    = 0;
+        cpu_read_addrb  = buffer_addr;
+        if (buffer_read & !ram_we_i) begin
+            cpu_read_enb = 1'b1;
+        end else if (buffer_write & ram_we_i) begin
+            cpu_write_enb  = 1'b1;
+            cpu_write_web  = ram_be_i;
+            cpu_write_data = ram_data_cpu;
+        end
+    end
+
+    // Buffer Serial Port writing control
+    always_comb begin
+        cpu_write_done    = 0;
+        cpu_write_address = 0;
+        cpu_finish_enb    = 0;
+        cpu_finish_addrb  = 0;
+        if (read_end & ram_we_i) begin
+            cpu_write_done    = ram_data_cpu[7];
+            cpu_write_address = ram_data_cpu[6:0];
+        end else if (buffer_write & ram_we_i) begin
+            cpu_finish_enb   = ram_data_cpu[7];
+            cpu_finish_addrb = ram_data_cpu[6:0];
         end
     end
 
