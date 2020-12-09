@@ -19,7 +19,7 @@ module frame_datapath #(
     input wire s_valid,
     output wire s_ready,
 
-    input wire [31:0] dip_sw,
+    input wire [15:0] dip_sw,
     input wire [31:0] ip1_i,
     input wire [31:0] ip2_i,
     input wire [31:0] ip3_i,
