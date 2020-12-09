@@ -334,9 +334,20 @@ module bus(input wire clk,
     always_ff @(posedge clk, posedge rst) begin
         if (rst) begin
             mac_o <= 44'h10aaaaaaaaa;
-            IP
-        end else begin
-            pass
+            ip0_o <= 32'h0100000a;
+            ip1_o <= 32'h0101000a;
+            ip2_o <= 32'h0102000a;
+            ip3_o <= 32'h0103000a;
+        end else if (ip0_req & ram_we_i) begin
+            ip0_o <= ram_data_cpu;
+        end else if (ip1_req & ram_we_i) begin
+            ip1_o <= ram_data_cpu;
+        end else if (ip2_req & ram_we_i) begin
+            ip2_o <= ram_data_cpu;
+        end else if (ip3_req & ram_we_i) begin
+            ip3_o <= ram_data_cpu;
+        end else if (mac_req & ram_we_i) begin
+            mac_o[31:0] <= ram_data_cpu;
         end
     end
 endmodule
