@@ -24,8 +24,8 @@ void read_ip(uint32_t *ip0, uint32_t *ip1, uint32_t *ip2, uint32_t *ip3)
     *ip2 = *ip2_ptr;
     *ip3 = *ip3_ptr;
 }
-void read_mac_prefix(uint32_t *mac_prefix)
+uint32_t read_mac_prefix()
 {
-    *mac_prefix = *mac_prefix_ptr;
+    return *mac_prefix_ptr;
 }
 #endif
