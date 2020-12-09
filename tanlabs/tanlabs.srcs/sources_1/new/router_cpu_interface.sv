@@ -24,7 +24,6 @@ module router_cpu_interface(
     input wire [31:0] cpu_write_data, // CPU2Router写入的数据
     input wire cpu_write_done,        // CPU2Router写入完毕
     input wire [6:0] cpu_write_address, // 在写完的时候，表示这一帧是第几帧，从0开始
-    input wire [10:0] frame_len, // 表示这一帧有多长，用bytes作为单位
 
     output wire cpu_start_enb, // 为1时，表示CPU当前可以进入读状态了
     output wire [6:0] cpu_start_addrb, // 我们的BRAM有128个2048bytes，我们的这个表示我们现在读到第几个2048bytes了，从0开始
@@ -164,10 +163,10 @@ blk_mem_gen_3 router2CPU
 // ============================================================================================================
 // Below is all about BRAM 2, where CPU can write and Router can read.
 
-typedef enum reg[2:0] { START_O, PREP1, PREP2, PREP3, ACCESS_O, END_O } router_read_state_t;
+typedef enum reg[2:0] { START_O, PREP1, PREP2, PREP3, ACCESS_O, END1, END2 } router_read_state_t;
 router_read_state_t router_read_state = START_O;
-reg [6:0] cpu_pointer_2;
-reg [6:0] router_pointer_2;
+reg [6:0] cpu_pointer_2 = 0;
+reg [6:0] router_pointer_2 = 0;
 reg [7:0] router_read_data;
 reg [7:0] internal_tx_data_i;
 reg internal_tx_last_i;
@@ -194,7 +193,7 @@ begin
     internal_tx_ready_i <= 0;
     internal_tx_user_i  <= 0;
     internal_tx_last_i  <= 0;
-    router_read_addr    <= 0;
+    router_read_addr    <= 11'b11111111111;
     router_read_state   <= START_O;
   end
   else if (router_start_enb)
@@ -207,6 +206,7 @@ begin
       internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
       router_read_state   <= PREP1;
+      router_read_addr    <= router_read_addr - 1;
     end
     PREP1:
     begin
@@ -216,17 +216,17 @@ begin
       internal_tx_last_i  <= 0;
       router_read_state   <= PREP2;
       counter[7:0]        <= router_read_data;
-      router_read_addr    <= router_read_addr - 1;
+      router_read_addr[10:0] <= 11'b0;
     end
     PREP2:
     begin
-      internal_tx_data_i     <= 0;
-      internal_tx_valid_i    <= 0;
-      internal_tx_ready_i    <= 0;
-      internal_tx_last_i     <= 0;
-      router_read_state      <= PREP3;
-      counter[10:8]          <= router_read_data[2:0];
-      router_read_addr[10:0] <= 11'b0;
+      internal_tx_data_i  <= 0;
+      internal_tx_valid_i <= 0;
+      internal_tx_ready_i <= 0;
+      internal_tx_last_i  <= 0;
+      router_read_state   <= PREP3;
+      counter[7:0]        <= router_read_data;
+      router_read_addr    <= router_read_addr + 1;
     end
     PREP3:
     begin
@@ -235,36 +235,45 @@ begin
       internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
       router_read_state   <= ACCESS_O;
-      counter             <= counter - 1;
+      counter[10:8]       <= router_read_data[2:0];
+      router_read_addr    <= router_read_addr + 1;
     end
     ACCESS_O:
     begin
-      internal_tx_data_i  <= router_read_data;
-      internal_tx_valid_i <= 1;
-      internal_tx_ready_i <= 1;
-      if (counter == 0)
+      if (counter == 1)
       begin
-        internal_tx_last_i <= 1;
-        router_read_state  <= END_O;
-        router_pointer_2   <= router_pointer_2 + 1;
+        internal_tx_valid_i <= 1;
+        internal_tx_ready_i <= 1;
+        internal_tx_data_i  <= router_read_data;
+        router_read_state   <= END1;
       end
-      else 
+      else
       begin
-        internal_tx_last_i <= 0; 
-        router_read_state  <= ACCESS_O;
-        router_read_addr   <= router_read_addr + 1;
-        counter            <= counter - 1;
+        internal_tx_valid_i <= 1;
+        internal_tx_ready_i <= 1;
+        router_read_state   <= ACCESS_O;
+        router_read_addr    <= router_read_addr + 1;
+        internal_tx_data_i  <= router_read_data;
+        counter             <= counter - 1;
       end
     end
-    END_O:
+    END1:
     begin
-      router_read_addr    <= router_pointer_2 << 11 + 11'b11111111111;
-      internal_tx_data_i  <= 0;
-      internal_tx_valid_i <= 0;
-      internal_tx_ready_i <= 0;
-      internal_tx_last_i  <= 0;
+      internal_tx_valid_i <= 1;
+      internal_tx_ready_i <= 1;
+      internal_tx_data_i  <= router_read_data;
+      router_read_state   <= END2;
+    end
+    END2:
+    begin
+      router_read_addr    <= (router_pointer_2 << 11) + 12'b111111111111;
+      internal_tx_valid_i <= 1;
+      internal_tx_ready_i <= 1;
+      internal_tx_last_i  <= 1;
+      internal_tx_data_i  <= router_read_data;
       internal_tx_user_i  <= 0;
       router_read_state   <= START_O;
+      router_pointer_2    <= router_pointer_2 + 1;
     end
     endcase
   end
