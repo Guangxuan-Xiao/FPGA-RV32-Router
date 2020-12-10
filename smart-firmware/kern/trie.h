@@ -20,7 +20,7 @@ typedef struct
 
 uint16_t get_idx(uint32_t *addr)
 {
-    return (addr >> 2) & 0x1FFF;
+    return ((uint32_t)addr >> 2) & 0x1FFF;
 }
 
 uint32_t *get_node_addr(uint32_t layer, uint32_t idx)
