@@ -31,6 +31,8 @@ extern void insert(RoutingTableEntry entry);
 extern void remove(uint32_t ip, uint32_t prefix_len);
 extern uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *metric);
 extern void traverse(RoutingTableEntry *buffer, uint32_t *len);
+extern uint32_t send(int if_index, const uint8_t *buffer, size_t length, const uint8_t *dst_mac);
+extern uint32_t recieve(int if_index_mask, uint8_t *buffer, size_t length, uint8_t *src_mac, uint8_t *dst_mac, int64_t timeout, int *if_index);
 extern uint32_t get_clock();
 
 uint8_t packet[2048];
@@ -157,10 +159,7 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
     uint16_t checksum = calculate_checksum(ip_header);
     ip_header->ip_sum = checksum;
     macaddr_t dest_mac;
-    if(HAL_ArpGetMacAddress(if_index, dst_addr, dest_mac) == 0)
-    {
-      HAL_SendIPPacket(if_index, output, totlen, dest_mac);
-    }
+    send(if_index, output, totlen, dest_mac);
     rest_ripentry -= 25;
     }
     if(rest_ripentry > 0)
@@ -193,13 +192,10 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
       uint32_t rip_len = assemble(&resp, &output[ip_header->ip_hl * 4 + 8]);
       udpHeader->uh_ulen = BE16((uint16_t)(rip_len + 8));
       udpHeader->uh_sum = 0; 
-    
       uint16_t checksum = calculate_checksum(ip_header);
       ip_header->ip_sum = checksum;
       macaddr_t dest_mac;
-      if(HAL_ArpGetMacAddress(if_index, dst_addr, dest_mac) == 0){
-        HAL_SendIPPacket(if_index, output, totlen, dest_mac);
-      }
+      send(if_index, output, totlen, dest_mac);
     }
 }
 
@@ -222,7 +218,6 @@ int main(int argc, char *argv[])
         .nexthop = 0,                  
         .metric = 1               
     };
-    // FORMER: update(true, entry);
     insert(entry);
   }
 
@@ -244,31 +239,14 @@ int main(int argc, char *argv[])
     macaddr_t src_mac;
     macaddr_t dst_mac;
     int if_index;
-    // TODO: Waiting for receive function.
-    res = HAL_ReceiveIPPacket(mask, packet, sizeof(packet), src_mac, dst_mac, 1000, &if_index);
-    if (res == HAL_ERR_EOF) 
+
+    uint32_t res = recieve(mask, packet, sizeof(packet), src_mac, dst_mac, 1000, &if_index);
+    if (res <= 0) 
     {
-      break;
-    } 
-    else if (res < 0) 
-    {
-      return res;
-    } 
-    else if (res == 0) 
-    {
-      continue;
-    } 
-    else if (res > sizeof(packet)) 
-    {
-      printf("truncated\n");
-      fflush(stdout);
+      printf("Receive invalid.\n");
       continue;
     }
-    if (!validateIPChecksum(packet, res)) 
-    {
-      printf("Invalid IP Checksum\n");
-      continue;
-    }
+
     in_addr_t src_addr, dst_addr;
     ipheader* ip_header = (ipheader *)packet;
     src_addr = ip_header->saddr; 
@@ -353,38 +331,7 @@ int main(int argc, char *argv[])
     } 
     else 
     {
-      uint8_t ttl = packet[8];
-      uint8_t ip_hl = ip_header->ihl;
-      if (ttl <= 1) 
-      {
-        printf("ttl is not greater than 1.");
-      } 
-      else 
-      {
-        uint32_t nexthop, dest_if;
-        if (prefix_query(dst_addr, &nexthop, &dest_if)) 
-        {
-          macaddr_t dest_mac;
-          if (nexthop == 0) 
-          {
-            nexthop = dst_addr;
-          }
-          if (HAL_ArpGetMacAddress(dest_if, nexthop, dest_mac) == 0) 
-          {
-            memcpy(output, packet, res);
-            forward(output, res);
-            HAL_SendIPPacket(dest_if, output, res, dest_mac);
-          } 
-          else 
-          {
-            printf("ARP not found for nexthop %x\n", nexthop);
-          }
-        } 
-        else 
-        {
-          printf("IP not found in routing table for src %x dst %x\n", src_addr, dst_addr);
-        }
-      }
+      printf("This is not my RIP packet.\n");
     }
   }
   return 0;
