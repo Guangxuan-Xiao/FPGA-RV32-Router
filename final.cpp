@@ -31,14 +31,13 @@ extern void insert(RoutingTableEntry entry);
 extern void remove(uint32_t ip, uint32_t prefix_len);
 extern uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *metric);
 extern void traverse(RoutingTableEntry *buffer, uint32_t *len);
-extern uint32_t send(int if_index, const uint8_t *buffer, size_t length, const uint8_t *dst_mac);
-extern uint32_t recieve(int if_index_mask, uint8_t *buffer, size_t length, uint8_t *src_mac, uint8_t *dst_mac, int64_t timeout, int *if_index);
 extern uint32_t get_clock();
-extern uint32_t send(int if_index, const uint8_t *buffer, size_t length, const uint8_t *dst_mac);
+extern uint32_t send(int if_index, const uint8_t *buffer, size_t length, uint32_t dst, const uint8_t *dst_mac);
 extern uint32_t receive(int if_index_mask, uint8_t *buffer, size_t length, uint8_t *src_mac, uint8_t *dst_mac, int64_t timeout, int *if_index);
 
 uint8_t packet[2048];
 uint8_t output[2048];
+uint32_t bram_addr_dst = 0;
 
 struct ipheader {
   uint8_t ihl : 4, version : 4;
@@ -160,8 +159,8 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
     udpHeader->uh_sum = 0; 
     uint16_t checksum = calculate_checksum(ip_header);
     ip_header->ip_sum = checksum;
-    macaddr_t dest_mac;
-    send(if_index, output, totlen, dest_mac);
+    send(if_index, output, totlen, bram_addr_dst, dst_mac);
+    bram_addr_dst = (bram_addr_dst + 1) & 0x7F;
     rest_ripentry -= 25;
     }
     if(rest_ripentry > 0)
@@ -196,8 +195,8 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
       udpHeader->uh_sum = 0; 
       uint16_t checksum = calculate_checksum(ip_header);
       ip_header->ip_sum = checksum;
-      macaddr_t dest_mac;
-      send(if_index, output, totlen, dest_mac);
+      send(if_index, output, totlen, bram_addr_dst, dst_mac);
+      bram_addr_dst = (bram_addr_dst + 1) & 0x7F;
     }
 }
 
@@ -237,6 +236,7 @@ int main(int argc, char *argv[])
     int if_index;
     // TODO: Waiting for receive function.
     
+
     uint32_t res = receive(mask, packet, sizeof(packet), src_mac, dst_mac, 1000, &if_index);
     if (res <= 0)
     {
@@ -248,7 +248,6 @@ int main(int argc, char *argv[])
       printf("truncated!\n");
       continue;
     }
-
     
     in_addr_t src_addr, dst_addr;
     ipheader* ip_header = (ipheader *)packet;
