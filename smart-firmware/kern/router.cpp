@@ -40,7 +40,7 @@ uint32_t receive(uint8_t* buffer, uint32_t src)
     uint32_t len = *ptr;
     len = ((len & 0xFF000000) >> 24) + ((len & 0xFF0000) >> 8);
     ptr = (volatile uint32_t*)(buffer_read_start_addr + src * buffer_size);
-    for (i = 0; i < len; i = i + 4)
+    for (uint32_t i = 0; i < len; i = i + 4)
     {
         buf = *ptr;
         buffer[i] = buf & 0xFF;
@@ -53,7 +53,7 @@ uint32_t receive(uint8_t* buffer, uint32_t src)
     return len;
 }
 
-void send(uint8_t* buffer, uint32_t len, uint32_t dst);
+void send(uint8_t* buffer, uint32_t len, uint32_t dst)
 {
     uint32_t i = 0;
     volatile uint32_t* ptr;
