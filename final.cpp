@@ -33,7 +33,7 @@ extern uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32
 extern void traverse(RoutingTableEntry *buffer, uint32_t *len);
 extern uint32_t get_clock();
 extern void send(int if_index, const uint8_t *buffer, uint32_t length, uint32_t dst, const uint8_t *dst_mac);
-extern uint32_t receive(int if_index_mask, uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_index);
+extern uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_index);
 
 uint8_t packet[2048];
 uint8_t output[2048];
@@ -230,14 +230,13 @@ int main(int argc, char *argv[])
       last_time = time;
     }
 
-    int mask = (1 << N_IFACE_ON_BOARD) - 1;
     macaddr_t src_mac;
     macaddr_t dst_mac;
     int if_index;
     // TODO: Waiting for receive function.
     
 
-    uint32_t res = receive(mask, packet, src_mac, dst_mac, &if_index);
+    uint32_t res = receive(packet, src_mac, dst_mac, &if_index);
     if (res <= 0)
     {
       printf("Receive invalid.\n");
