@@ -18,6 +18,11 @@ typedef struct
     uint32_t nexthop_idx;
 } trie_node_t;
 
+uint16_t get_idx(uint32_t *addr)
+{
+    return (addr >> 2) & 0x1FFF;
+}
+
 uint32_t *get_node_addr(uint32_t layer, uint32_t idx)
 {
     if (idx == 0)

@@ -12,8 +12,9 @@ class Allocator
 private:
     AllocatorNode *nodes;
     uint16_t allocated;
+
 public:
-    Allocator(uint16_t size);
+    Allocator(uint16_t size = 8192);
     ~Allocator();
     uint16_t get();
     void put(uint16_t idx);
