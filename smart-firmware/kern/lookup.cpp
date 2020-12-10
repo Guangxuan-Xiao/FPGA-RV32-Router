@@ -6,7 +6,7 @@ static int layer_size[32] = {0};
 static Allocator allocators[32];
 static int nexthop_size = 0;
 static const int ROUTE_NODES_NUM = 1 << 16;
-static int route_node_num;
+static int route_node_num = 1;
 class route_node_t
 {
 public:
