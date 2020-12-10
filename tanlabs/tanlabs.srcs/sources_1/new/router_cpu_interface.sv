@@ -154,7 +154,7 @@ blk_mem_gen_3 router2CPU
   //.douta(douta),  // output wire [7 : 0] douta
   .clkb(clk_cpu),    // input wire clkb
   .enb(cpu_read_enb),      // input wire enb
-  //.web(web),      // input wire [3 : 0] web
+  .web(4'b0),      // input wire [3 : 0] web
   .addrb(cpu_read_addrb),  // input wire [15 : 0] addrb
   //.dinb(dinb),    // input wire [31 : 0] dinb
   .doutb(cpu_read_data)   // output wire [31 : 0] doutb
@@ -332,8 +332,8 @@ end
 blk_mem_gen_3 CPU2router 
 (
   .clka(clk_router),    // input wire clka
-  .ena(1),      // input wire ena
-  //.wea(wea),      // input wire [0 : 0] wea
+  .ena(1'b1),      // input wire ena
+  .wea(1'b0),      // input wire [0 : 0] wea
   .addra(router_read_addr),  // input wire [17 : 0] addra
   //.dina(dina),    // input wire [7 : 0] dina
   .douta(router_read_data),  // output wire [7 : 0] douta
