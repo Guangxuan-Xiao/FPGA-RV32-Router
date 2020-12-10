@@ -668,8 +668,7 @@ module tanlabs(
     .internal_tx_data(internal_tx_data),
     .internal_tx_last(internal_tx_last),
     .internal_tx_user(internal_tx_user),
-    .internal_tx_valid(internal_tx_valid), 
-    .internal_tx_ready(internal_tx_ready),
+    .internal_tx_valid(internal_tx_valid),
 
     .cpu_write_enb(cpu_write_enb),
     .cpu_write_web(cpu_write_web),
