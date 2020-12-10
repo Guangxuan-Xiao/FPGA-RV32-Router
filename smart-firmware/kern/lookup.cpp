@@ -241,7 +241,7 @@ void lookup_test()
     RoutingTableEntry buffer[10];
     uint32_t len = 0;
     traverse(buffer, &len);
-    for (uint32_t i; i < len; ++i)
+    for (uint32_t i = 0; i < len; ++i)
         buffer[i].print();
     uint32_t nexthop_ip, port, metric;
     search(0x04030201, &nexthop_ip, &port, &metric);
