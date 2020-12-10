@@ -39,7 +39,7 @@ void init()
 void insert(RoutingTableEntry entry)
 {
     trie_node_t parent;
-    volatile uint32_t *current_node = (volatile uint32_t *)ROOT_ADDR;
+    uint32_t *current_node = (uint32_t *)ROOT_ADDR;
     uint32_t current_node_s = route_node_t::root;
     for (uint32_t i = 0; i < entry.prefix_len; ++i)
     {
@@ -89,8 +89,8 @@ void insert(RoutingTableEntry entry)
 void remove(uint32_t ip, uint32_t prefix_len)
 {
     trie_node_t parent;
-    volatile uint32_t *current_node = (uint32_t *)ROOT_ADDR;
-    volatile uint32_t *path[33] = {current_node, 0};
+    uint32_t *current_node = (uint32_t *)ROOT_ADDR;
+    uint32_t *path[33] = {current_node, 0};
     uint32_t current_node_s = route_node_t::root;
     uint32_t path_s[33] = {current_node_s, 0};
     for (uint32_t i = 0; i < prefix_len; ++i)
@@ -149,7 +149,7 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
 {
     trie_node_t parent;
     uint32_t nexthop_idx = 0;
-    volatile uint32_t *current_node = (uint32_t *)ROOT_ADDR;
+    uint32_t *current_node = (uint32_t *)ROOT_ADDR;
     uint32_t current_node_s = route_node_t::root;
     parse_node(current_node, &parent);
     *metric = 0xffffffff;
@@ -188,7 +188,7 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
     return nexthop_idx;
 }
 
-void traverse_node(uint32_t ip, uint8_t depth, volatile uint32_t *addr_h, uint32_t addr_s, RoutingTableEntry *buffer, uint32_t *len)
+void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s, RoutingTableEntry *buffer, uint32_t *len)
 {
     if (!addr_h || !addr_s)
         return;
