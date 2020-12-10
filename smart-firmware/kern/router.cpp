@@ -10,6 +10,9 @@ static uint32_t const read_start = 0x60000000;
 static uint32_t const write_start = 0x60040000;
 static uint32_t const size_addr = 0x7FC;
 static uint32_t const width = 11;
+#define RD_SRT (*(volatile uint8_t *)(0x70000000))
+#define RD_END (*(volatile uint8_t *)(0x70000010))
+#define WR_END (*(volatile uint8_t *)(0x70000020))
 
 void set_ip(uint32_t ip0, uint32_t ip1, uint32_t ip2, uint32_t ip3)
 {
@@ -37,15 +40,21 @@ uint32_t read_mac_prefix()
     return *mac_prefix_ptr;
 }
 
-uint32_t receive(uint8_t* buffer, uint32_t src)
+uint32_t receive(int if_index_mask, uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_index)
 {
+    uint8_t status = RD_SRT;
+    if (!(status & 0x80))
+    {
+        return 0;
+    }
+    uint32_t src = status & 0x7F;
     volatile uint32_t* ptr;
     ptr = (volatile uint32_t*)(read_start + (src << width) + size_addr);
     uint32_t buf = 0;
-    uint32_t len = *ptr;
-    len = ((len & 0xFF000000) >> 24) + ((len & 0xFF0000) >> 8);
+    uint32_t length = *ptr;
+    length = ((length & 0xFF000000) >> 24) + ((length & 0xFF0000) >> 8);
     ptr = (volatile uint32_t*)(read_start + (src << width));
-    for (uint32_t i = 0; i < len; i = i + 4)
+    for (uint32_t i = 0; i < length; i = i + 4)
     {
         buf = *ptr;
         buffer[i] = buf & 0xFF;
@@ -55,30 +64,32 @@ uint32_t receive(uint8_t* buffer, uint32_t src)
         ptr = ptr + 1;
     }
     buf = 0;
-    return len;
+    RD_END = status;
+    return length;
 }
 
-void send(uint8_t* buffer, uint32_t len, uint32_t dst)
+void send(int if_index, const uint8_t *buffer, uint32_t length, uint32_t dst, const uint8_t *dst_mac)
 {
     uint32_t i = 0;
     volatile uint32_t* ptr;
     ptr = (volatile uint32_t*)(write_start + (dst << width));
     uint32_t buf = 0;
-    len = len - 4;
-    for (i = 0; i < len; i = i + 4)
+    length = length - 4;
+    for (i = 0; i < length; i = i + 4)
     {
         buf = buffer[i] + (buffer[i + 1] << 8) + (buffer[i + 2] << 16) + (buffer[i + 3] << 24);
         *ptr = buf;
         ptr = ptr + 1;
     }
-    len = len + 4;
+    length = length + 4;
     buf = 0;
-    for (; i < len; i++)
+    for (; i < length; i++)
     {
         buf = buf + (buffer[i] << (i & 3));
     }
     *ptr = buf;
     ptr = (volatile uint32_t*)(read_start + (dst << width) + size_addr);
-    buf = ((len & 0xFF) << 24) + ((len & 0xFF00) << 8);
+    buf = ((length & 0xFF) << 24) + ((length & 0xFF00) << 8);
+    WR_END = (uint8_t)(dst | 0x80);
     *ptr = buf;
 }
