@@ -38,9 +38,9 @@ module router_cpu_interface(
 typedef enum reg[1:0] { START, ACCESS, END } router_write_state_t;
 router_write_state_t router_write_state = START;
 
-reg [6:0] router_pointer = 7'b0;
-reg [6:0] cpu_pointer = 7'b0;
-reg [6:0] cpu_pointer_router = 7'b0;
+reg [6:0] router_pointer;
+reg [6:0] cpu_pointer;
+reg [6:0] cpu_pointer_router;
 
 reg [7:0] router_write_data;
 reg [17:0] router_write_addr;
