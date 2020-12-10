@@ -4,7 +4,7 @@
 #include <stdlib.h>
 struct AllocatorNode
 {
-    int16_t succ;
+    uint16_t succ;
     uint16_t idx;
 };
 class Allocator
