@@ -43,4 +43,4 @@
 
 ## 类串口设计
 
-我们目前拟将`0x70000000-0x70000002`作为`cpu_start_enb + cpu_start_addrb`、`cpu_finish_enb + cpu_finish_addrb`还有`cpu_write_done + cpu_write_address`的虚拟地址
+我们目前拟将`0x70000000, 0x70000010, 0x70000020`作为`cpu_start_enb + cpu_start_addrb`、`cpu_finish_enb + cpu_finish_addrb`还有`cpu_write_done + cpu_write_address`的虚拟地址

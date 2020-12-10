@@ -38,8 +38,9 @@ module router_cpu_interface(
 typedef enum reg[1:0] { START, ACCESS, END } router_write_state_t;
 router_write_state_t router_write_state = START;
 
-reg [6:0] router_pointer = 7'b0;
-reg [6:0] cpu_pointer = 7'b0;
+reg [6:0] router_pointer;
+reg [6:0] cpu_pointer;
+reg [6:0] router_pointer_cpu;
 
 reg [7:0] router_write_data;
 reg [17:0] router_write_addr;
@@ -140,7 +141,26 @@ begin
   end
 end
 
-assign cpu_start_enb = (router_pointer != cpu_pointer) ? 1'b1 : 1'b0;
+assign cpu_start_enb = (router_pointer_cpu != cpu_pointer) ? 1'b1 : 1'b0;
+
+xpm_cdc_array_single #(
+  .DEST_SYNC_FF(4),   // DECIMAL; range: 2-10
+  .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+  .SIM_ASSERT_CHK(0), // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+  .SRC_INPUT_REG(1),  // DECIMAL; 0=do not register input, 1=register input
+  .WIDTH(7)           // DECIMAL; range: 1-1024
+)
+xpm_cdc_array_single_inst (
+  .dest_out(router_pointer_cpu), // WIDTH-bit output: src_in synchronized to thcpu_pointer_routertination clock domain. This
+                        // output is registered.
+
+  .dest_clk(clk_cpu), // 1-bit input: Clock signal for the destination clock domain.
+  .src_clk(clk_router),   // 1-bit input: optional; required when SRC_INPUT_REG = 1
+  .src_in(router_pointer)      // WIDTH-bit input: Input single-bit array to be synchronized to destination clock
+                        // domain. It is assumed that each bit of the array is unrelated to the others. This
+                        // is reflected in the constraints applied to this macro. To transfer a binary value
+                        // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
+);
 
 // A for router, B for CPU
 blk_mem_gen_3 router2CPU 
@@ -153,7 +173,7 @@ blk_mem_gen_3 router2CPU
   //.douta(douta),  // output wire [7 : 0] douta
   .clkb(clk_cpu),    // input wire clkb
   .enb(cpu_read_enb),      // input wire enb
-  //.web(web),      // input wire [3 : 0] web
+  .web(4'b0),      // input wire [3 : 0] web
   .addrb(cpu_read_addrb),  // input wire [15 : 0] addrb
   //.dinb(dinb),    // input wire [31 : 0] dinb
   .doutb(cpu_read_data)   // output wire [31 : 0] doutb
@@ -167,6 +187,7 @@ blk_mem_gen_3 router2CPU
 typedef enum reg[2:0] { START_O, PREP1, PREP2, PREP3, ACCESS_O, END1, END2 } router_read_state_t;
 router_read_state_t router_read_state = START_O;
 reg [6:0] cpu_pointer_2 = 0;
+reg [6:0] cpu_pointer_2_router = 0;
 reg [6:0] router_pointer_2 = 0;
 reg [7:0] router_read_data;
 reg [7:0] internal_tx_data_i;
@@ -181,9 +202,28 @@ assign internal_tx_user = internal_tx_user_i;
 assign internal_tx_valid = internal_tx_valid_i;
 assign internal_tx_ready = internal_tx_ready_i;
 
-wire router_start_enb = (router_pointer_2 != cpu_pointer_2) ? 1'b1 : 1'b0;
+wire router_start_enb = (router_pointer_2 != cpu_pointer_2_router) ? 1'b1 : 1'b0;
 reg[10:0] counter;
 reg[17:0] router_read_addr;
+
+xpm_cdc_array_single #(
+  .DEST_SYNC_FF(4),   // DECIMAL; range: 2-10
+  .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+  .SIM_ASSERT_CHK(0), // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+  .SRC_INPUT_REG(1),  // DECIMAL; 0=do not register input, 1=register input
+  .WIDTH(7)           // DECIMAL; range: 1-1024
+)
+xpm_cdc_array_single_inst_2 (
+  .dest_out(cpu_pointer_2_router), // WIDTH-bit output: src_in synchronized to the destination clock domain. This
+                        // output is registered.
+
+  .dest_clk(clk_router), // 1-bit input: Clock signal for the destination clock domain.
+  .src_clk(clk_cpu),   // 1-bit input: optional; required when SRC_INPUT_REG = 1
+  .src_in(cpu_pointer_2)      // WIDTH-bit input: Input single-bit array to be synchronized to destination clock
+                        // domain. It is assumed that each bit of the array is unrelated to the others. This
+                        // is reflected in the constraints applied to this macro. To transfer a binary value
+                        // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
+);
 
 always @ (posedge clk_router)
 begin
@@ -311,8 +351,8 @@ end
 blk_mem_gen_3 CPU2router 
 (
   .clka(clk_router),    // input wire clka
-  .ena(1),      // input wire ena
-  //.wea(wea),      // input wire [0 : 0] wea
+  .ena(1'b1),      // input wire ena
+  .wea(1'b0),      // input wire [0 : 0] wea
   .addra(router_read_addr),  // input wire [17 : 0] addra
   //.dina(dina),    // input wire [7 : 0] dina
   .douta(router_read_data),  // output wire [7 : 0] douta

@@ -1,7 +1,9 @@
 #include "lookup.h"
 #include "trie.h"
+#include "allocator.h"
 #include <stdio.h>
 static int layer_size[32] = {0};
+static Allocator allocators[32];
 static int nexthop_size = 0;
 static const int ROUTE_NODES_NUM = 1 << 16;
 static int route_node_num;
@@ -41,6 +43,7 @@ void insert(RoutingTableEntry entry)
     trie_node_t parent;
     uint32_t *current_node = (uint32_t *)ROOT_ADDR;
     uint32_t current_node_s = route_node_t::root;
+    uint16_t idx;
     for (uint32_t i = 0; i < entry.prefix_len; ++i)
     {
         parse_node(current_node, &parent);
@@ -49,9 +52,10 @@ void insert(RoutingTableEntry entry)
         {
             if (!parent.rc_ptr)
             {
-                layer_size[i]++;
-                parent.rc_ptr = get_node_addr(i + 1, layer_size[i]);
-                set_rc(current_node, layer_size[i]);
+                // layer_size[i]++;
+                idx = allocators[i].get();
+                parent.rc_ptr = get_node_addr(i + 1, idx);
+                set_rc(current_node, idx);
                 route_nodes[current_node_s].rc = route_node_t::new_node();
             }
             current_node = parent.rc_ptr;
@@ -61,9 +65,10 @@ void insert(RoutingTableEntry entry)
         {
             if (!parent.lc_ptr)
             {
-                layer_size[i]++;
-                parent.lc_ptr = get_node_addr(i + 1, layer_size[i]);
-                set_lc(current_node, layer_size[i]);
+                // layer_size[i]++;
+                idx = allocators[i].get();
+                parent.lc_ptr = get_node_addr(i + 1, idx);
+                set_lc(current_node, idx);
                 route_nodes[current_node_s].lc = route_node_t::new_node();
             }
             current_node = parent.lc_ptr;
@@ -123,12 +128,15 @@ void remove(uint32_t ip, uint32_t prefix_len)
     set_nexthop(current_node, 0);
     route_nodes[current_node_s].metric = -1;
     // Trace back
+    uint16_t idx;
     for (int i = prefix_len - 1; i >= 0; --i)
     {
         int bit = (ip >> i) & 1;
         if (*path[i + 1] == 0)
         {
-            --layer_size[i];
+            // --layer_size[i];
+            idx = get_idx(path[i + 1]);
+            allocators[i].put(idx);
             if (bit)
             {
                 set_rc(path[i], 0);
