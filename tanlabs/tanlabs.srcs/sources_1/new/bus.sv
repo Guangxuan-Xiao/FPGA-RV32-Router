@@ -123,11 +123,11 @@ module bus(input wire clk,
     localparam BUFFER_WRITE_END   = 32'h6007FFFF;
 
     // Interface BRAM Address
-    // | 0x70000000-0x70000002 | Buffer 串口数据及状态 |
+    // | 0x70000000-0x70000020 | Buffer 串口数据及状态 |
 
     localparam BUFFER_START_READ = 32'h70000000;
-    localparam BUFFER_END_READ   = 32'h70000001;
-    localparam BUFFER_END_WRITE  = 32'h70000002;
+    localparam BUFFER_END_READ   = 32'h70000010;
+    localparam BUFFER_END_WRITE  = 32'h70000020;
 
     localparam CLOCK_ADDR = 32'h10000010;
     localparam IP0_ADDR = 32'h10000100;
