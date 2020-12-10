@@ -1,7 +1,7 @@
 ENTRY(__bootloader_start)
 
 SECTIONS {
-    . = 0x80000000;
+    . = 0x80100000;
 
     .boot : {
         /* ensure that the bootloader is at the beginning */
