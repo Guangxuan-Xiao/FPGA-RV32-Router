@@ -34,6 +34,8 @@ extern void traverse(RoutingTableEntry *buffer, uint32_t *len);
 extern uint32_t send(int if_index, const uint8_t *buffer, size_t length, const uint8_t *dst_mac);
 extern uint32_t recieve(int if_index_mask, uint8_t *buffer, size_t length, uint8_t *src_mac, uint8_t *dst_mac, int64_t timeout, int *if_index);
 extern uint32_t get_clock();
+extern uint32_t send(int if_index, const uint8_t *buffer, size_t length, const uint8_t *dst_mac);
+extern uint32_t receive(int if_index_mask, uint8_t *buffer, size_t length, uint8_t *src_mac, uint8_t *dst_mac, int64_t timeout, int *if_index);
 
 uint8_t packet[2048];
 uint8_t output[2048];
@@ -202,12 +204,6 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
 
 int main(int argc, char *argv[]) 
 {
-  // TO DELETE
-  int res = HAL_Init(1, addrs);
-  if (res < 0) 
-  {
-    return res;
-  }
   for (uint32_t i = 0; i < N_IFACE_ON_BOARD; i++) 
   {
     RoutingTableEntry entry = 
@@ -239,14 +235,21 @@ int main(int argc, char *argv[])
     macaddr_t src_mac;
     macaddr_t dst_mac;
     int if_index;
-
-    uint32_t res = recieve(mask, packet, sizeof(packet), src_mac, dst_mac, 1000, &if_index);
-    if (res <= 0) 
+    // TODO: Waiting for receive function.
+    
+    uint32_t res = receive(mask, packet, sizeof(packet), src_mac, dst_mac, 1000, &if_index);
+    if (res <= 0)
     {
       printf("Receive invalid.\n");
       continue;
     }
+    else if (res >= sizeof(packet))
+    {
+      printf("truncated!\n");
+      continue;
+    }
 
+    
     in_addr_t src_addr, dst_addr;
     ipheader* ip_header = (ipheader *)packet;
     src_addr = ip_header->saddr; 
