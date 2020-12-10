@@ -238,6 +238,13 @@ void lookup_test()
         .nexthop_ip = 0x0109a8c0,
         .metric = 3};
     insert(entry2);
+    RoutingTableEntry entry3 = {
+        .ip = 0x0b0a0103,
+        .prefix_len = 24,
+        .port = 8,
+        .nexthop_ip = 0x0109a8c0,
+        .metric = 1};
+    insert(entry3);
     RoutingTableEntry buffer[10];
     uint32_t len = 0;
     traverse(buffer, &len);
@@ -251,6 +258,9 @@ void lookup_test()
     search(0x00000000, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     remove(0x04030201, 32);
+    traverse(buffer, &len);
+    for (uint32_t i = 0; i < len; ++i)
+        buffer[i].print();
     search(0x04030201, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     search(0x01030201, &nexthop_ip, &port, &metric);
@@ -258,6 +268,9 @@ void lookup_test()
     search(0x00000000, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     remove(0x00030201, 24);
+    traverse(buffer, &len);
+    for (uint32_t i = 0; i < len; ++i)
+        buffer[i].print();
     search(0x04030201, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     search(0x01030201, &nexthop_ip, &port, &metric);
