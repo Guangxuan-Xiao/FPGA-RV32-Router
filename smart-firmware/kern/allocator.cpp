@@ -1,18 +1,12 @@
 #include "allocator.h"
-Allocator::Allocator(uint16_t size)
+Allocator::Allocator()
 {
     allocated = 0;
-    nodes = (AllocatorNode *)malloc(sizeof(AllocatorNode) * size);
-    for (uint16_t i = 0; i < size; ++i)
+    for (uint16_t i = 0; i < ALLOCATOR_SIZE; ++i)
     {
         nodes[i].idx = i;
         nodes[i].succ = i + 1;
     }
-}
-
-Allocator::~Allocator()
-{
-    free(nodes);
 }
 
 uint16_t Allocator::get()
