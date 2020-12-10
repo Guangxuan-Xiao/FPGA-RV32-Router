@@ -653,7 +653,7 @@ module tanlabs(
     wire cpu_finish_enb;
     wire [6:0] cpu_finish_addrb;
 
-    router_cpu_interface(
+    router_cpu_interface router_cpu_interface(
     .clk_router(eth_clk),
     .clk_cpu(core_clk),
     .rst_router(reset_eth),
