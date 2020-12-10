@@ -24,7 +24,7 @@ void set_mac_prefix(uint32_t mac_prefix)
     *mac_prefix_ptr = mac_prefix;
 }
 
-void read_ip(volatile uint32_t *ip0, volatile uint32_t *ip1, volatile uint32_t *ip2, volatile uint32_t *ip3)
+void read_ip(uint32_t *ip0, uint32_t *ip1, uint32_t *ip2, uint32_t *ip3)
 {
     *ip0 = *ip0_ptr;
     *ip1 = *ip1_ptr;
@@ -37,14 +37,14 @@ uint32_t read_mac_prefix()
     return *mac_prefix_ptr;
 }
 
-uint32_t receive(uint8_t* buffer, uint32_t src)
+uint32_t receive(uint8_t *buffer, uint32_t src)
 {
-    volatile uint32_t* ptr;
-    ptr = (volatile uint32_t*)(read_start + (src << width) + size_addr);
+    volatile uint32_t *ptr;
+    ptr = (volatile uint32_t *)(read_start + (src << width) + size_addr);
     uint32_t buf = 0;
     uint32_t len = *ptr;
     len = ((len & 0xFF000000) >> 24) + ((len & 0xFF0000) >> 8);
-    ptr = (volatile uint32_t*)(read_start + (src << width));
+    ptr = (volatile uint32_t *)(read_start + (src << width));
     for (uint32_t i = 0; i < len; i = i + 4)
     {
         buf = *ptr;
@@ -58,11 +58,11 @@ uint32_t receive(uint8_t* buffer, uint32_t src)
     return len;
 }
 
-void send(uint8_t* buffer, uint32_t len, uint32_t dst)
+void send(uint8_t *buffer, uint32_t len, uint32_t dst)
 {
     uint32_t i = 0;
-    volatile uint32_t* ptr;
-    ptr = (volatile uint32_t*)(write_start + (dst << width));
+    volatile uint32_t *ptr;
+    ptr = (volatile uint32_t *)(write_start + (dst << width));
     uint32_t buf = 0;
     len = len - 4;
     for (i = 0; i < len; i = i + 4)
@@ -78,7 +78,22 @@ void send(uint8_t* buffer, uint32_t len, uint32_t dst)
         buf = buf + (buffer[i] << (i & 3));
     }
     *ptr = buf;
-    ptr = (volatile uint32_t*)(read_start + (dst << width) + size_addr);
+    ptr = (volatile uint32_t *)(read_start + (dst << width) + size_addr);
     buf = ((len & 0xFF) << 24) + ((len & 0xFF00) << 8);
     *ptr = buf;
+}
+
+void ip_mac_test()
+{
+    uint32_t ip0, ip1, ip2, ip3, mac_prefix;
+    read_ip(&ip0, &ip1, &ip2, &ip3);
+    printf("IP0: %08x IP1: %08x IP2: %08x IP3: %08x \n", ip0, ip1, ip2, ip3);
+    mac_prefix = read_mac_prefix();
+    printf("MAC[35:4]: %08x\n", mac_prefix);
+    set_ip(0x00aaaaaa, 0x00bbbbbb, 0x00cccccc, 0xdddddddd);
+    set_mac_prefix(0xabcdabcd);
+    read_ip(&ip0, &ip1, &ip2, &ip3);
+    printf("IP0: %08x IP1: %08x IP2: %08x IP3: %08x \n", ip0, ip1, ip2, ip3);
+    mac_prefix = read_mac_prefix();
+    printf("MAC[35:4]: %08x\n", mac_prefix);
 }
