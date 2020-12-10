@@ -40,7 +40,7 @@ router_write_state_t router_write_state = START;
 
 reg [6:0] router_pointer;
 reg [6:0] cpu_pointer;
-reg [6:0] cpu_pointer_router;
+reg [6:0] router_pointer_cpu;
 
 reg [7:0] router_write_data;
 reg [17:0] router_write_addr;
@@ -141,7 +141,26 @@ begin
   end
 end
 
-assign cpu_start_enb = (router_pointer != cpu_pointer_router) ? 1'b1 : 1'b0;
+assign cpu_start_enb = (router_pointer_cpu != cpu_pointer) ? 1'b1 : 1'b0;
+
+xpm_cdc_array_single #(
+  .DEST_SYNC_FF(4),   // DECIMAL; range: 2-10
+  .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
+  .SIM_ASSERT_CHK(0), // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+  .SRC_INPUT_REG(1),  // DECIMAL; 0=do not register input, 1=register input
+  .WIDTH(7)           // DECIMAL; range: 1-1024
+)
+xpm_cdc_array_single_inst (
+  .dest_out(router_pointer_cpu), // WIDTH-bit output: src_in synchronized to thcpu_pointer_routertination clock domain. This
+                        // output is registered.
+
+  .dest_clk(clk_cpu), // 1-bit input: Clock signal for the destination clock domain.
+  .src_clk(clk_router),   // 1-bit input: optional; required when SRC_INPUT_REG = 1
+  .src_in(router_pointer)      // WIDTH-bit input: Input single-bit array to be synchronized to destination clock
+                        // domain. It is assumed that each bit of the array is unrelated to the others. This
+                        // is reflected in the constraints applied to this macro. To transfer a binary value
+                        // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
+);
 
 // A for router, B for CPU
 blk_mem_gen_3 router2CPU 
@@ -192,15 +211,15 @@ xpm_cdc_array_single #(
   .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
   .SIM_ASSERT_CHK(0), // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
   .SRC_INPUT_REG(1),  // DECIMAL; 0=do not register input, 1=register input
-  .WIDTH(14)           // DECIMAL; range: 1-1024
+  .WIDTH(7)           // DECIMAL; range: 1-1024
 )
-xpm_cdc_array_single_inst (
-  .dest_out({cpu_pointer_2_router, cpu_pointer_router}), // WIDTH-bit output: src_in synchronized to the destination clock domain. This
+xpm_cdc_array_single_inst_2 (
+  .dest_out(cpu_pointer_2_router), // WIDTH-bit output: src_in synchronized to the destination clock domain. This
                         // output is registered.
 
   .dest_clk(clk_router), // 1-bit input: Clock signal for the destination clock domain.
   .src_clk(clk_cpu),   // 1-bit input: optional; required when SRC_INPUT_REG = 1
-  .src_in({cpu_pointer_2, cpu_pointer})      // WIDTH-bit input: Input single-bit array to be synchronized to destination clock
+  .src_in(cpu_pointer_2)      // WIDTH-bit input: Input single-bit array to be synchronized to destination clock
                         // domain. It is assumed that each bit of the array is unrelated to the others. This
                         // is reflected in the constraints applied to this macro. To transfer a binary value
                         // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
