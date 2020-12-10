@@ -2,7 +2,7 @@
 #include "trie.h"
 #include "allocator.h"
 #include <stdio.h>
-static int layer_size[32] = {0};
+// static int layer_size[32] = {0};
 static Allocator allocators[32];
 static int nexthop_size = 0;
 static const int ROUTE_NODES_NUM = 1 << 16;
@@ -34,8 +34,8 @@ void init()
 {
     route_node_num = 1;
     nexthop_size = 0;
-    for (int i = 0; i < 32; ++i)
-        layer_size[i] = 0;
+    // for (int i = 0; i < 32; ++i)
+    //     layer_size[i] = 0;
 }
 
 void insert(RoutingTableEntry entry)

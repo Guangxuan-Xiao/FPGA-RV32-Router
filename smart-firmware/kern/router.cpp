@@ -58,7 +58,7 @@ uint32_t receive(uint8_t *buffer, uint32_t src)
     return len;
 }
 
-void send(uint8_t *buffer, uint32_t len, uint32_t dst);
+void send(uint8_t *buffer, uint32_t len, uint32_t dst)
 {
     uint32_t i = 0;
     volatile uint32_t *ptr;
