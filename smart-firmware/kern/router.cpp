@@ -42,21 +42,17 @@ uint32_t read_mac_prefix()
 
 uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_index)
 {
-    printf("1 114514\n");
-    uint8_t status = 0;
-    printf("2 114514\n");
+    uint8_t status = RD_SRT;
     if (!(status & 0x80))
     {
         return 0;
     }
-    printf("3 114514\n");
+    printf("taichoule\r\n");
     uint32_t src = status & 0x7F;
-    printf("4 114514\n");
     volatile uint32_t *ptr;
     ptr = (volatile uint32_t *)(read_start + (src << width) + size_addr);
     uint32_t buf = 0;
     uint32_t length = *ptr;
-    printf("5 114514\n");
     length = ((length & 0xFF000000) >> 24) + ((length & 0xFF0000) >> 8);
     ptr = (volatile uint32_t*)(read_start + (src << width));
     buf = *ptr;

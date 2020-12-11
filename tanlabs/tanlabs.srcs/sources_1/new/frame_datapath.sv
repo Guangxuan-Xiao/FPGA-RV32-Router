@@ -898,7 +898,7 @@ end
                         if( !rt_o_valid ||!test_packet_valid)
                         begin
                             // TODO: drop!
-                            s2.drop <= 1;
+                            s2.drop <= 0;
                         end
                         else
                         begin
@@ -1088,8 +1088,9 @@ end
                 case(s5.prot_type)
                 3'b000:
                 begin
-                    s6.dest <= query_port_5;
-                    store_dst <= query_port_5;
+                    //TODO: change to prev_5
+                    s6.dest <= 4;
+                    store_dst <= 4;
                 end
 
                 3'b001:

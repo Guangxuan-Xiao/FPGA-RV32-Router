@@ -110,14 +110,7 @@ uint16_t get_checksum(uint16_t *hdr, const size_t bytes)
 void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac)
 {
   uint32_t router_len;
-  printf("into\n");
   traverse(cache, &router_len);
-
-  printf("router_len: %d\n", router_len);
-
-  for(int i=0; i<4; i++)
-    cache[i].print();
-  
   uint32_t rest_ripentry = router_len;
   while(rest_ripentry > 25)
   {
@@ -152,9 +145,7 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
     udpHeader->uh_sum = 0; 
     uint16_t checksum = calculate_checksum(ip_header);
     ip_header->ip_sum = checksum;
-    printf("there\n");
     send(if_index, output, totlen, bram_addr_dst, dst_mac);
-    printf("there\n");
     bram_addr_dst = (bram_addr_dst + 1) & 0x7F;
     rest_ripentry -= 25;
     }
@@ -231,10 +222,9 @@ int mainLoop()
 
     uint32_t res = receive(packet, src_mac, dst_mac, &if_index);
 
-    printf("res: %d\n", res);
     if (res <= 0)
     {
-      printf("Receive invalid.\n");
+      //printf("Receive invalid.\n");
       continue;
     }
     else if (res >= sizeof(packet))
