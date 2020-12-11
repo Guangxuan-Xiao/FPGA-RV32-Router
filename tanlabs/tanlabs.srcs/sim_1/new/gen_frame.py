@@ -190,6 +190,27 @@ write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
             RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
             RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0"))
 '''
+
+write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
+            IP(src=IP_TESTER0, dst=IP_TEST_DST, id=0xaf1a, ttl=64) /
+            UDP(sport=7, dport=7) /
+            RIP(cmd=2, version=2) /
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0"))
 fout.close()
 pout.close()
 exit(0)

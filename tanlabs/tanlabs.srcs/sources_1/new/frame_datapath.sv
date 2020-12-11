@@ -226,23 +226,23 @@ module frame_datapath #(
         case(in.id)
             3'b000:
             begin
-                my_mac <= {mac, dip_sw[15:12]};
-                my_ip  <= ip0;
+                my_mac <= 48'h555555555555;
+                my_ip  <= 32'h44444444;
             end
             3'b001:
             begin
-                my_mac <= {mac, dip_sw[11:8]};
-                my_ip  <= ip1;
+                my_mac <= 48'h555555555555;
+                my_ip  <= 32'h44444444;
             end
             3'b010:
             begin
-                my_mac <= {mac, dip_sw[7:4]};
-                my_ip  <= ip2;
+                my_mac <= 48'h555555555555;
+                my_ip  <= 32'h44444444;
             end
             3'b011:
             begin
-                my_mac <= {mac, dip_sw[3:0]};
-                my_ip  <= ip3;
+                my_mac <= 48'h555555555555;
+                my_ip  <= 32'h44444444;
             end
             default:
             begin
@@ -1103,6 +1103,10 @@ end
                     s6.dest <= 0;
                 end
                 endcase
+            end
+            else if (s5.last)
+            begin
+                s6.drop <= 1;
             end
             else if (!s5.is_first)
             begin
