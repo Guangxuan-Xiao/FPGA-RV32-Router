@@ -22,7 +22,7 @@ int main()
 	print_hello();
 	lookup_test();
 	ip_mac_test();
-	clock_test();
+	// clock_test();
 	// router_rip();
 	return 233;
 }

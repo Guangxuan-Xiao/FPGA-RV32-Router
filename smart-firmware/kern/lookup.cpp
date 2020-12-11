@@ -4,8 +4,8 @@
 #include <stdio.h>
 // static int layer_size[32] = {0};
 static Allocator allocators[32];
+static RoutingTrieAllocator routingTrieAllocator;
 static int nexthop_size = 0;
-static const int ROUTE_NODES_NUM = 1 << 16;
 static int route_node_num = 1;
 class route_node_t
 {
@@ -15,12 +15,8 @@ public:
     uint32_t metric;
     route_node_t() : lc(0), rc(0), metric(0xffffffff) {}
     static const uint32_t root = 1;
-    static uint32_t new_node()
-    {
-        return ++route_node_num;
-    }
 };
-static route_node_t route_nodes[ROUTE_NODES_NUM];
+static route_node_t route_nodes[ROUTING_TRIE_SIZE];
 void RoutingTableEntry::print()
 {
     printf("IP: %08x\n", ip);
@@ -46,6 +42,7 @@ void insert(RoutingTableEntry entry)
     uint16_t idx;
     for (uint32_t i = 0; i < entry.prefix_len; ++i)
     {
+        printf("Node Addr: %u %x\n", current_node_s, current_node);
         parse_node(current_node, &parent);
         int bit = (entry.ip >> i) & 1;
         if (bit)
@@ -56,8 +53,9 @@ void insert(RoutingTableEntry entry)
                 idx = allocators[i].get();
                 parent.rc_ptr = get_node_addr(i + 1, idx);
                 set_rc(current_node, idx);
-                route_nodes[current_node_s].rc = route_node_t::new_node();
             }
+            if (!route_nodes[current_node_s].rc)
+                route_nodes[current_node_s].rc = routingTrieAllocator.get();
             current_node = parent.rc_ptr;
             current_node_s = route_nodes[current_node_s].rc;
         }
@@ -69,8 +67,9 @@ void insert(RoutingTableEntry entry)
                 idx = allocators[i].get();
                 parent.lc_ptr = get_node_addr(i + 1, idx);
                 set_lc(current_node, idx);
-                route_nodes[current_node_s].lc = route_node_t::new_node();
             }
+            if (!route_nodes[current_node_s].lc)
+                route_nodes[current_node_s].lc = routingTrieAllocator.get();
             current_node = parent.lc_ptr;
             current_node_s = route_nodes[current_node_s].lc;
         }
@@ -137,6 +136,7 @@ void remove(uint32_t ip, uint32_t prefix_len)
             // --layer_size[i];
             idx = get_idx(path[i + 1]);
             allocators[i].put(idx);
+            routingTrieAllocator.put(path_s[i + 1]);
             if (bit)
             {
                 set_rc(path[i], 0);
@@ -248,6 +248,7 @@ void lookup_test()
     RoutingTableEntry buffer[10];
     uint32_t len = 0;
     traverse(buffer, &len);
+    printf("Routing Table Size: %u\n", len);
     for (uint32_t i = 0; i < len; ++i)
         buffer[i].print();
     uint32_t nexthop_ip, port, metric;
@@ -259,6 +260,7 @@ void lookup_test()
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     remove(0x04030201, 32);
     traverse(buffer, &len);
+    printf("Routing Table Size: %u\n", len);
     for (uint32_t i = 0; i < len; ++i)
         buffer[i].print();
     search(0x04030201, &nexthop_ip, &port, &metric);
@@ -269,6 +271,7 @@ void lookup_test()
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     remove(0x00030201, 24);
     traverse(buffer, &len);
+    printf("Routing Table Size: %u\n", len);
     for (uint32_t i = 0; i < len; ++i)
         buffer[i].print();
     search(0x04030201, &nexthop_ip, &port, &metric);
