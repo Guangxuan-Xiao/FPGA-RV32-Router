@@ -31,8 +31,7 @@ void init()
 {
     route_node_num = 1;
     nexthop_size = 0;
-    // for (int i = 0; i < 32; ++i)
-    //     layer_size[i] = 0;
+    routingTrieAllocator.get();
 }
 
 void insert(RoutingTableEntry entry)
@@ -199,6 +198,7 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
 
 void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s, RoutingTableEntry *buffer, uint32_t *len)
 {
+    // printf("Node Addr: %u %x\n", addr_s, addr_h);
     if (!addr_h || !addr_s)
         return;
     trie_node_t node_h;
@@ -254,6 +254,7 @@ void lookup_test()
     printf("Routing Table Size: %u\n", len);
     for (uint32_t i = 0; i < len; ++i)
         buffer[i].print();
+    printf("\n");
     uint32_t nexthop_ip, port, metric;
     search(0x04030201, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
@@ -266,6 +267,7 @@ void lookup_test()
     printf("Routing Table Size: %u\n", len);
     for (uint32_t i = 0; i < len; ++i)
         buffer[i].print();
+    printf("\n");
     search(0x04030201, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     search(0x01030201, &nexthop_ip, &port, &metric);
@@ -273,10 +275,13 @@ void lookup_test()
     search(0x00000000, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     remove(0x00030201, 24);
+    search(0x0b0a0103, &nexthop_ip, &port, &metric);
+    printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     traverse(buffer, &len);
     printf("Routing Table Size: %u\n", len);
     for (uint32_t i = 0; i < len; ++i)
         buffer[i].print();
+    printf("\n");
     search(0x04030201, &nexthop_ip, &port, &metric);
     printf("Nexthop: 0x%08x\nPort: %d\nMetric: %d\n", nexthop_ip, port, metric);
     search(0x01030201, &nexthop_ip, &port, &metric);

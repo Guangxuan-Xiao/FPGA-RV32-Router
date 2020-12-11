@@ -20,6 +20,7 @@ static void print_hello()
 int main()
 {
 	print_hello();
+	init();
 	lookup_test();
 	ip_mac_test();
 	// clock_test();
