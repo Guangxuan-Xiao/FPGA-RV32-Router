@@ -1,13 +1,14 @@
 #include "rip.h"
 #include "router.h"
-#include "router_hal.h"
+#include "timer.h"
+#include "lookup.h"
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/udp.h>
+#define N_IFACE_ON_BOARD 4
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define BE16(x) __builtin_bswap16(x)
@@ -21,23 +22,10 @@
 
 RoutingTableEntry cache[8200];
 
-extern bool validateIPChecksum(uint8_t *packet, size_t len);
-extern void update(bool insert, RoutingTableEntry entry);
-extern bool prefix_query(uint32_t addr, uint32_t *nexthop, uint32_t *if_index);
-extern bool forward(uint8_t *packet, size_t len);
-extern bool disassemble(const uint8_t *packet, uint32_t len, RipPacket *output);
-extern uint32_t assemble(const RipPacket *rip, uint8_t *buffer);
-extern void insert(RoutingTableEntry entry);
-extern void remove(uint32_t ip, uint32_t prefix_len);
-extern uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *metric);
-extern void traverse(RoutingTableEntry *buffer, uint32_t *len);
-extern uint32_t get_clock();
-extern void send(int if_index, const uint8_t *buffer, uint32_t length, uint32_t dst, const uint8_t *dst_mac);
-extern uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_index);
-
 uint8_t packet[2048];
 uint8_t output[2048];
 uint32_t bram_addr_dst = 0;
+typedef uint8_t macaddr_t[6];
 
 struct ipheader {
   uint8_t ihl : 4, version : 4;
@@ -134,8 +122,8 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
     resp.numEntries = 25;
     for(int i = start; i < rest_ripentry; ++i)
     {
-      resp.entries[i - start].addr = cache[i].addr; //网络字节序
-      resp.entries[i - start].mask = BE32(~((1<<(32 - cache[i].len)) - 1)); //网络字节序
+      resp.entries[i - start].addr = cache[i].ip; //网络字节序
+      resp.entries[i - start].mask = BE32(~((1<<(32 - cache[i].prefix_len)) - 1)); //网络字节序
       resp.entries[i - start].metric = BE32(cache[i].metric); 
       resp.entries[i - start].nexthop = 0; // 网络字节序
     }
@@ -170,8 +158,8 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
       resp.numEntries = rest_ripentry;
       for(int i = 0; i < rest_ripentry; ++i)
       {
-        resp.entries[i].addr = cache[i].addr; //网络字节序
-        resp.entries[i].mask = BE32(~((1<<(32 - cache[i].len)) - 1)); //网络字节序
+        resp.entries[i].addr = cache[i].ip; //网络字节序
+        resp.entries[i].mask = BE32(~((1<<(32 - cache[i].prefix_len)) - 1)); //网络字节序
         resp.entries[i].metric = BE32(cache[i].metric); 
         resp.entries[i].nexthop = 0; // 网络字节序
       }
@@ -201,16 +189,17 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
 }
 
 
-int main(int argc, char *argv[]) 
+int mainLoop() 
 {
+  printf("here\n");
   for (uint32_t i = 0; i < N_IFACE_ON_BOARD; i++) 
   {
     RoutingTableEntry entry = 
     {
-        .addr = addrs[i] & 0x00FFFFFF, 
-        .len = 24,                     
-        .if_index = i,                 
-        .nexthop = 0,                  
+        .ip = addrs[i] & 0x00FFFFFF, 
+        .prefix_len = 24,                     
+        .port = i,                 
+        .nexthop_ip = 0,                  
         .metric = 1               
     };
     insert(entry);
@@ -300,10 +289,10 @@ int main(int argc, char *argv[])
               {
                 RoutingTableEntry rte = 
                 {
-                  .addr = addr,
-                  .len = preLen,
-                  .if_index = if_index,
-                  .nexthop = rip.entries[i].nexthop,
+                  .ip = addr,
+                  .prefix_len = preLen,
+                  .port = if_index,
+                  .nexthop_ip = rip.entries[i].nexthop,
                   .metric  = new_metric
                 };
                 insert(rte);
@@ -313,10 +302,10 @@ int main(int argc, char *argv[])
             {
               RoutingTableEntry rte = 
                 {
-                  .addr = addr,
-                  .len = preLen,
-                  .if_index = if_index,
-                  .nexthop = rip.entries[i].nexthop,
+                  .ip = addr,
+                  .prefix_len = preLen,
+                  .port = if_index,
+                  .nexthop_ip = rip.entries[i].nexthop,
                   .metric  = new_metric
                 };
               insert(rte);

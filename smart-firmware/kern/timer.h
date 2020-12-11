@@ -1,5 +1,5 @@
-#ifndef TIME_H
-#define TIME_H
+#ifndef TIMER_H
+#define TIMER_H
 #include <stdint.h>
 #include <stdio.h>
 const uint32_t NS_PER_CLOCK = 20;
@@ -24,4 +24,4 @@ void clock_test()
         }
     }
 }
-#endif // !TIME_H
+#endif // !TIMER_H
