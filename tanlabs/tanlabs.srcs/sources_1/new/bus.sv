@@ -242,7 +242,7 @@ module bus(input wire clk,
     end
 
     assign ram_data_ram = ram_data_reg;
-    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req | buffer_req | read_end | write_end | ip0_req | ip1_req | ip2_req | ip3_req | mac_req;
+    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req | buffer_req | read_start | read_end | write_end | ip0_req | ip1_req | ip2_req | ip3_req | mac_req;
 
     // CPU Reading RAM control
     always_comb begin
