@@ -42,7 +42,7 @@ void insert(RoutingTableEntry entry)
     uint16_t idx;
     for (uint32_t i = 0; i < entry.prefix_len; ++i)
     {
-        printf("Node Addr: %u %x\n", current_node_s, current_node);
+        // printf("Node Addr: %u %x\n", current_node_s, current_node);
         parse_node(current_node, &parent);
         int bit = (entry.ip >> i) & 1;
         if (bit)
@@ -230,6 +230,8 @@ void lookup_test()
         .port = 9,
         .nexthop_ip = 0x0203a8c0,
         .metric = 5};
+    insert(entry1);
+    remove(0x00030201, 24);
     insert(entry1);
     RoutingTableEntry entry2 = {
         .ip = 0x04030201,
