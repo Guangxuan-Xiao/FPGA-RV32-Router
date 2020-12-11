@@ -69,8 +69,7 @@ const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0204a8c0, 0x0205a8c0, 0x010aa8c0,
 const int router_id = 3;
 #else
 
-in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0100000a, 0x0101000a, 0x0102000a,
-                                     0x0103000a};
+const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0100000a, 0x0101000a, 0x0102000a, 0x0103000a};
 const int router_id = 4;
 #endif
 const in_addr_t multicastIP = 0x090000e0; 
@@ -110,10 +109,16 @@ uint16_t get_checksum(uint16_t *hdr, const size_t bytes)
 
 void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac)
 {
-  uint32_t* router_len;
-  traverse(cache, router_len);
+  uint32_t router_len;
+  printf("into\n");
+  traverse(cache, &router_len);
+
+  printf("router_len: %d\n", router_len);
+
+  for(int i=0; i<4; i++)
+    cache[i].print();
   
-  uint32_t rest_ripentry = *router_len;
+  uint32_t rest_ripentry = router_len;
   while(rest_ripentry > 25)
   {
     int start = rest_ripentry - 25;
@@ -147,7 +152,9 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
     udpHeader->uh_sum = 0; 
     uint16_t checksum = calculate_checksum(ip_header);
     ip_header->ip_sum = checksum;
+    printf("there\n");
     send(if_index, output, totlen, bram_addr_dst, dst_mac);
+    printf("there\n");
     bram_addr_dst = (bram_addr_dst + 1) & 0x7F;
     rest_ripentry -= 25;
     }
@@ -191,7 +198,6 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
 
 int mainLoop() 
 {
-  printf("here\n");
   for (uint32_t i = 0; i < N_IFACE_ON_BOARD; i++) 
   {
     RoutingTableEntry entry = 
@@ -204,7 +210,6 @@ int mainLoop()
     };
     insert(entry);
   }
-
   uint32_t last_time = get_clock();
   while (1) 
   {
@@ -225,6 +230,8 @@ int mainLoop()
     // TODO: Waiting for receive function.
 
     uint32_t res = receive(packet, src_mac, dst_mac, &if_index);
+
+    printf("res: %d\n", res);
     if (res <= 0)
     {
       printf("Receive invalid.\n");
@@ -235,6 +242,7 @@ int mainLoop()
       printf("truncated!\n");
       continue;
     }
+
     
     in_addr_t src_addr, dst_addr;
     ipheader* ip_header = (ipheader *)packet;
@@ -254,6 +262,7 @@ int mainLoop()
       dst_is_me = true; 
     if (dst_is_me) 
     {
+      printf("dst is me.\n");
       RipPacket rip;
       if (disassemble(packet, res, &rip)) 
       {

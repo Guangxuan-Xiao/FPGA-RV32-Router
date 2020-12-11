@@ -211,6 +211,7 @@ void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s
         buffer[*len].nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
         buffer[*len].port = *get_nexthop_port_addr(nexthop_idx);
         buffer[*len].prefix_len = depth;
+        
         *len = (*len) + 1;
     }
     traverse_node(ip, depth + 1, node_h.lc_ptr, route_nodes[addr_s].lc, buffer, len);
@@ -219,6 +220,7 @@ void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s
 
 void traverse(RoutingTableEntry *buffer, uint32_t *len)
 {
+    printf("start traverse.\n");
     *len = 0;
     traverse_node(0, 0, (uint32_t *)ROOT_ADDR, route_node_t::root, buffer, len);
 }
