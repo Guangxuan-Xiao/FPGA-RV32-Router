@@ -38,15 +38,15 @@ module router_cpu_interface(
 typedef enum reg[2:0] { START, ACCESS, END1, END2, END3 } router_write_state_t;
 router_write_state_t router_write_state = START;
 
-reg [6:0] router_pointer = 0;
-reg [6:0] cpu_pointer = 0;
-reg [6:0] router_pointer_cpu = 0;
+reg [6:0] router_pointer;
+reg [6:0] cpu_pointer;
+reg [6:0] router_pointer_cpu;
 
-reg [7:0] router_write_data = 0;
-reg [17:0] router_write_addr = 0;
-reg [17:0] router_write_addr_tmp = 0;
-reg internal_rx_ready_i = 0;
-reg router_write_en = 0;
+reg [7:0] router_write_data;
+reg [17:0] router_write_addr;
+reg [17:0] router_write_addr_tmp;
+reg internal_rx_ready_i;
+reg router_write_en;
 
 assign internal_rx_ready = internal_rx_ready_i;
 
