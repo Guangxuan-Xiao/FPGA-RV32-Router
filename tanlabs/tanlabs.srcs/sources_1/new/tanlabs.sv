@@ -653,6 +653,7 @@ module tanlabs(
     wire cpu_finish_enb;
     wire [6:0] cpu_finish_addrb;
     wire internal_tx_ready = eth_tx_ready[4];
+    wire [31:0] rubbish2333;
 
     router_cpu_interface router_cpu_interface(
     .clk_router(eth_clk),
@@ -685,7 +686,8 @@ module tanlabs(
     .cpu_read_addrb(cpu_read_addrb),
     .cpu_read_data(cpu_read_data),
     .cpu_finish_enb(cpu_finish_enb),
-    .cpu_finish_addrb(cpu_finish_addrb)
+    .cpu_finish_addrb(cpu_finish_addrb),
+    .rubbish2333(rubbish2333)
     );
 
     bus bus(
@@ -752,6 +754,7 @@ module tanlabs(
     .cpu_read_data(cpu_read_data),
     .cpu_finish_enb(cpu_finish_enb),
     .cpu_finish_addrb(cpu_finish_addrb),
+    .rubbish2333(rubbish2333),
 
     .ip0_o(ip0_i),
     .ip1_o(ip1_i),

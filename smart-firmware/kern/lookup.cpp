@@ -220,7 +220,7 @@ void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s
 
 void traverse(RoutingTableEntry *buffer, uint32_t *len)
 {
-    printf("start traverse.\r\n");
+    //printf("start traverse.\r\n");
     *len = 0;
     traverse_node(0, 0, (uint32_t *)ROOT_ADDR, route_node_t::root, buffer, len);
 }
