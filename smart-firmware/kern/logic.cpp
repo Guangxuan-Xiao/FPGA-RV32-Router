@@ -207,7 +207,7 @@ int mainLoop()
     uint32_t time = get_clock();
     if (time >= last_time + 50000000) 
     {
-      printf("5s Timer\n");
+      printf("5s Timer\r\n");
       for (int i = 0; i < N_IFACE_ON_BOARD; i++) 
       {
         send_all_rip(i, multicastIP, multicastMac);
@@ -224,12 +224,12 @@ int mainLoop()
 
     if (res <= 0)
     {
-      //printf("Receive invalid.\n");
+      //printf("Receive invalid.\r\n");
       continue;
     }
     else if (res >= sizeof(packet))
     {
-      printf("truncated!\n");
+      printf("truncated!\r\n");
       continue;
     }
 
@@ -252,7 +252,7 @@ int mainLoop()
       dst_is_me = true; 
     if (dst_is_me) 
     {
-      printf("dst is me.\n");
+      printf("dst is me.\r\n");
       RipPacket rip;
       if (disassemble(packet, res, &rip)) 
       {
@@ -314,12 +314,12 @@ int mainLoop()
       } 
       else 
       {
-        printf("Not a RIP packet.\n");
+        printf("Not a RIP packet.\r\n");
       }
     } 
     else 
     {
-      printf("This is not my RIP packet.\n");
+      printf("This is not my RIP packet.\r\n");
     }
   }
   return 0;

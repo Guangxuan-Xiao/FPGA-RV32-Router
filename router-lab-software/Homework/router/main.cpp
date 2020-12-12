@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
     if (time > last_time + 5 * 1000)
     {
       // ref. RFC 2453 Section 3.8
-      printf("5s Timer\n");
+      printf("5s Timer\r\n");
       prepareRIP();
       // HINT: print complete routing table to stdout/stderr for debugging
       // TODO: send complete routing table to every interface
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
     // 1. validate
     if (!validateIPChecksum(packet, res))
     {
-      printf("Invalid IP Checksum\n");
+      printf("Invalid IP Checksum\r\n");
       // drop if ip checksum invalid
       continue;
     }
@@ -439,7 +439,7 @@ int main(int argc, char *argv[])
           {
             // not found
             // you can drop it
-            printf("ARP not found for nexthop %x\n", nexthop);
+            printf("ARP not found for nexthop %x\r\n", nexthop);
           }
         }
         else
@@ -447,7 +447,7 @@ int main(int argc, char *argv[])
           // NOT TO DETERMINE.
           // not found
           // send ICMP Destination Network Unreachable
-          printf("IP not found in routing table for src %x dst %x\n", src_addr, dst_addr);
+          printf("IP not found in routing table for src %x dst %x\r\n", src_addr, dst_addr);
           // send icmp destination net unreachable to src addr
           // fill IP header
           struct ip *ip_header = (struct ip *)output;

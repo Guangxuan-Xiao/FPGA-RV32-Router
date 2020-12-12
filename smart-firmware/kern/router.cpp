@@ -43,6 +43,7 @@ uint32_t read_mac_prefix()
 uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_index)
 {
     uint8_t status = RD_SRT;
+    printf("status: %d\r\n", status);
     if (!(status & 0x80))
     {
         return 0;
@@ -128,13 +129,13 @@ void ip_mac_test()
 {
     uint32_t ip0, ip1, ip2, ip3, mac_prefix;
     read_ip(&ip0, &ip1, &ip2, &ip3);
-    printf("IP0: %08x IP1: %08x IP2: %08x IP3: %08x \n", ip0, ip1, ip2, ip3);
+    printf("IP0: %08x IP1: %08x IP2: %08x IP3: %08x \r\n", ip0, ip1, ip2, ip3);
     mac_prefix = read_mac_prefix();
-    printf("MAC[35:4]: %08x\n", mac_prefix);
+    printf("MAC[35:4]: %08x\r\n", mac_prefix);
     set_ip(0x00aaaaaa, 0x00bbbbbb, 0x00cccccc, 0xdddddddd);
     set_mac_prefix(0xabcdabcd);
     read_ip(&ip0, &ip1, &ip2, &ip3);
-    printf("IP0: %08x IP1: %08x IP2: %08x IP3: %08x \n", ip0, ip1, ip2, ip3);
+    printf("IP0: %08x IP1: %08x IP2: %08x IP3: %08x \r\n", ip0, ip1, ip2, ip3);
     mac_prefix = read_mac_prefix();
-    printf("MAC[35:4]: %08x\n", mac_prefix);
+    printf("MAC[35:4]: %08x\r\n", mac_prefix);
 }

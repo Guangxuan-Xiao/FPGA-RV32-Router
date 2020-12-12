@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
     uint32_t time = get_clock();
     if (time >= last_time + 50000000) 
     {
-      printf("5s Timer\n");
+      printf("5s Timer\r\n");
       for (int i = 0; i < N_IFACE_ON_BOARD; i++) 
       {
         send_all_rip(i, multicastIP, multicastMac);
@@ -238,12 +238,12 @@ int main(int argc, char *argv[])
     uint32_t res = receive(packet, src_mac, dst_mac, &if_index);
     if (res <= 0)
     {
-      printf("Receive invalid.\n");
+      printf("Receive invalid.\r\n");
       continue;
     }
     else if (res >= sizeof(packet))
     {
-      printf("truncated!\n");
+      printf("truncated!\r\n");
       continue;
     }
     
@@ -326,12 +326,12 @@ int main(int argc, char *argv[])
       } 
       else 
       {
-        printf("Not a RIP packet.\n");
+        printf("Not a RIP packet.\r\n");
       }
     } 
     else 
     {
-      printf("This is not my RIP packet.\n");
+      printf("This is not my RIP packet.\r\n");
     }
   }
   return 0;
