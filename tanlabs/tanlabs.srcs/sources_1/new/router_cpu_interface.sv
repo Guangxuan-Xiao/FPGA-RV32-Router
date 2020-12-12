@@ -121,7 +121,7 @@ begin
     END2:
     begin
       router_write_state      <= END3;
-      router_write_data       <= router_write_addr_tmp[10:8];
+      router_write_data       <= {5'b0, router_write_addr_tmp[10:8]};
       router_write_en         <= 1;
       router_write_addr[10:0] <= 11'b11111111110;
       router_pointer          <= router_pointer + 1;
