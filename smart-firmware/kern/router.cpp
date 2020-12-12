@@ -43,12 +43,11 @@ uint32_t read_mac_prefix()
 uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_index)
 {
     uint8_t status = RD_SRT;
-    printf("status: %d\r\n", status);
+    //printf("status: %d\r\n", status);
     if (!(status & 0x80))
     {
         return 0;
     }
-    printf("status: %d\n", status);
     uint32_t src = status & 0x7F;
     volatile uint32_t *ptr;
     ptr = (volatile uint32_t *)(read_start + (src << width) + size_addr);
@@ -56,7 +55,7 @@ uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_in
     uint32_t length = *ptr;
     length = ((length & 0xFF000000) >> 24) + ((length & 0xFF0000) >> 8);
     ptr = (volatile uint32_t*)(read_start + (src << width));
-    buf = *ptr;
+    /*buf = *ptr;
     dst_mac[0] = buf & 0xFF;
     *if_index = buf & 0xFF;
     dst_mac[1] = (buf & 0xFF00) >> 8;
@@ -90,6 +89,14 @@ uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_in
         ptr = ptr + 1;
     }
     length = length + 14;
+    for (uint32_t i = 0; i < 512; i++)
+    {
+        buf = *ptr;
+        //printf("buf: 0x%x\r\n", buf);
+        //printf("ptr: 0x%x\r\n\r\n", ptr);
+        ptr = ptr + 1;
+    }*/
+    printf("read a packet\r\n");
     RD_END = status;
     return length;
 }

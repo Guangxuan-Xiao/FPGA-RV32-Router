@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
     uint32_t time = get_clock();
     if (time >= last_time + 50000000) 
     {
-      printf("5s Timer\r\n");
+      //printf("5s Timer\r\n");
       for (int i = 0; i < N_IFACE_ON_BOARD; i++) 
       {
         send_all_rip(i, multicastIP, multicastMac);
