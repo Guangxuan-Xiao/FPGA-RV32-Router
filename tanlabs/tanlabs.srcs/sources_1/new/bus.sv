@@ -181,12 +181,12 @@ module bus(input wire clk,
 
     wire buffer_read  = ram_req && (ram_addr_i >= BUFFER_READ_START) && (ram_addr_i <= BUFFER_READ_END);
     wire buffer_write = ram_req && (ram_addr_i >= BUFFER_WRITE_START) && (ram_addr_i <= BUFFER_WRITE_END);
-    wire buffer_req   = buffer_read || buffer_write;
     wire buffer_addr  = ram_addr_i[17:2];
 
     wire read_start = ram_req && (ram_addr_i == BUFFER_START_READ);
     wire read_end   = ram_req && (ram_addr_i == BUFFER_END_READ);
     wire write_end  = ram_req && (ram_addr_i == BUFFER_END_WRITE);
+    wire buffer_req   = buffer_read || buffer_write || read_start || write_end || write_end;
 
     // set base ram data not zzz only on writing it.
     assign base_ram_data = (base_ram_req || uart_data_req) && ram_we_i ? base_ram_data_reg : 32'bz;
@@ -226,6 +226,24 @@ module bus(input wire clk,
         end
     end
 
+    wire buffer_ready = ram_req & buffer_state == END;
+    sram_state_t buffer_state;
+    always_ff @(posedge clk, posedge rst) begin
+        if (rst || !buffer_req) begin
+            buffer_state <= START;
+        end
+        else begin
+            case (buffer_state)
+                START:
+                buffer_state <= ACCESS;
+                ACCESS:
+                buffer_state <= END;
+                END:
+                buffer_state <= START;
+            endcase
+        end
+    end
+
     // Flash State Machine
     reg[1:0] flash_state;
     reg flash_we;
@@ -242,7 +260,7 @@ module bus(input wire clk,
     end
 
     assign ram_data_ram = ram_data_reg;
-    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req | buffer_req | read_start | read_end | write_end | ip0_req | ip1_req | ip2_req | ip3_req | mac_req;
+    assign ram_ready = sram_ready | flash_ready | trie_req | nexthop_req | clock_req | buffer_ready | ip0_req | ip1_req | ip2_req | ip3_req | mac_req;
 
     // CPU Reading RAM control
     always_comb begin
@@ -395,11 +413,9 @@ module bus(input wire clk,
         cpu_write_web   = 0;
         cpu_write_addrb = buffer_addr;
         cpu_write_data  = 0;
-        cpu_read_enb    = 0;
+        cpu_read_enb    = 1;
         cpu_read_addrb  = buffer_addr;
-        if (buffer_read & !ram_we_i) begin
-            cpu_read_enb = 1'b1;
-        end else if (buffer_write & ram_we_i) begin
+        if (buffer_write & ram_we_i) begin
             cpu_write_enb  = 1'b1;
             cpu_write_web  = ram_be_i;
             cpu_write_data = ram_data_cpu;
@@ -415,7 +431,7 @@ module bus(input wire clk,
         if (read_end & ram_we_i) begin
             cpu_write_done    = ram_data_cpu[7];
             cpu_write_address = ram_data_cpu[6:0];
-        end else if (buffer_write & ram_we_i) begin
+        end else if (write_end & ram_we_i) begin
             cpu_finish_enb   = ram_data_cpu[7];
             cpu_finish_addrb = ram_data_cpu[6:0];
         end
