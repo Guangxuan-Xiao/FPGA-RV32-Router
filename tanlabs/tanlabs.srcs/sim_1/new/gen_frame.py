@@ -148,7 +148,7 @@ write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
             UDP(sport=7, dport=7) / b'hello, 00012')
 '''
 # send(IP(ttl=255, dst="68.68.68.68"), iface="enx00e04c68002d")
-write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) / IP(ttl=255, dst="68.68.68.68") / UDP(sport=7, dport=7) )
+#write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) / IP(ttl=255, dst="68.68.68.68") / UDP(sport=7, dport=7) )
 
 # IP packet with TTL=1. Route does not exist.
 write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
