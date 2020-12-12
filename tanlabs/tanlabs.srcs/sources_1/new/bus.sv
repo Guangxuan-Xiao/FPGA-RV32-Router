@@ -186,7 +186,7 @@ module bus(input wire clk,
     wire read_start = ram_req && (ram_addr_i == BUFFER_START_READ);
     wire read_end   = ram_req && (ram_addr_i == BUFFER_END_READ);
     wire write_end  = ram_req && (ram_addr_i == BUFFER_END_WRITE);
-    wire buffer_req   = buffer_read || buffer_write || read_start || write_end || write_end;
+    wire buffer_req = buffer_read || buffer_write || read_start || read_end || write_end;
 
     // set base ram data not zzz only on writing it.
     assign base_ram_data = (base_ram_req || uart_data_req) && ram_we_i ? base_ram_data_reg : 32'bz;
@@ -428,10 +428,10 @@ module bus(input wire clk,
         cpu_write_address = 0;
         cpu_finish_enb    = 0;
         cpu_finish_addrb  = 0;
-        if (read_end & ram_we_i) begin
+        if (write_end & ram_we_i) begin
             cpu_write_done    = ram_data_cpu[7];
             cpu_write_address = ram_data_cpu[6:0];
-        end else if (write_end & ram_we_i) begin
+        end else if (read_end & ram_we_i) begin
             cpu_finish_enb   = ram_data_cpu[7];
             cpu_finish_addrb = ram_data_cpu[6:0];
         end
