@@ -230,7 +230,7 @@ blk_mem_gen_3 router2CPU
 // ====================================================================
 // Below is all about BRAM 2, where CPU can write and Router can read.
 
-typedef enum reg[2:0] { START_O, PREP1, PREP2, PREP3, ACCESS_O, END1, END2 } router_read_state_t;
+typedef enum reg[2:0] { START_O, PREP1, PREP2, PREP3, ACCESS_O, END_1, END_2 } router_read_state_t;
 router_read_state_t router_read_state = START_O;
 reg [6:0] cpu_pointer_2 = 0;
 reg [6:0] cpu_pointer_2_router = 0;
@@ -330,7 +330,7 @@ begin
       begin
         internal_tx_valid_i <= 1;
         internal_tx_data_i  <= router_read_data;
-        router_read_state   <= END1;
+        router_read_state   <= END_1;
       end
       else
       begin
@@ -341,13 +341,13 @@ begin
         counter             <= counter - 1;
       end
     end
-    END1:
+    END_1:
     begin
       internal_tx_valid_i <= 1;
       internal_tx_data_i  <= router_read_data;
-      router_read_state   <= END2;
+      router_read_state   <= END_2;
     end
-    END2:
+    END_2:
     begin
       router_read_addr    <= (router_pointer_2 << 11) + 12'b111111111111;
       internal_tx_valid_i <= 1;
