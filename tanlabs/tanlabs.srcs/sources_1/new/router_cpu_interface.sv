@@ -11,13 +11,13 @@ module router_cpu_interface(
     input wire internal_rx_last,
     input wire internal_rx_user,
     input wire internal_rx_valid, 
-    input wire internal_rx_ready,
+    output wire internal_rx_ready,
 
     output wire [7:0] internal_tx_data,
     output wire internal_tx_last,
     output wire internal_tx_user,
     output wire internal_tx_valid, 
-    output wire internal_tx_ready,
+    input wire internal_tx_ready,
 
     input wire cpu_write_enb,
     input wire [3:0] cpu_write_web,
@@ -45,6 +45,8 @@ reg [6:0] router_pointer_cpu;
 reg [7:0] router_write_data;
 reg [17:0] router_write_addr;
 reg router_write_en;
+
+assign internal_rx_ready = 1'b1;
 
 // Showing the state of router write.
 always @ (posedge clk_router)
@@ -121,7 +123,6 @@ begin
   end
 end
 
-
 always @ (posedge clk_cpu)
 begin
   if (rst_cpu)
@@ -141,13 +142,12 @@ begin
   end
 end
 
-// TODO:
-// assign cpu_start_enb = (router_pointer_cpu != cpu_pointer) ? 1'b1 : 1'b0;
-reg[7:0] rubbish_but_useful;
+assign cpu_start_enb = (router_pointer_cpu != cpu_pointer) ? 1'b1 : 1'b0;
+assign cpu_start_addrb = cpu_pointer;
 
+/*reg[7:0] rubbish_but_useful;
 assign cpu_start_enb = rubbish_but_useful[7];
 assign cpu_start_addrb = rubbish_but_useful[6:0];
-
 xpm_cdc_array_single #(
   .DEST_SYNC_FF(4),   // DECIMAL; range: 2-10
   .INIT_SYNC_FF(0),   // DECIMAL; 0=disable simulation init values, 1=enable simulation init values
@@ -165,7 +165,7 @@ xpm_cdc_array_single_inst_114514 (
                         // domain. It is assumed that each bit of the array is unrelated to the others. This
                         // is reflected in the constraints applied to this macro. To transfer a binary value
                         // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
-);
+);*/
 
 xpm_cdc_array_single #(
   .DEST_SYNC_FF(4),   // DECIMAL; range: 2-10
@@ -218,13 +218,11 @@ reg [7:0] internal_tx_data_i;
 reg internal_tx_last_i;
 reg internal_tx_user_i;
 reg internal_tx_valid_i;
-reg internal_tx_ready_i;
 
 assign internal_tx_data = internal_tx_data_i;
 assign internal_tx_last = internal_tx_last_i;
 assign internal_tx_user = internal_tx_user_i;
 assign internal_tx_valid = internal_tx_valid_i;
-assign internal_tx_ready = internal_tx_ready_i;
 
 wire router_start_enb = (router_pointer_2 != cpu_pointer_2_router) ? 1'b1 : 1'b0;
 reg[10:0] counter;
@@ -255,11 +253,16 @@ begin
   begin
     internal_tx_data_i  <= 0;
     internal_tx_valid_i <= 0;
-    internal_tx_ready_i <= 0;
     internal_tx_user_i  <= 0;
     internal_tx_last_i  <= 0;
     router_read_addr    <= 11'b11111111111;
     router_read_state   <= START_O;
+  end
+  else if (!internal_tx_ready)
+  begin
+    internal_tx_data_i  <= 0;
+    internal_tx_valid_i <= 0;
+    internal_tx_last_i  <= 0;
   end
   else if (router_start_enb)
   begin
@@ -268,7 +271,6 @@ begin
     begin
       internal_tx_data_i  <= 0;
       internal_tx_valid_i <= 0;
-      internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
       router_read_state   <= PREP1;
       router_read_addr    <= router_read_addr - 1;
@@ -277,7 +279,6 @@ begin
     begin
       internal_tx_data_i  <= 0;
       internal_tx_valid_i <= 0;
-      internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
       router_read_state   <= PREP2;
       counter[7:0]        <= router_read_data;
@@ -287,7 +288,6 @@ begin
     begin
       internal_tx_data_i  <= 0;
       internal_tx_valid_i <= 0;
-      internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
       router_read_state   <= PREP3;
       counter[7:0]        <= router_read_data;
@@ -297,7 +297,6 @@ begin
     begin
       internal_tx_data_i  <= 0;
       internal_tx_valid_i <= 0;
-      internal_tx_ready_i <= 0;
       internal_tx_last_i  <= 0;
       router_read_state   <= ACCESS_O;
       counter[10:8]       <= router_read_data[2:0];
@@ -308,14 +307,12 @@ begin
       if (counter == 1)
       begin
         internal_tx_valid_i <= 1;
-        internal_tx_ready_i <= 1;
         internal_tx_data_i  <= router_read_data;
         router_read_state   <= END1;
       end
       else
       begin
         internal_tx_valid_i <= 1;
-        internal_tx_ready_i <= 1;
         router_read_state   <= ACCESS_O;
         router_read_addr    <= router_read_addr + 1;
         internal_tx_data_i  <= router_read_data;
@@ -325,7 +322,6 @@ begin
     END1:
     begin
       internal_tx_valid_i <= 1;
-      internal_tx_ready_i <= 1;
       internal_tx_data_i  <= router_read_data;
       router_read_state   <= END2;
     end
@@ -333,7 +329,6 @@ begin
     begin
       router_read_addr    <= (router_pointer_2 << 11) + 12'b111111111111;
       internal_tx_valid_i <= 1;
-      internal_tx_ready_i <= 1;
       internal_tx_last_i  <= 1;
       internal_tx_data_i  <= router_read_data;
       internal_tx_user_i  <= 0;
@@ -346,7 +341,6 @@ begin
   begin
     internal_tx_data_i  <= 0;
     internal_tx_valid_i <= 0;
-    internal_tx_ready_i <= 0;
     internal_tx_user_i  <= 0;
     internal_tx_last_i  <= 0;
     router_read_state   <= START_O;
