@@ -35,7 +35,7 @@ module router_cpu_interface(
     input wire [6:0] cpu_finish_addrb
 );
 
-typedef enum reg[1:0] { START, ACCESS, END } router_write_state_t;
+typedef enum reg[2:0] { START, ACCESS, END1, END2, END3 } router_write_state_t;
 router_write_state_t router_write_state = START;
 
 reg [6:0] router_pointer;
@@ -44,20 +44,24 @@ reg [6:0] router_pointer_cpu;
 
 reg [7:0] router_write_data;
 reg [17:0] router_write_addr;
+reg [17:0] router_write_addr_tmp;
+reg internal_rx_ready_i;
 reg router_write_en;
 
-assign internal_rx_ready = 1'b1;
+assign internal_rx_ready = internal_rx_ready_i;
 
 // Showing the state of router write.
 always @ (posedge clk_router)
 begin
   if (rst_router)
   begin
-    router_write_state <= START;
-    router_pointer <= 0;
-    router_write_data <= 0;
-    router_write_addr <= 0;
-    router_write_en <= 0;
+    router_write_state    <= START;
+    router_pointer        <= 0;
+    router_write_data     <= 0;
+    router_write_addr     <= 0;
+    router_write_en       <= 0;
+    internal_rx_ready_i   <= 1;
+    router_write_addr_tmp <= 0;
   end
   else
   begin
@@ -83,11 +87,12 @@ begin
       begin
         if (internal_rx_last)
         begin
-          router_write_state <= END;
-          router_write_data  <= internal_rx_data;
-          router_write_en    <= 1;
-          router_write_addr  <= router_write_addr + 1;
-          router_pointer     <= router_pointer + 1;
+          router_write_state    <= END1;
+          router_write_data     <= internal_rx_data;
+          router_write_en       <= 1;
+          router_write_addr     <= router_write_addr + 1;
+          router_write_addr_tmp <= router_write_addr + 1;
+          internal_rx_ready_i   <= 0;
         end
         else
         begin
@@ -104,21 +109,38 @@ begin
       end
     end
 
-    END:
+    END1:
     begin
-      router_write_addr <= router_pointer << 11;
-      if (internal_rx_ready && internal_rx_valid)
-      begin
-        router_write_state <= ACCESS;
-        router_write_data  <= internal_rx_data;
-        router_write_en    <= 1;
-      end
-      else
-      begin
-        router_write_state <= START;
-        router_write_en    <= 0;
-      end
-    end  
+      router_write_state      <= END2;
+      router_write_data       <= router_write_addr_tmp[7:0];
+      router_write_en         <= 1;
+      router_write_addr[10:0] <= 11'b11111111111;
+      internal_rx_ready_i     <= 0;
+    end
+
+    END2:
+    begin
+      router_write_state      <= END3;
+      router_write_data       <= router_write_addr_tmp[10:8];
+      router_write_en         <= 1;
+      router_write_addr[10:0] <= 11'b11111111110;
+      router_pointer          <= router_pointer + 1;
+      internal_rx_ready_i     <= 0;
+    end
+
+    END3:
+    begin
+      router_write_addr   <= router_pointer << 11;
+      router_write_state  <= START;
+      router_write_en     <= 0;
+      internal_rx_ready_i <= 1;
+    end
+
+    default:
+    begin
+      router_write_state <= START;
+      router_write_en    <= 0;
+    end
     endcase
   end
 end
