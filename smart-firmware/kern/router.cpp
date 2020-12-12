@@ -47,7 +47,7 @@ uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_in
     {
         return 0;
     }
-    printf("taichoule\r\n");
+    printf("status: %d\n", status);
     uint32_t src = status & 0x7F;
     volatile uint32_t *ptr;
     ptr = (volatile uint32_t *)(read_start + (src << width) + size_addr);
