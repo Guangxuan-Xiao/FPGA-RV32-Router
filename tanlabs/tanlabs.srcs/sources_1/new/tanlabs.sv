@@ -652,6 +652,7 @@ module tanlabs(
     wire [31:0] cpu_read_data;
     wire cpu_finish_enb;
     wire [6:0] cpu_finish_addrb;
+    wire internal_tx_ready = eth_tx_ready[4];
 
     router_cpu_interface router_cpu_interface(
     .clk_router(eth_clk),
@@ -669,6 +670,7 @@ module tanlabs(
     .internal_tx_last(internal_tx_last),
     .internal_tx_user(internal_tx_user),
     .internal_tx_valid(internal_tx_valid),
+    .internal_tx_ready(internal_tx_ready),
 
     .cpu_write_enb(cpu_write_enb),
     .cpu_write_web(cpu_write_web),
