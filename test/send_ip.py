@@ -6,9 +6,10 @@ from scapy.all import *
 # args = parser.parse_args()
 # dst = args.dst
 # iface = args.iface
-while True:
+# while True:
     # send(IP(ttl=255, dst=dst), iface=iface)
-    send(IP(ttl=255, dst="172.172.172.172"), iface="enx00e04c68002d")
+send(IP(ttl=255, dst="68.68.68.68"), iface="enx00e04c68002d")
 # sudo ip addr add 172.172.172.172/8 dev enx00e04c68002d
+# sudo arping -I enx00e04c68002d 172.172.172.172 -c 2
 # sudo minicom -b 9600 -D /dev/ttyACM0
 # sudo arping -I enx00e04c68002d 172.172.172.172
