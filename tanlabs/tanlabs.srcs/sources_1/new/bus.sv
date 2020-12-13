@@ -126,7 +126,6 @@ module bus(input wire clk,
     localparam BUFFER_START_READ = 32'h70000000;
     localparam BUFFER_END_READ   = 32'h70000010;
     localparam BUFFER_END_WRITE  = 32'h70000020;
-    localparam BUFFER_RUBBISH    = 32'h70000030;
 
     localparam CLOCK_ADDR = 32'h10000010;
     localparam IP0_ADDR = 32'h10000100;
@@ -185,8 +184,7 @@ module bus(input wire clk,
     wire read_start = ram_req && (ram_addr_i == BUFFER_START_READ);
     wire read_end   = ram_req && (ram_addr_i == BUFFER_END_READ);
     wire write_end  = ram_req && (ram_addr_i == BUFFER_END_WRITE);
-    wire rubbish    = ram_req && (ram_addr_i == BUFFER_RUBBISH);
-    wire buffer_req = buffer_read || buffer_write || read_start || read_end || write_end || rubbish;
+    wire buffer_req = buffer_read || buffer_write || read_start || read_end || write_end;
 
     // set base ram data not zzz only on writing it.
     assign base_ram_data = (base_ram_req || uart_data_req) && ram_we_i ? base_ram_data_reg : 32'bz;
