@@ -21,16 +21,16 @@ module router_cpu_interface(
 
     input wire cpu_write_enb,
     input wire [3:0] cpu_write_web,
-    input wire [15:0] cpu_write_addrb,
-    input wire [31:0] cpu_write_data,
+    input wire [17:0] cpu_write_addrb,
+    input wire [7:0] cpu_write_data,
     input wire cpu_write_done,
     input wire [6:0] cpu_write_address,
 
     output wire cpu_start_enb,
     output wire [6:0] cpu_start_addrb,
     input wire cpu_read_enb,
-    input wire [15:0] cpu_read_addrb,
-    output wire [31:0] cpu_read_data,
+    input wire [17:0] cpu_read_addrb,
+    output wire [7:0] cpu_read_data,
     input wire cpu_finish_enb,
     input wire [6:0] cpu_finish_addrb,
     output wire [31:0] rubbish2333
@@ -208,6 +208,11 @@ xpm_cdc_array_single_inst (
                         // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
 );
 
+wire [7:0] dina;
+wire [7:0] douta;
+wire [7:0] dinb;
+wire [7:0] doutb;
+
 // A for router, B for CPU
 blk_mem_gen_3 router2CPU 
 (
@@ -216,13 +221,13 @@ blk_mem_gen_3 router2CPU
   .wea(router_write_en),      // input wire [0 : 0] wea
   .addra(router_write_addr),  // input wire [17 : 0] addra
   .dina(router_write_data),    // input wire [7 : 0] dina
-  //.douta(douta),  // output wire [7 : 0] douta
+  .douta(douta),  // output wire [7 : 0] douta
   .clkb(clk_cpu),    // input wire clkb
   .enb(cpu_read_enb),      // input wire enb
-  .web(4'b0),      // input wire [3 : 0] web
-  .addrb(cpu_read_addrb),  // input wire [15 : 0] addrb
-  //.dinb(dinb),    // input wire [31 : 0] dinb
-  .doutb(cpu_read_data)   // output wire [31 : 0] doutb
+  .web(1'b0),      // input wire [0 : 0] web
+  .addrb(cpu_read_addrb),  // input wire [17 : 0] addrb
+  .dinb(dinb),    // input wire [7 : 0] dinb
+  .doutb(cpu_read_data)   // output wire [7 : 0] doutb
 );
 
 
@@ -394,14 +399,14 @@ blk_mem_gen_3 CPU2router
   .ena(1'b1),      // input wire ena
   .wea(1'b0),      // input wire [0 : 0] wea
   .addra(router_read_addr),  // input wire [17 : 0] addra
-  //.dina(dina),    // input wire [7 : 0] dina
+  .dina(dina),    // input wire [7 : 0] dina
   .douta(router_read_data),  // output wire [7 : 0] douta
   .clkb(clk_cpu),    // input wire clkb
   .enb(cpu_write_enb),      // input wire enb
-  .web(cpu_write_web),      // input wire [3 : 0] web
-  .addrb(cpu_write_addrb),  // input wire [15 : 0] addrb
-  .dinb(cpu_write_data)    // input wire [31 : 0] dinb
-  //.doutb(doutb)   // output wire [31 : 0] doutb
+  .web(cpu_write_web),      // input wire [0 : 0] web
+  .addrb(cpu_write_addrb),  // input wire [17 : 0] addrb
+  .dinb(cpu_write_data)    // input wire [7 : 0] dinb
+  .doutb(doutb)   // output wire [7 : 0] doutb
 );
 
 endmodule

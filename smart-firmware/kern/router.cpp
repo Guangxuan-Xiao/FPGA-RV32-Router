@@ -13,6 +13,8 @@ static uint32_t const width = 11;
 #define RD_SRT (*(volatile uint8_t *)(0x70000000))
 #define RD_END (*(volatile uint8_t *)(0x70000010))
 #define WR_END (*(volatile uint8_t *)(0x70000020))
+#define RUBISH (*(volatile uint32_t *)(0x70000030))
+static uint32_t tmp;
 
 void set_ip(uint32_t ip0, uint32_t ip1, uint32_t ip2, uint32_t ip3)
 {
@@ -42,6 +44,23 @@ uint32_t read_mac_prefix()
 
 uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_index)
 {
+    bool flag = false;
+    uint32_t rubbish = RUBISH;
+    if (tmp != rubbish)
+    {
+        printf("ready = 0x%x\r\n", tmp >> 31);
+        printf("valid = 0x%x\r\n", (tmp >> 30) & 1);
+        printf("last = 0x%x\r\n", (tmp >> 29) & 1);
+        printf("data =               0x%x\r\n", (tmp >> 21) & 255);
+        printf("state = 0x%x\r\n", (tmp >> 18) & 7);
+        printf("addr = 0x%x\r\n", tmp & 0x3FFFF);
+        flag = true;
+        volatile uint8_t *ptr;
+        ptr = (volatile uint8_t *)(read_start + (tmp & 0x3FFFF));
+        uint8_t data = *ptr;
+        printf("readdata =                              0x%x\r\n", data);
+        tmp = rubbish;
+    }
     uint8_t status = RD_SRT;
     //printf("status: %d\r\n", status);
     if (!(status & 0x80))
@@ -54,6 +73,10 @@ uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_in
     uint32_t buf = 0;
     uint32_t length = *ptr;
     length = ((length & 0xFF000000) >> 24) + ((length & 0xFF0000) >> 8);
+    if (flag)
+    {
+        printf("length = 0x%x\r\n", length);
+    }
     ptr = (volatile uint32_t*)(read_start + (src << width));
     /*buf = *ptr;
     dst_mac[0] = buf & 0xFF;
