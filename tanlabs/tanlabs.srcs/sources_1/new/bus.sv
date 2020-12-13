@@ -45,15 +45,15 @@ module bus(input wire clk,
     input nexthop_t nexthop_data_router,
     output reg cpu_write_enb,
     output reg [3:0] cpu_write_web,
-    output reg [15:0] cpu_write_addrb,
-    output reg [31:0] cpu_write_data,
+    output reg [17:0] cpu_write_addrb,
+    output reg [7:0] cpu_write_data,
     output reg cpu_write_done,
     output reg [6:0] cpu_write_address,
     input wire cpu_start_enb,
     input wire [6:0] cpu_start_addrb,
     output reg cpu_read_enb,
-    output reg [15:0] cpu_read_addrb,
-    input wire [31:0] cpu_read_data,
+    output reg [17:0] cpu_read_addrb,
+    input wire [7:0] cpu_read_data,
     output reg cpu_finish_enb,
     output reg [6:0] cpu_finish_addrb,
     input wire [31:0] rubbish2333,
@@ -183,7 +183,7 @@ module bus(input wire clk,
 
     wire buffer_read  = ram_req && (ram_addr_i >= BUFFER_READ_START) && (ram_addr_i <= BUFFER_READ_END);
     wire buffer_write = ram_req && (ram_addr_i >= BUFFER_WRITE_START) && (ram_addr_i <= BUFFER_WRITE_END);
-    wire buffer_addr  = ram_addr_i[17:2];
+    wire buffer_addr  = ram_addr_i[17:0];
 
     wire read_start = ram_req && (ram_addr_i == BUFFER_START_READ);
     wire read_end   = ram_req && (ram_addr_i == BUFFER_END_READ);
@@ -296,12 +296,11 @@ module bus(input wire clk,
         end else if (nexthop_ip_req) begin
             ram_data_reg = nexthop_data_router.ip;
         end else if (buffer_read) begin
-            ram_data_reg = cpu_read_data;
+            ram_data_reg = {24'b0, cpu_read_data};
         end else if (read_start) begin
             ram_data_reg = {24'b0, cpu_start_enb, cpu_start_addrb};
         end else if (rubbish) begin
             ram_data_reg = rubbish2333;
-        end
         end else begin
             ram_data_reg = 32'b0;
         end
@@ -424,7 +423,7 @@ module bus(input wire clk,
         if (buffer_write & ram_we_i) begin
             cpu_write_enb  = 1'b1;
             cpu_write_web  = ram_be_i;
-            cpu_write_data = ram_data_cpu;
+            cpu_write_data = ram_data_cpu[7:0];
         end
     end
 

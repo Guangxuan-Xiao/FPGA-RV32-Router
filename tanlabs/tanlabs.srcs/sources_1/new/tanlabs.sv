@@ -640,16 +640,16 @@ module tanlabs(
 
     wire cpu_write_enb;
     wire [3:0] cpu_write_web;
-    wire [15:0] cpu_write_addrb;
-    wire [31:0] cpu_write_data;
+    wire [17:0] cpu_write_addrb;
+    wire [7:0] cpu_write_data;
     wire cpu_write_done;
     wire [6:0] cpu_write_address;
 
     wire cpu_start_enb;
     wire [6:0] cpu_start_addrb;
     wire cpu_read_enb;
-    wire [15:0] cpu_read_addrb;
-    wire [31:0] cpu_read_data;
+    wire [17:0] cpu_read_addrb;
+    wire [7:0] cpu_read_data;
     wire cpu_finish_enb;
     wire [6:0] cpu_finish_addrb;
     wire internal_tx_ready = eth_tx_ready[4];
