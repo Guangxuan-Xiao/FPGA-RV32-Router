@@ -638,22 +638,19 @@ module tanlabs(
 
     // Interface here.
 
-    wire cpu_write_enb;
-    wire [3:0] cpu_write_web;
-    wire [16:0] cpu_write_addrb;
-    wire [7:0] cpu_write_data;
-    wire cpu_write_done;
-    wire [5:0] cpu_write_address;
+    wire cpu_write_web;
+    wire [`BUFFER_ADDR_WIDTH - 1:0] cpu_write_addrb;
+    wire [7:0] cpu_write_dinb;
+    wire cpu_write_end;
+    wire [`BUFFER_WIDTH - 1:0] cpu_write_end_ptr;
 
-    wire cpu_start_enb;
-    wire [5:0] cpu_start_addrb;
-    wire cpu_read_enb;
-    wire [16:0] cpu_read_addrb;
-    wire [7:0] cpu_read_data;
-    wire cpu_finish_enb;
-    wire [5:0] cpu_finish_addrb;
+    wire cpu_read_start;
+    wire [`BUFFER_WIDTH - 1:0] cpu_read_start_ptr;
+    wire [`BUFFER_ADDR_WIDTH - 1:0] cpu_read_addrb;
+    wire [7:0] cpu_read_doutb;
+    wire cpu_read_end;
+    wire [`BUFFER_WIDTH - 1:0] cpu_read_end_ptr;
     wire internal_tx_ready = eth_tx_ready[4];
-    wire [31:0] rubbish2333;
 
     router_cpu_interface router_cpu_interface(
     .clk_router(eth_clk),
@@ -673,21 +670,18 @@ module tanlabs(
     .internal_tx_valid(internal_tx_valid),
     .internal_tx_ready(internal_tx_ready),
 
-    .cpu_write_enb(cpu_write_enb),
     .cpu_write_web(cpu_write_web),
     .cpu_write_addrb(cpu_write_addrb),
-    .cpu_write_data(cpu_write_data),
-    .cpu_write_done(cpu_write_done),
-    .cpu_write_address(cpu_write_address),
+    .cpu_write_dinb(cpu_write_dinb),
+    .cpu_write_end(cpu_write_end),
+    .cpu_write_end_ptr(cpu_write_end_ptr),
 
-    .cpu_start_enb(cpu_start_enb),
-    .cpu_start_addrb(cpu_start_addrb),
-    .cpu_read_enb(cpu_read_enb),
+    .cpu_read_start(cpu_read_start),
+    .cpu_read_start_ptr(cpu_read_start_ptr),
     .cpu_read_addrb(cpu_read_addrb),
-    .cpu_read_data(cpu_read_data),
-    .cpu_finish_enb(cpu_finish_enb),
-    .cpu_finish_addrb(cpu_finish_addrb),
-    .rubbish2333(rubbish2333)
+    .cpu_read_doutb(cpu_read_doutb),
+    .cpu_read_end(cpu_read_end),
+    .cpu_read_end_ptr(cpu_read_end_ptr)
     );
 
     bus bus(
@@ -740,21 +734,18 @@ module tanlabs(
     .nexthop_data_cpu(nexthop_data_cpu),
     .nexthop_data_router(nexthop_data_router),
 
-    .cpu_write_enb(cpu_write_enb),
     .cpu_write_web(cpu_write_web),
     .cpu_write_addrb(cpu_write_addrb),
-    .cpu_write_data(cpu_write_data),
-    .cpu_write_done(cpu_write_done),
-    .cpu_write_address(cpu_write_address),
+    .cpu_write_dinb(cpu_write_dinb),
+    .cpu_write_end(cpu_write_end),
+    .cpu_write_end_ptr(cpu_write_end_ptr),
 
-    .cpu_start_enb(cpu_start_enb),
-    .cpu_start_addrb(cpu_start_addrb),
-    .cpu_read_enb(cpu_read_enb),
+    .cpu_read_start(cpu_read_start),
+    .cpu_read_start_ptr(cpu_read_start_ptr),
     .cpu_read_addrb(cpu_read_addrb),
-    .cpu_read_data(cpu_read_data),
-    .cpu_finish_enb(cpu_finish_enb),
-    .cpu_finish_addrb(cpu_finish_addrb),
-    .rubbish2333(rubbish2333),
+    .cpu_read_doutb(cpu_read_doutb),
+    .cpu_read_end(cpu_read_end),
+    .cpu_read_end_ptr(cpu_read_end_ptr),
 
     .ip0_o(ip0_i),
     .ip1_o(ip1_i),

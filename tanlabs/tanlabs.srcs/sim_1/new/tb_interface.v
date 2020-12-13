@@ -33,15 +33,15 @@ module tb_interface();
     reg cpu_write_enb;
     reg [3:0] cpu_write_web;
     reg [15:0] cpu_write_addrb;
-    reg [31:0] cpu_write_data;
-    reg cpu_write_done;
-    reg [6:0] cpu_write_address;
+    reg [31:0] cpu_write_dinb;
+    reg cpu_write_end;
+    reg [6:0] cpu_write_end_ptr;
 
     reg cpu_read_enb;
     reg [15:0] cpu_read_addr;
-    wire [31:0] cpu_read_data;
-    reg cpu_finish_enb;
-    reg [6:0] cpu_finish_addrb;
+    wire [31:0] cpu_read_doutb;
+    reg cpu_read_end;
+    reg [6:0] cpu_read_end_ptr;
 
     initial
     begin
@@ -83,66 +83,66 @@ module tb_interface();
         cpu_read_enb = 1;
         cpu_read_addr = 0;
         #8
-        cpu_finish_enb = 1;
-        cpu_finish_addrb = 0;
+        cpu_read_end = 1;
+        cpu_read_end_ptr = 0;
         #20
         cpu_write_enb = 1'b1;
         cpu_write_web = 4'b1111;
         cpu_write_addrb = 0;
-        cpu_write_data = 32'h9731;
+        cpu_write_dinb = 32'h9731;
         #20
         cpu_write_enb = 1'b1;
         cpu_write_web = 4'b1111;
         cpu_write_addrb = 0;
-        cpu_write_data = 32'h97311454;
+        cpu_write_dinb = 32'h97311454;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h86421145;
+        cpu_write_dinb = 32'h86421145;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h55556666;
+        cpu_write_dinb = 32'h55556666;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h32423415;
+        cpu_write_dinb = 32'h32423415;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h32412532;
+        cpu_write_dinb = 32'h32412532;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h65443453;
+        cpu_write_dinb = 32'h65443453;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h45362543;
+        cpu_write_dinb = 32'h45362543;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h45322453;
+        cpu_write_dinb = 32'h45322453;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h66333555;
+        cpu_write_dinb = 32'h66333555;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h32423415;
+        cpu_write_dinb = 32'h32423415;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h32412532;
+        cpu_write_dinb = 32'h32412532;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h65443453;
+        cpu_write_dinb = 32'h65443453;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h45362543;
+        cpu_write_dinb = 32'h45362543;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h45322453;
+        cpu_write_dinb = 32'h45322453;
         #20
         cpu_write_addrb = cpu_write_addrb + 1;
-        cpu_write_data = 32'h66333555;
+        cpu_write_dinb = 32'h66333555;
         #20
         cpu_write_addrb = cpu_write_addrb[15:9] + 9'b111111111;
-        cpu_write_data = 32'h30000000;
+        cpu_write_dinb = 32'h30000000;
         #20
-        cpu_write_done = 1'b1;
-        cpu_write_address = 7'b0;
+        cpu_write_end = 1'b1;
+        cpu_write_end_ptr = 7'b0;
     end
 
     router_cpu_interface router_module
@@ -164,15 +164,15 @@ module tb_interface();
     .cpu_write_enb(cpu_write_enb),
     .cpu_write_web(cpu_write_web),
     .cpu_write_addrb(cpu_write_addrb),
-    .cpu_write_data(cpu_write_data),
-    .cpu_write_done(cpu_write_done),
-    .cpu_write_address(cpu_write_address),
+    .cpu_write_dinb(cpu_write_dinb),
+    .cpu_write_end(cpu_write_end),
+    .cpu_write_end_ptr(cpu_write_end_ptr),
 
     .cpu_read_addrb(cpu_read_addr),
-    .cpu_read_data(cpu_read_data),
+    .cpu_read_doutb(cpu_read_doutb),
     .cpu_read_enb(cpu_read_enb),
-    .cpu_finish_enb(cpu_finish_enb),
-    .cpu_finish_addrb(cpu_finish_addrb)
+    .cpu_read_end(cpu_read_end),
+    .cpu_read_end_ptr(cpu_read_end_ptr)
 );
 
 endmodule
