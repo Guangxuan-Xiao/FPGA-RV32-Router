@@ -8,8 +8,8 @@ module axis_model
     parameter ID_WIDTH = 3
 )
 (
-    input clk,
-    input reset,
+    input wire clk,
+    input wire reset,
 
     output reg [DATA_WIDTH - 1:0] m_data,
     output reg [DATA_WIDTH / 8 - 1:0] m_keep,
@@ -17,7 +17,7 @@ module axis_model
     output reg [DATA_WIDTH / 8 - 1:0] m_user,
     output reg [ID_WIDTH - 1:0] m_id,
     output reg m_valid,
-    input m_ready
+    input wire m_ready
 );
 
     integer fd;

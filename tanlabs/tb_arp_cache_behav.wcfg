@@ -3,149 +3,156 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="tb_interface_behav.wdb" id="1">
+      <db_ref path="tb_behav.wdb" id="1">
          <top_modules>
+            <top_module name="\$unit_arp_cache_sv " />
             <top_module name="glbl" />
-            <top_module name="tb_interface" />
+            <top_module name="ipif_pkg" />
+            <top_module name="tb" />
+            <top_module name="vcomponents" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="670001fs"></ZoomEndTime>
-      <Cursor1Time time="1000000fs"></Cursor1Time>
+      <ZoomStartTime time="3007172019fs"></ZoomStartTime>
+      <ZoomEndTime time="3104222020fs"></ZoomEndTime>
+      <Cursor1Time time="3022522019fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="196"></NameColumnWidth>
-      <ValueColumnWidth column_width="66"></ValueColumnWidth>
+      <NameColumnWidth column_width="166"></NameColumnWidth>
+      <ValueColumnWidth column_width="421"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="32" />
-   <wvobject type="logic" fp_name="/tb_interface/router_module/clk_router">
-      <obj_property name="ElementShortName">clk_router</obj_property>
-      <obj_property name="ObjectShortName">clk_router</obj_property>
+   <WVObjectSize size="33" />
+   <wvobject fp_name="/tb/reset" type="logic">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/router_module/clk_cpu">
-      <obj_property name="ElementShortName">clk_cpu</obj_property>
-      <obj_property name="ObjectShortName">clk_cpu</obj_property>
+   <wvobject fp_name="/tb/clk_125M" type="logic">
+      <obj_property name="ElementShortName">clk_125M</obj_property>
+      <obj_property name="ObjectShortName">clk_125M</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/internal_rx_data">
-      <obj_property name="ElementShortName">internal_rx_data[7:0]</obj_property>
-      <obj_property name="ObjectShortName">internal_rx_data[7:0]</obj_property>
+   <wvobject fp_name="/tb/dut/frame_datapath_i/out" type="array">
+      <obj_property name="ElementShortName">out</obj_property>
+      <obj_property name="ObjectShortName">out</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/router_module/internal_rx_last">
-      <obj_property name="ElementShortName">internal_rx_last</obj_property>
-      <obj_property name="ObjectShortName">internal_rx_last</obj_property>
+   <wvobject fp_name="/tb/dut/frame_datapath_i/dest" type="array">
+      <obj_property name="ElementShortName">dest[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dest[2:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/router_module/internal_rx_user">
-      <obj_property name="ElementShortName">internal_rx_user</obj_property>
-      <obj_property name="ObjectShortName">internal_rx_user</obj_property>
+   <wvobject fp_name="/tb/in_data" type="array">
+      <obj_property name="ElementShortName">in_data[63:0]</obj_property>
+      <obj_property name="ObjectShortName">in_data[63:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/router_module/internal_rx_valid">
-      <obj_property name="ElementShortName">internal_rx_valid</obj_property>
-      <obj_property name="ObjectShortName">internal_rx_valid</obj_property>
+   <wvobject fp_name="/tb/in_keep" type="array">
+      <obj_property name="ElementShortName">in_keep[7:0]</obj_property>
+      <obj_property name="ObjectShortName">in_keep[7:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/router_module/internal_rx_ready">
-      <obj_property name="ElementShortName">internal_rx_ready</obj_property>
-      <obj_property name="ObjectShortName">internal_rx_ready</obj_property>
+   <wvobject fp_name="/tb/in_last" type="logic">
+      <obj_property name="ElementShortName">in_last</obj_property>
+      <obj_property name="ObjectShortName">in_last</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/router_write_state">
-      <obj_property name="ElementShortName">router_write_state[1:0]</obj_property>
-      <obj_property name="ObjectShortName">router_write_state[1:0]</obj_property>
+   <wvobject fp_name="/tb/in_user" type="array">
+      <obj_property name="ElementShortName">in_user[7:0]</obj_property>
+      <obj_property name="ObjectShortName">in_user[7:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/router_write_data">
-      <obj_property name="ElementShortName">router_write_data[7:0]</obj_property>
-      <obj_property name="ObjectShortName">router_write_data[7:0]</obj_property>
+   <wvobject fp_name="/tb/in_id" type="array">
+      <obj_property name="ElementShortName">in_id[2:0]</obj_property>
+      <obj_property name="ObjectShortName">in_id[2:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/router_module/router_write_en">
-      <obj_property name="ElementShortName">router_write_en</obj_property>
-      <obj_property name="ObjectShortName">router_write_en</obj_property>
+   <wvobject fp_name="/tb/in_valid" type="logic">
+      <obj_property name="ElementShortName">in_valid</obj_property>
+      <obj_property name="ObjectShortName">in_valid</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/router_write_addr">
-      <obj_property name="ElementShortName">router_write_addr[17:0]</obj_property>
-      <obj_property name="ObjectShortName">router_write_addr[17:0]</obj_property>
+   <wvobject fp_name="/tb/in_ready" type="logic">
+      <obj_property name="ElementShortName">in_ready</obj_property>
+      <obj_property name="ObjectShortName">in_ready</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/router_pointer">
-      <obj_property name="ElementShortName">router_pointer[6:0]</obj_property>
-      <obj_property name="ObjectShortName">router_pointer[6:0]</obj_property>
+   <wvobject fp_name="/tb/out_data" type="array">
+      <obj_property name="ElementShortName">out_data[63:0]</obj_property>
+      <obj_property name="ObjectShortName">out_data[63:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/cpu_read_addrb">
-      <obj_property name="ElementShortName">cpu_read_addrb[15:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_read_addrb[15:0]</obj_property>
+   <wvobject fp_name="/tb/out_keep" type="array">
+      <obj_property name="ElementShortName">out_keep[7:0]</obj_property>
+      <obj_property name="ObjectShortName">out_keep[7:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/cpu_read_data">
-      <obj_property name="ElementShortName">cpu_read_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_read_data[31:0]</obj_property>
+   <wvobject fp_name="/tb/out_last" type="logic">
+      <obj_property name="ElementShortName">out_last</obj_property>
+      <obj_property name="ObjectShortName">out_last</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/router_module/cpu_finish_enb">
-      <obj_property name="ElementShortName">cpu_finish_enb</obj_property>
-      <obj_property name="ObjectShortName">cpu_finish_enb</obj_property>
+   <wvobject fp_name="/tb/out_user" type="array">
+      <obj_property name="ElementShortName">out_user[7:0]</obj_property>
+      <obj_property name="ObjectShortName">out_user[7:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/cpu_finish_addrb">
-      <obj_property name="ElementShortName">cpu_finish_addrb[6:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_finish_addrb[6:0]</obj_property>
+   <wvobject fp_name="/tb/out_dest" type="array">
+      <obj_property name="ElementShortName">out_dest[2:0]</obj_property>
+      <obj_property name="ObjectShortName">out_dest[2:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/cpu_pointer">
-      <obj_property name="ElementShortName">cpu_pointer[6:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_pointer[6:0]</obj_property>
+   <wvobject fp_name="/tb/out_valid" type="logic">
+      <obj_property name="ElementShortName">out_valid</obj_property>
+      <obj_property name="ObjectShortName">out_valid</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/cpu_pointer_2">
-      <obj_property name="ElementShortName">cpu_pointer_2[6:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_pointer_2[6:0]</obj_property>
+   <wvobject fp_name="/tb/out_ready" type="logic">
+      <obj_property name="ElementShortName">out_ready</obj_property>
+      <obj_property name="ObjectShortName">out_ready</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/router_pointer_2">
-      <obj_property name="ElementShortName">router_pointer_2[6:0]</obj_property>
-      <obj_property name="ObjectShortName">router_pointer_2[6:0]</obj_property>
+   <wvobject fp_name="/tb/sfp_tb2dut_p" type="array">
+      <obj_property name="ElementShortName">sfp_tb2dut_p[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sfp_tb2dut_p[3:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/cpu_write_addrb">
-      <obj_property name="ElementShortName">cpu_write_addrb[15:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_write_addrb[15:0]</obj_property>
+   <wvobject fp_name="/tb/sfp_tb2dut_n" type="array">
+      <obj_property name="ElementShortName">sfp_tb2dut_n[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sfp_tb2dut_n[3:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/cpu_write_address">
-      <obj_property name="ElementShortName">cpu_write_address[6:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_write_address[6:0]</obj_property>
+   <wvobject fp_name="/tb/sfp_dut2tb_p" type="array">
+      <obj_property name="ElementShortName">sfp_dut2tb_p[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sfp_dut2tb_p[3:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/cpu_write_data">
-      <obj_property name="ElementShortName">cpu_write_data[31:0]</obj_property>
-      <obj_property name="ObjectShortName">cpu_write_data[31:0]</obj_property>
+   <wvobject fp_name="/tb/sfp_dut2tb_n" type="array">
+      <obj_property name="ElementShortName">sfp_dut2tb_n[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sfp_dut2tb_n[3:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/router_module/cpu_write_done">
-      <obj_property name="ElementShortName">cpu_write_done</obj_property>
-      <obj_property name="ObjectShortName">cpu_write_done</obj_property>
+   <wvobject fp_name="/tb/DATA_WIDTH" type="array">
+      <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/router_module/cpu_write_enb">
-      <obj_property name="ElementShortName">cpu_write_enb</obj_property>
-      <obj_property name="ObjectShortName">cpu_write_enb</obj_property>
+   <wvobject fp_name="/tb/ID_WIDTH" type="array">
+      <obj_property name="ElementShortName">ID_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ID_WIDTH[31:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/internal_tx_data">
+   <wvobject fp_name="/tb/dut/internal_tx_data" type="array">
       <obj_property name="ElementShortName">internal_tx_data[7:0]</obj_property>
       <obj_property name="ObjectShortName">internal_tx_data[7:0]</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/internal_tx_last">
+   <wvobject fp_name="/tb/dut/internal_tx_last" type="logic">
       <obj_property name="ElementShortName">internal_tx_last</obj_property>
       <obj_property name="ObjectShortName">internal_tx_last</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/internal_tx_ready">
-      <obj_property name="ElementShortName">internal_tx_ready</obj_property>
-      <obj_property name="ObjectShortName">internal_tx_ready</obj_property>
+   <wvobject fp_name="/tb/dut/internal_tx_user" type="logic">
+      <obj_property name="ElementShortName">internal_tx_user</obj_property>
+      <obj_property name="ObjectShortName">internal_tx_user</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb_interface/internal_tx_valid">
+   <wvobject fp_name="/tb/dut/internal_tx_valid" type="logic">
       <obj_property name="ElementShortName">internal_tx_valid</obj_property>
       <obj_property name="ObjectShortName">internal_tx_valid</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/router_read_addr">
-      <obj_property name="ElementShortName">router_read_addr[17:0]</obj_property>
-      <obj_property name="ObjectShortName">router_read_addr[17:0]</obj_property>
+   <wvobject fp_name="/tb/dut/internal_rx_data" type="array">
+      <obj_property name="ElementShortName">internal_rx_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_data[7:0]</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/router_read_data">
-      <obj_property name="ElementShortName">router_read_data[7:0]</obj_property>
-      <obj_property name="ObjectShortName">router_read_data[7:0]</obj_property>
+   <wvobject fp_name="/tb/dut/internal_rx_last" type="logic">
+      <obj_property name="ElementShortName">internal_rx_last</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_last</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/counter">
-      <obj_property name="ElementShortName">counter[10:0]</obj_property>
-      <obj_property name="ObjectShortName">counter[10:0]</obj_property>
+   <wvobject fp_name="/tb/dut/internal_rx_user" type="logic">
+      <obj_property name="ElementShortName">internal_rx_user</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_user</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/tb_interface/router_module/router_read_state">
-      <obj_property name="ElementShortName">router_read_state[2:0]</obj_property>
-      <obj_property name="ObjectShortName">router_read_state[2:0]</obj_property>
+   <wvobject fp_name="/tb/dut/internal_rx_valid" type="logic">
+      <obj_property name="ElementShortName">internal_rx_valid</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/internal_rx_ready" type="logic">
+      <obj_property name="ElementShortName">internal_rx_ready</obj_property>
+      <obj_property name="ObjectShortName">internal_rx_ready</obj_property>
    </wvobject>
 </wave_config>

@@ -1,3 +1,5 @@
+
+
 #!/usr/bin/env python3
 
 # Requirements:
@@ -12,7 +14,7 @@ from scapy import *
 from scapy.utils import *
 from scapy.layers.l2 import *
 from scapy.layers.inet import *
-from scapy.layers.rip import *
+from scapy.all import *
 import sys
 import struct
 
@@ -25,7 +27,7 @@ MAC_BROADCAST = 'ff:ff:ff:ff:ff:ff'
 MAC_DUT0 = MAC_BROADCAST
 MAC_DUT1 = MAC_BROADCAST
 MAC_TESTER0 = '54:45:53:54:5f:30'
-MAC_TESTER1 = '54:45:53:54:5f:32'
+MAC_TESTER2 = '54:45:53:54:5f:32'
 IFACE_DEFAULT_ROUTE = 3
 MAC_DEFAULT_ROUTE = '54:45:53:54:5f:33'
 
@@ -40,15 +42,16 @@ if SEND_FRAMES:
 #   3. The IP address of Interface 2 of the router is 10.0.2.1/24.
 #   4. The IP address of Interface 3 of the router is 10.0.3.1/24.
 #   5. There exists a default route, and its next hop is Interface 3, 10.0.3.2.
-IP_TESTER0 = '10.0.0.2'
-IP_TESTER1 = '10.0.1.2'
+# IP_TESTER0 = '10.0.0.2'
+# IP_TESTER2 = '10.0.1.2'
+IP_TESTER0 = '187.187.187.187'
 IP_DUT0 = '10.0.0.1'  # Device under test.
 IP_DUT3 = '10.0.3.1'
 IP_DEFAULT_ROUTE = '10.0.3.2'  # The IP address of the default route.
-IP_TEST_DST = '192.168.1.1'  # Forward destination. Route should exist.
+# IP_TEST_DST = '192.168.1.1'  # Forward destination. Route should exist.
+IP_TEST_DST = '170.170.170.0'
 IP_TEST_DST_NO_MAC = '10.0.0.100'  # Forward destination. Route should exist. MAC address should not exist.
 IP_TEST_DST_NO_ROUTE = '254.254.254.254'  # Forward destination. Route should not exist.
-IP_RIP = '224.0.0.9'  # RIP multicast group address.
 
 # frames.txt format:
 # <Ingress Interface ID> <Frame Length> <Frame Data...>
@@ -70,15 +73,18 @@ def write_frame(iface, f):
   if SEND_FRAMES:
     sendp(f, iface='tanlabs-veth{}'.format(iface))
 
-
+'''
 # ARP request test.
 write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_BROADCAST) /
             ARP(op='who-has', hwsrc=MAC_TESTER0, psrc=IP_TESTER0, hwdst=MAC_BROADCAST, pdst=IP_DUT0))
+'''
 
+'''
 # ARP reply test.
-write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
+ write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
             ARP(op='is-at', hwsrc=MAC_TESTER0, psrc=IP_TESTER0, hwdst=MAC_DUT0, pdst=IP_DUT0))
-
+'''
+'''
 # Fill the ARP cache entry of the default route.
 write_frame(IFACE_DEFAULT_ROUTE, Ether(src=MAC_DEFAULT_ROUTE, dst=MAC_BROADCAST) /
             ARP(op='who-has', hwsrc=MAC_DEFAULT_ROUTE, psrc=IP_DEFAULT_ROUTE, hwdst=MAC_BROADCAST, pdst=IP_DUT3))
@@ -94,13 +100,13 @@ write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
             UDP(sport=7, dport=7) / b'hello, 00002')
 
 # Simple IP forwarding test (no MAC).
-write_frame(1, Ether(src=MAC_TESTER1, dst=MAC_DUT1) /
-            IP(src=IP_TESTER1, dst=IP_TEST_DST_NO_MAC) /
+write_frame(1, Ether(src=MAC_TESTER2, dst=MAC_DUT1) /
+            IP(src=IP_TESTER2, dst=IP_TEST_DST_NO_MAC) /
             UDP(sport=7, dport=7) / b'hello, 00003')
 
 # Simple IP forwarding test (no route).
-write_frame(1, Ether(src=MAC_TESTER1, dst=MAC_DUT1) /
-            IP(src=IP_TESTER1, dst=IP_TEST_DST_NO_ROUTE) /
+write_frame(1, Ether(src=MAC_TESTER2, dst=MAC_DUT1) /
+            IP(src=IP_TESTER2, dst=IP_TEST_DST_NO_ROUTE) /
             UDP(sport=7, dport=7) / b'hello, 00004')
 
 # TTL=2 test.
@@ -142,12 +148,15 @@ write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
 write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
             IP(src=IP_TESTER0, dst=IP_TEST_DST_NO_ROUTE, ttl=1, chksum=0x1234) /
             UDP(sport=7, dport=7) / b'hello, 00012')
+'''
+# send(IP(ttl=255, dst="68.68.68.68"), iface="enx00e04c68002d")
+#write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) / IP(ttl=255, dst="68.68.68.68") / UDP(sport=7, dport=7) )
 
 # IP packet with TTL=1. Route does not exist.
 write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
             IP(src=IP_TESTER0, dst=IP_TEST_DST_NO_ROUTE, ttl=1) /
             UDP(sport=7, dport=7) / b'hello, 00013')
-
+'''
 # L2 garbage test.
 write_frame(0, Ether(b'BeLrYEeECrHIsbxfm734+jLpfJshQTmHsz+NJrYR8PCKodcW9OU8p+jPotD00014'))
 
@@ -158,17 +167,55 @@ write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0, type='IPv4') /
 # L3 garbage test (ARP).
 write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0, type='ARP') /
             b'BeLrYEeECrHIsbxfm734+jLpfJshQTmHsz+NJrYR8PCKodcW9OU8p+jPotD00016')
+'''
 
-# RIP test.
-write_frame(1, Ether(src=MAC_TESTER1) /
-            IP(src=IP_TESTER1, dst=IP_RIP, ttl=1) /
-            UDP() /
-            RIP(version=2) /
-            RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
-            RIPEntry(addr='166.111.0.0', mask='255.255.0.0'))
-
+'''
 # You can construct more frames to test your datapath.
 
+# RIP packet test.
+
+write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
+            IP(src=IP_TESTER0, dst=IP_TEST_DST, id=0xaf1a, ttl=64) /
+            UDP(sport=7, dport=7) /
+            RIP(cmd=2, version=2) /
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0"))
+'''
+
+write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
+            IP(src=IP_TESTER0, dst=IP_TEST_DST, id=0xaf1a, ttl=64) /
+            UDP(sport=7, dport=7) /
+            RIP(cmd=2, version=2) /
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0")/
+            RIPEntry(addr="192.168.200.0", metric=16, mask="255.255.255.0"))
 fout.close()
 pout.close()
 exit(0)

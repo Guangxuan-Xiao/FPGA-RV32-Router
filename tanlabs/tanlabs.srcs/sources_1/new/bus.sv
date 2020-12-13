@@ -2,18 +2,18 @@
 `include "frame_datapath.vh"
 module bus(input wire clk,
     input wire rst,
-    inout wire[31:0] base_ram_data, // BaseRAM数据，低8位与CPLD串口控制器共享
+    inout wire[31:0] base_ram_data, // BaseRAM数据，低8位与CPLD串口控制器共�?
     output reg[19:0] base_ram_addr, // BaseRAM地址
-    output reg[3:0] base_ram_be_n,  // BaseRAM字节使能，低有效。如果不使用字节使能，请保持为0
-    output reg base_ram_ce_n,       // BaseRAM片选，低有效
-    output reg base_ram_oe_n,       // BaseRAM读使能，低有效
-    output reg base_ram_we_n,       // BaseRAM写使能，低有效
+    output reg[3:0] base_ram_be_n,  // BaseRAM字节使能，低有效。如果不使用字节使能，请保持�?0
+    output reg base_ram_ce_n,       // BaseRAM片�?�，低有�?
+    output reg base_ram_oe_n,       // BaseRAM读使能，低有�?
+    output reg base_ram_we_n,       // BaseRAM写使能，低有�?
     inout wire[31:0] ext_ram_data,  // ExtRAM数据
     output reg[19:0] ext_ram_addr,  // ExtRAM地址
-    output reg[3:0] ext_ram_be_n,   // ExtRAM字节使能，低有效。如果不使用字节使能，请保持为0
-    output reg ext_ram_ce_n,        // ExtRAM片选，低有效
-    output reg ext_ram_oe_n,        // ExtRAM读使能，低有效
-    output reg ext_ram_we_n,        // ExtRAM写使能，低有效
+    output reg[3:0] ext_ram_be_n,   // ExtRAM字节使能，低有效。如果不使用字节使能，请保持�?0
+    output reg ext_ram_ce_n,        // ExtRAM片�?�，低有�?
+    output reg ext_ram_oe_n,        // ExtRAM读使能，低有�?
+    output reg ext_ram_we_n,        // ExtRAM写使能，低有�?
     input wire[31:0] ram_data_cpu,
     output reg[31:0] ram_data_ram,
     input wire[31:0] ram_addr_i,
@@ -22,19 +22,19 @@ module bus(input wire clk,
     input wire ram_oe_i,
     input wire ram_req,
     output wire ram_ready,
-    input wire uart_dataready,      // 串口数据准备好
-    input wire uart_tbre,           // 发送数据标志
-    input wire uart_tsre,           // 数据发送完毕标志
-    output reg uart_rdn,            // 读串口信号，低有效
-    output reg uart_wrn,             // 写串口信号，低有效
-    output reg [22:0]flash_a,      // Flash地址，a0仅在8bit模式有效，16bit模式无意义
+    input wire uart_dataready,      // 串口数据准备�?
+    input wire uart_tbre,           // 发�?�数据标�?
+    input wire uart_tsre,           // 数据发�?�完毕标�?
+    output reg uart_rdn,            // 读串口信号，低有�?
+    output reg uart_wrn,             // 写串口信号，低有�?
+    output reg [22:0]flash_a,      // Flash地址，a0仅在8bit模式有效�?16bit模式无意�?
     inout  wire [15:0]flash_d,      // Flash数据
     output reg flash_rp_n,         // Flash复位信号，低有效
-    output reg flash_vpen,         // Flash写保护信号，低电平时不能擦除、烧写
-    output reg flash_ce_n,         // Flash片选信号，低有效
-    output reg flash_oe_n,         // Flash读使能信号，低有效
-    output reg flash_we_n,         // Flash写使能信号，低有效
-    output reg flash_byte_n,       // Flash 8bit模式选择，低有效。在使用flash的16位模式时请设为1
+    output reg flash_vpen,         // Flash写保护信号，低电平时不能擦除、烧�?
+    output reg flash_ce_n,         // Flash片�?�信号，低有�?
+    output reg flash_oe_n,         // Flash读使能信号，低有�?
+    output reg flash_we_n,         // Flash写使能信号，低有�?
+    output reg flash_byte_n,       // Flash 8bit模式选择，低有效。在使用flash�?16位模式时请设�?1
     output reg[3:0] trie_web[32:0],
     output reg [4:0] nexthop_web,
     output reg [TRIE_ADDR_WIDTH-1:0] node_addr[32:0],
@@ -67,7 +67,7 @@ module bus(input wire clk,
     // | 0x80100000-0x803FFFFF | 用户程序代码 |
     // | 0x80400000-0x807EFFFF | 用户程序数据 |
     // | 0x807F0000-0x807FFFFF | 监控程序数据 |
-    // | 0x10000000-0x10000007 | 串口数据及状态 |
+    // | 0x10000000-0x10000007 | 串口数据及状�? |
     // | 0x40000000-0x407FFFFF | Flash数据 |
 
     localparam BASE_ADDR_START = 32'h80000000;
@@ -91,9 +91,9 @@ module bus(input wire clk,
 
     // Nexthop BRAM Address
     // | 0x20200000-0x202001FF | Next-hop BRAM Data |
-    // 第2位地址（Addr[2]）为0（第偶数个字）表示IP地址
-    // 第2位地址（Addr[2]）为1（第奇数个字）表示Port（低对齐）。
-    // 第3-8位地址（n = Addr[8:3]）表示第n个IP地址或Port。
+    // �?2位地�?（Addr[2]）为0（第偶数个字）表示IP地址
+    // �?2位地�?（Addr[2]）为1（第奇数个字）表示Port（低对齐）�??
+    // �?3-8位地�?（n = Addr[8:3]）表示第n个IP地址或Port�?
     // E.g.1
     // | 0x20200000-0x20200003 | IP[0] |
     // | 0x20200004-0x20200007 | {24'b0, port[0]} |
@@ -124,7 +124,7 @@ module bus(input wire clk,
     localparam BUFFER_WRITE_END   = 32'h6007FFFF;
 
     // Interface BRAM Address
-    // | 0x70000000-0x70000020 | Buffer 串口数据及状态 |
+    // | 0x70000000-0x70000020 | Buffer 串口数据及状�? |
 
     localparam BUFFER_START_READ = 32'h70000000;
     localparam BUFFER_END_READ   = 32'h70000010;
@@ -302,7 +302,7 @@ module bus(input wire clk,
         end else if (rubbish) begin
             ram_data_reg = rubbish2333;
         end
-        end else begin
+        else begin
             ram_data_reg = 32'b0;
         end
     end
