@@ -54,7 +54,7 @@ assign internal_rx_ready = internal_rx_ready_i;
 // Showing the state of router write.
 always @ (posedge clk_router)
 begin
-  if (rst_router)
+  /*if (rst_router)
   begin
     router_write_state    <= START;
     router_pointer        <= 0;
@@ -143,7 +143,10 @@ begin
       router_write_en    <= 0;
     end
     endcase
-  end
+  end*/
+  router_write_data     <= router_write_data + 1;
+  router_write_addr     <= router_write_addr + 1;
+  router_write_en       <= 1;
 end
 
 always @ (posedge clk_cpu)
