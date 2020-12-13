@@ -14,15 +14,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="3007172019fs"></ZoomStartTime>
-      <ZoomEndTime time="3104222020fs"></ZoomEndTime>
-      <Cursor1Time time="3022522019fs"></Cursor1Time>
+      <ZoomStartTime time="1825337682fs"></ZoomStartTime>
+      <ZoomEndTime time="21295337683fs"></ZoomEndTime>
+      <Cursor1Time time="2325337682fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="166"></NameColumnWidth>
-      <ValueColumnWidth column_width="421"></ValueColumnWidth>
+      <ValueColumnWidth column_width="415"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="33" />
+   <WVObjectSize size="35" />
    <wvobject fp_name="/tb/reset" type="logic">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
@@ -154,5 +154,13 @@
    <wvobject fp_name="/tb/dut/internal_rx_ready" type="logic">
       <obj_property name="ElementShortName">internal_rx_ready</obj_property>
       <obj_property name="ObjectShortName">internal_rx_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/frame_datapath_i/in" type="array">
+      <obj_property name="ElementShortName">in</obj_property>
+      <obj_property name="ObjectShortName">in</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/frame_datapath_i/in_ready" type="logic">
+      <obj_property name="ElementShortName">in_ready</obj_property>
+      <obj_property name="ObjectShortName">in_ready</obj_property>
    </wvobject>
 </wave_config>

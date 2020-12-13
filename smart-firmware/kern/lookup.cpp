@@ -198,7 +198,7 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
 
 void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s, RoutingTableEntry *buffer, uint32_t *len)
 {
-    // printf("Node Addr: %u %x\r\n", addr_s, addr_h);
+    //printf("Node Addr: %u %x\r\n", addr_s, addr_h);
     if (!addr_h || !addr_s)
         return;
     trie_node_t node_h;

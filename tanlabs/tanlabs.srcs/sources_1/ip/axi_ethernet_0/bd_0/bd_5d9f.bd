@@ -833,7 +833,7 @@
             "value": "Custom"
           },
           "EXAMPLE_SIMULATION": {
-            "value": "0"
+            "value": "1"
           },
           "EnableAsyncSGMII": {
             "value": "false"
@@ -992,7 +992,7 @@
             "value": "true"
           },
           "Threshold_Value": {
-            "value": "300000"
+            "value": "3000"
           }
         }
       },
@@ -1032,16 +1032,16 @@
           "mac/s_axi"
         ]
       },
-      "s_axis_pause_1": {
-        "interface_ports": [
-          "s_axis_pause",
-          "mac/s_axis_pause"
-        ]
-      },
       "mac_rx_statistics": {
         "interface_ports": [
           "rx_statistics",
           "mac/rx_statistics"
+        ]
+      },
+      "s_axis_pause_1": {
+        "interface_ports": [
+          "s_axis_pause",
+          "mac/s_axis_pause"
         ]
       },
       "mac_tx_statistics": {
@@ -1050,16 +1050,22 @@
           "mac/tx_statistics"
         ]
       },
-      "mac_gmii": {
+      "pcs_pma_sfp": {
         "interface_ports": [
-          "mac/gmii",
-          "pcs_pma/gmii_pcs_pma"
+          "sfp",
+          "pcs_pma/sfp"
         ]
       },
       "mac_m_axis_rx": {
         "interface_ports": [
           "m_axis_rx",
           "mac/m_axis_rx"
+        ]
+      },
+      "mac_gmii": {
+        "interface_ports": [
+          "mac/gmii",
+          "pcs_pma/gmii_pcs_pma"
         ]
       },
       "s_axis_tx_1": {
@@ -1072,12 +1078,6 @@
         "interface_ports": [
           "mgt_clk",
           "pcs_pma/gtrefclk_in"
-        ]
-      },
-      "pcs_pma_sfp": {
-        "interface_ports": [
-          "sfp",
-          "pcs_pma/sfp"
         ]
       }
     },

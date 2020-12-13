@@ -219,7 +219,7 @@
         <spirit:configurableElementValue spirit:referenceId="BUSIFPARAM_VALUE.USERCLK_PORT.FREQ_HZ">62500000</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="BUSIFPARAM_VALUE.USERCLK_PORT.INSERT_VIP">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_EMAC_IF_TEMAC">true</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.EXAMPLE_SIMULATION">0</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.EXAMPLE_SIMULATION">1</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.c_1588">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.c_8_or_9_family">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.c_InstantiateBitslice0">false</spirit:configurableElementValue>
@@ -277,7 +277,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.DrpClkRate">50.0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.EMAC_IF_TEMAC">TEMAC</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.ETHERNET_BOARD_INTERFACE">Custom</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.EXAMPLE_SIMULATION">0</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.EXAMPLE_SIMULATION">1</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.EnableAsyncSGMII">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Enable_1588">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Enable_1588_1step">false</spirit:configurableElementValue>
