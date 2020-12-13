@@ -43,20 +43,17 @@ module bus(input wire clk,
     output reg [NEXTHOP_ADDR_WIDTH-1:0] nexthop_addr,
     output nexthop_t nexthop_data_cpu,
     input nexthop_t nexthop_data_router,
-    output reg cpu_write_enb,
     output reg cpu_write_web,
-    output reg [16:0] cpu_write_addrb,
-    output reg [7:0] cpu_write_data,
-    output reg cpu_write_done,
-    output reg [5:0] cpu_write_address,
-    input wire cpu_start_enb,
-    input wire [5:0] cpu_start_addrb,
-    output reg cpu_read_enb,
-    output reg [16:0] cpu_read_addrb,
-    input wire [7:0] cpu_read_data,
-    output reg cpu_finish_enb,
-    output reg [5:0] cpu_finish_addrb,
-    input wire [31:0] rubbish2333,
+    output reg [`BUFFER_ADDR_WIDTH - 1:0] cpu_write_addrb,
+    output reg [7:0] cpu_write_dinb,
+    output reg cpu_write_end,
+    output reg [`BUFFER_WIDTH - 1:0] cpu_write_end_ptr,
+    input wire cpu_read_start,
+    input wire [`BUFFER_WIDTH - 1:0] cpu_read_start_ptr,
+    output reg [`BUFFER_ADDR_WIDTH - 1:0] cpu_read_addrb,
+    input wire [7:0] cpu_read_doutb,
+    output reg cpu_read_end,
+    output reg [`BUFFER_WIDTH - 1:0] cpu_read_end_ptr,
     output reg [43:0] mac_o,
     output reg [31:0] ip0_o,
     output reg [31:0] ip1_o,
@@ -119,9 +116,9 @@ module bus(input wire clk,
     // | 0x6007F800-0x6007FFFF | CPU Write buffer 127 |
 
     localparam BUFFER_READ_START  = 32'h60000000;
-    localparam BUFFER_READ_END    = 32'h6001FFFF;
-    localparam BUFFER_WRITE_START = 32'h60020000;
-    localparam BUFFER_WRITE_END   = 32'h6003FFFF;
+    localparam BUFFER_READ_END    = 32'h6000FFFF;
+    localparam BUFFER_WRITE_START = 32'h60040000;
+    localparam BUFFER_WRITE_END   = 32'h6004FFFF;
 
     // Interface BRAM Address
     // | 0x70000000-0x70000020 | Buffer 串口数据及状�? |
@@ -183,7 +180,7 @@ module bus(input wire clk,
 
     wire buffer_read  = ram_req && (ram_addr_i >= BUFFER_READ_START) && (ram_addr_i <= BUFFER_READ_END);
     wire buffer_write = ram_req && (ram_addr_i >= BUFFER_WRITE_START) && (ram_addr_i <= BUFFER_WRITE_END);
-    wire buffer_addr  = ram_addr_i[16:0];
+    wire buffer_addr  = ram_addr_i[`BUFFER_ADDR_WIDTH - 1:0];
 
     wire read_start = ram_req && (ram_addr_i == BUFFER_START_READ);
     wire read_end   = ram_req && (ram_addr_i == BUFFER_END_READ);
@@ -296,11 +293,9 @@ module bus(input wire clk,
         end else if (nexthop_ip_req) begin
             ram_data_reg = nexthop_data_router.ip;
         end else if (buffer_read) begin
-            ram_data_reg = {cpu_read_data, cpu_read_data, cpu_read_data, cpu_read_data};
+            ram_data_reg = {cpu_read_doutb, cpu_read_doutb, cpu_read_doutb, cpu_read_doutb};
         end else if (read_start) begin
-            ram_data_reg = {24'b0, cpu_start_enb, 1'b0, cpu_start_addrb};
-        end else if (rubbish) begin
-            ram_data_reg = rubbish2333;
+            ram_data_reg = {24'b0, cpu_read_start, `BUFFER_SPARE'b0, cpu_read_start_ptr};
         end else begin
             ram_data_reg = 32'b0;
         end
@@ -414,31 +409,28 @@ module bus(input wire clk,
 
     // Buffer writing control
     always_comb begin
-        cpu_write_enb   = 0;
         cpu_write_web   = 0;
         cpu_write_addrb = buffer_addr;
-        cpu_write_data  = 0;
-        cpu_read_enb    = 1;
+        cpu_write_dinb  = 0;
         cpu_read_addrb  = buffer_addr;
         if (buffer_write & ram_we_i) begin
-            cpu_write_enb  = 1'b1;
             cpu_write_web  = 1'b1;
-            cpu_write_data = ram_data_cpu[7:0];
+            cpu_write_dinb = ram_data_cpu[7:0];
         end
     end
 
     // Buffer Serial Port writing control
     always_comb begin
-        cpu_write_done    = 0;
-        cpu_write_address = 0;
-        cpu_finish_enb    = 0;
-        cpu_finish_addrb  = 0;
+        cpu_write_end    = 0;
+        cpu_write_end_ptr = 0;
+        cpu_read_end    = 0;
+        cpu_read_end_ptr  = 0;
         if (write_end & ram_we_i) begin
-            cpu_write_done    = ram_data_cpu[7];
-            cpu_write_address = ram_data_cpu[5:0];
+            cpu_write_end     = ram_data_cpu[7];
+            cpu_write_end_ptr = ram_data_cpu[`BUFFER_WIDTH - 1:0];
         end else if (read_end & ram_we_i) begin
-            cpu_finish_enb   = ram_data_cpu[7];
-            cpu_finish_addrb = ram_data_cpu[5:0];
+            cpu_read_end     = ram_data_cpu[7];
+            cpu_read_end_ptr = ram_data_cpu[`BUFFER_WIDTH - 1:0];
         end
     end
 

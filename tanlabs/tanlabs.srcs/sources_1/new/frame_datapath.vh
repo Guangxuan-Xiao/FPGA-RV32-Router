@@ -65,6 +65,10 @@ logic [2:0] prot_type;
 `define LTP_SRC_IP (20 * 8) +: 32
 `define LTP_TRG_IP (24 * 8) +: 32
 
+`define BUFFER_WIDTH 5
+`define BUFFER_SPARE 2
+`define BUFFER_ADDR_WIDTH 16
+
 localparam ID_CPU = 3'd4;  // The interface ID of CPU is 4.
 
 localparam ETHERTYPE_IP4 = 16'h0008;
