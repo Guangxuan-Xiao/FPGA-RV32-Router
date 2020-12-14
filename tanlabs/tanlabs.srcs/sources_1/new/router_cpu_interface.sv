@@ -96,7 +96,7 @@ begin
           router_write_state  <= END1;
           router_write_dina   <= internal_rx_data;
           router_write_addra  <= router_write_addra + 1;
-          router_write_len    <= router_write_addra + 1;
+          router_write_len    <= router_write_addra + 2;
           router_write_wea    <= 1;
           internal_rx_ready_i <= 0;
         end

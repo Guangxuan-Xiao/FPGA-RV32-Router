@@ -111,7 +111,7 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
 {
   uint32_t router_len;
   traverse(cache, &router_len);
-  printf("end traverse with router_len: %d\r\n", router_len);
+  //printf("end traverse with router_len: %d\r\n", router_len);
   uint32_t rest_ripentry = router_len;
   while(rest_ripentry > 25)
   {
@@ -147,9 +147,9 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
     udpHeader->uh_sum = 0; 
     uint16_t checksum = calculate_checksum(ip_header);
     ip_header->ip_sum = checksum;
-    printf("before send\r\n");
+    //printf("before send\r\n");
     send(if_index, output, totlen, bram_addr_dst, dst_mac);
-    printf("end send\r\n");
+    //printf("end send\r\n");
     bram_addr_dst = (bram_addr_dst + 1) & 0x7F;
     rest_ripentry -= 25;
     }
@@ -185,10 +185,10 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
       udpHeader->uh_sum = 0; 
       uint16_t checksum = calculate_checksum(ip_header);
       ip_header->ip_sum = checksum;
-      printf("before send\r\n");
+      //printf("before send\r\n");
       send(if_index, output, totlen, bram_addr_dst, dst_mac);
-      printf("end send\r\n");
-      bram_addr_dst = (bram_addr_dst + 1) & 0x7F;
+      //printf("end send\r\n");
+      bram_addr_dst = (bram_addr_dst + 1) & 0x1F;
     }
 }
 
@@ -210,7 +210,7 @@ int mainLoop()
   while (1) 
   {
     uint32_t time = get_clock();
-    if (time >= last_time + 50000000) 
+    if (time >= last_time + 500000000) 
     {
       printf("5s Timer\r\n");
       for (int i = 0; i < N_IFACE_ON_BOARD; i++) 
