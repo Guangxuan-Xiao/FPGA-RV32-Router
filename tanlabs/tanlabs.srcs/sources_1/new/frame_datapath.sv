@@ -920,6 +920,7 @@ end
     end
 
     reg [47:0] store_trg_mac;
+    reg [31:0] query_nexthop_3;   
     reg [2:0] query_port_3;  
     frame_data s3;
     wire s3_ready;
@@ -947,6 +948,7 @@ end
                             arp_cache_wr_en <= 1'b0;
                             trg_ip_addr <= query_nexthop_2; 
                             query_port_3 <= query_port_2;
+                            query_nexthop_3 <= query_nexthop_2;
                         end
                     end
 
@@ -994,6 +996,7 @@ end
     end
 
     reg [2:0] query_port_4;  
+    reg [31:0] query_nexthop_4;   
     frame_data s4;
     wire s4_ready;
 //    assign test_mac = trg_mac_addr;
@@ -1007,6 +1010,7 @@ end
         else if (s4_ready)
         begin
             s4 <= s3;
+            query_nexthop_4 <= query_nexthop_3;
             query_port_4 <= query_port_3;
         end
     end
@@ -1016,6 +1020,7 @@ end
     frame_data s5;
     wire s5_ready;
     reg [2:0] query_port_5;  
+    reg [31:0] query_nexthop_5;   
     assign s4_ready = s5_ready || !s4.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -1034,11 +1039,11 @@ end
                         if (!s4.to_cpu && s4.id != 4)
                         begin
                             query_port_5 <= query_port_4;
+                            query_nexthop_5 <= query_nexthop_4;
                             store_trg_mac = trg_mac_addr;
                             if(!store_trg_mac)
                             //Not found, then we send an ARP packet.
                             begin
-                                s5.data[`MAC_SRC] <= s4.my_mac;
                                 s5.data[`MAC_DST] <= TBD;
                                 s5.data[`MAC_TYPE] <= ETHERTYPE_ARP;
                                 s5.data[`HARD_TYPE] <= HARD;
@@ -1046,22 +1051,92 @@ end
                                 s5.data[`OP] <= REQUEST;
                                 s5.data[`HARD_LEN] <= HARD_L;
                                 s5.data[`PROT_LEN] <= PROT_L;
-                                s5.data[`SRC_MAC_ADDR] <= s4.my_mac;
-                                s5.data[`SRC_IP_ADDR] <= s4.my_ip;
-                                s5.data[`TRG_IP_ADDR] <= s4.data[`TRG_IP_IP];
                                 s5.data[`TRG_MAC_ADDR] <= TBD;
                                 s5.data[`FINAL] <= 48'h0;
+
+                                if (query_nexthop_4 == 0)
+                                begin
+                                    s5.data[`TRG_IP_ADDR] <= s4.data[`TRG_IP_IP];
+                                end
+                                else 
+                                begin
+                                    s5.data[`TRG_IP_ADDR] <= query_nexthop_4;
+                                end
+                                
+                                case (query_port_4)
+                                    3'b000:
+                                    begin
+                                        s5.data[`MAC_SRC] <= {dip_sw[15:12], mac};
+                                        s5.data[`SRC_MAC_ADDR] <= {dip_sw[15:12], mac};
+                                        s5.data[`SRC_IP_ADDR] <= ip0;
+                                    end
+
+                                    3'b001:
+                                    begin
+                                        s5.data[`MAC_SRC] <= {dip_sw[11:8], mac};
+                                        s5.data[`SRC_MAC_ADDR] <= {dip_sw[11:8], mac};
+                                        s5.data[`SRC_IP_ADDR] <= ip1;
+                                    end
+
+                                    3'b010:
+                                    begin
+                                        s5.data[`MAC_SRC] <= {dip_sw[7:4], mac};
+                                        s5.data[`SRC_MAC_ADDR] <= {dip_sw[7:4], mac};
+                                        s5.data[`SRC_IP_ADDR] <= ip2;
+                                    end
+
+                                    3'b011:
+                                    begin
+                                        s5.data[`MAC_SRC] <= {dip_sw[3:0], mac};
+                                        s5.data[`SRC_MAC_ADDR] <= {dip_sw[3:0], mac};
+                                        s5.data[`SRC_IP_ADDR] <= ip3;
+                                    end
+                                    
+                                    default:
+                                    begin
+                                        s5.data[`MAC_SRC] <= 0;
+                                        s5.data[`SRC_MAC_ADDR] <= 0;
+                                        s5.data[`SRC_IP_ADDR] <= 0;
+                                    end
+                                endcase
                             end
                             else
                             begin
-                                s5.data[`MAC_SRC] <= s4.my_mac;
+                                // ARP cache found, then change MAC address
                                 s5.data[`MAC_DST] <= trg_mac_addr;
+                                case (query_port_4)
+                                    3'b000:
+                                    begin
+                                        s5.data[`MAC_SRC] <= {dip_sw[15:12], mac};
+                                    end
+
+                                    3'b001:
+                                    begin
+                                        s5.data[`MAC_SRC] <= {dip_sw[11:8], mac};
+                                    end
+
+                                    3'b010:
+                                    begin
+                                        s5.data[`MAC_SRC] <= {dip_sw[7:4], mac};
+                                    end
+
+                                    3'b011:
+                                    begin
+                                        s5.data[`MAC_SRC] <= {dip_sw[3:0], mac};
+                                    end
+                                    
+                                    default:
+                                    begin
+                                        s5.data[`MAC_SRC] <= 0;
+                                    end
+                                endcase
                             end
                         end
                     end
 
                     3'b001:
                     begin
+                        // ARP 
                         s5.data[`MAC_DST] <= s4.data[`MAC_SRC];
                         s5.data[`MAC_SRC] <= s4.my_mac;
                     end
