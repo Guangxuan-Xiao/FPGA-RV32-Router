@@ -40,7 +40,7 @@ uint32_t read_mac_prefix()
     return *mac_prefix_ptr;
 }
 
-uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_index)
+uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, uint32_t *if_index)
 {
     uint8_t status = RD_SRT;
     if (!(status & 0x80))
@@ -141,7 +141,7 @@ uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_in
     return length;
 }
 
-void send(int if_index, const uint8_t *buffer, uint32_t length, uint32_t dst, const uint8_t *dst_mac)
+void send(uint32_t if_index, const uint8_t *buffer, uint32_t length, uint32_t dst, const uint8_t *dst_mac)
 {
     /*volatile uint32_t* ptr;
     ptr = (volatile uint32_t*)(write_start + (dst << width));
