@@ -10,10 +10,23 @@ module tb_frame_datapath
 );
 
     reg reset;
+    reg [43:0] mac_i;
+    reg [31:0] ip1_i;
+    reg [31:0] ip2_i;
+    reg [31:0] ip3_i;
+    reg [31:0] ip4_i;
+    reg [15:0] dip_sw;
+
     initial begin
         reset = 1;
         #6000
         reset = 0;
+        dip_sw = 16'b0001001001001000;
+        mac_i = 44'h12345678123;
+        ip1_i = 32'h11111111;
+        ip2_i = 32'h22222222;
+        ip3_i = 32'h33333333;
+        ip4_i = 32'h44444444;
     end
 
     wire clk_125M;
@@ -65,6 +78,13 @@ module tb_frame_datapath
         .s_id(in_id),
         .s_valid(in_valid),
         .s_ready(in_ready),
+
+        .dip_sw(dip_sw),
+        .ip0_i(ip1_i),
+        .ip1_i(ip2_i),
+        .ip2_i(ip3_i),
+        .ip3_i(ip4_i),
+        .mac_i(mac_i),
 
         .m_data(out_data),
         .m_keep(out_keep),

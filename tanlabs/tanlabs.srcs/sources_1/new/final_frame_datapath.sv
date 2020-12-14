@@ -220,7 +220,6 @@ module frame_datapath #(
                            // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
    );
    
-   reg [31:0] ip_val;
     always@(*)
     begin
         // This block aims at getting my MAC and IP according to in.id.
@@ -228,39 +227,33 @@ module frame_datapath #(
             3'b000:
             begin
                 my_mac <= {mac_i, dip_sw[15:12]};
-                my_ip  <= ip0_i;
-                ip_val <= {ip0_i[7:0], ip0_i[15:8], ip0_i[23:16], ip0_i[31:24]};
+                my_ip  <= ip1_i;
             end
             3'b001:
             begin
                 my_mac <= {mac_i, dip_sw[11:8]};
-                my_ip  <= ip1_i;
-                ip_val <= {ip1_i[7:0], ip1_i[15:8], ip1_i[23:16], ip1_i[31:24]};
+                my_ip  <= ip2_i;
             end
             3'b010:
             begin
                 my_mac <= {mac_i, dip_sw[7:4]};
-                my_ip  <= ip2_i;
-                ip_val <= {ip2_i[7:0], ip2_i[15:8], ip2_i[23:16], ip2_i[31:24]};
+                my_ip  <= ip3_i;
             end
             3'b011:
             begin
                 my_mac <= {mac_i, dip_sw[3:0]};
-                my_ip  <= ip3_i;
-                ip_val <= {ip3_i[7:0], ip3_i[15:8], ip3_i[23:16], ip3_i[31:24]};
+                my_ip  <= ip4_i;
             end
             default:
             begin
                 my_mac <= 48'h0;
                 my_ip  <= 32'h0;
-                ip_val <= 0;
             end
         endcase
     end
 
     frame_data s1;
     wire s1_ready;
-    reg [31:0] ip_file;
     assign in_ready = s1_ready || !in.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -280,20 +273,6 @@ module frame_datapath #(
                     data_input_content <= in.data;
                     rt_i_ip <= in.data[`TRG_IP_IP];   
                     rt_i_ready <= 1;
-                    ip_file <= in.data[`TRG_IP_IP];
-                    if(in.id != 4)
-                    begin
-                        if (in.data [`TRG_IP_IP] == my_ip || ( ip_val <= 32'hEFFFFFFF && ip_val >= 8'hE0000000)
-                        begin
-                            s1.dest <= 4;
-                            s1.to_cpu <= 1;
-                            s1.data[`MAC_DST] <= in.id;
-                        end
-                        else
-                        begin
-                            s1.to_cpu <= 0;
-                        end
-                    end
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
                 begin
@@ -326,7 +305,7 @@ module frame_datapath #(
         else if(query_trie_1_ready)
         begin
             query_trie_1 <= s1;
-            if(s1.prot_type == 3'b000 && !s1.to_cpu && s1.id != 4)
+            if(s1.prot_type == 3'b000)
             begin
                 manage <= data_output_content;
                 query_trie_1.data <= data_output_content;
@@ -880,20 +859,17 @@ end
                 case(query_trie_34.prot_type)
                     3'b000:
                     begin
-                        if(!query_trie_34.to_cpu && query_trie_34.id != 4)
+                        liushui <= rt_o_ready;
+                        query_nexthop_2 <= rt_o_nexthop.ip; 
+                        query_port_2 <= rt_o_nexthop.port;
+                        if( !rt_o_valid ||!test_packet_valid)
                         begin
-                            liushui <= rt_o_ready;
-                            query_nexthop_2 <= rt_o_nexthop.ip; 
-                            query_port_2 <= rt_o_nexthop.port;
-                            if( !rt_o_valid ||!test_packet_valid)
-                            begin
-                                // TODO: drop!
-                                s2.drop <= 0;
-                            end
-                            else
-                            begin
-                                s2.drop <= 0;
-                            end
+                            // TODO: drop!
+                            s2.drop <= 0;
+                        end
+                        else
+                        begin
+                            s2.drop <= 0;
                         end
                     end
 
@@ -933,12 +909,9 @@ end
                 case(s2.prot_type)
                     3'b000:
                     begin
-                        if(!s2.to_cpu && s2.id != 4)
-                        begin
-                            arp_cache_wr_en <= 1'b0;
-                            trg_ip_addr <= query_nexthop_2; 
-                            query_port_3 <= query_port_2;
-                        end
+                        arp_cache_wr_en <= 1'b0;
+                        trg_ip_addr <= query_nexthop_2; 
+                        query_port_3 <= query_port_2;
                     end
 
                     3'b001:
@@ -1022,32 +995,29 @@ end
                 case (s4.prot_type)
                     3'b000:
                     begin
-                        if (!s4.to_cpu && s4.id != 4)
+                        query_port_5 <= query_port_4;
+                        store_trg_mac = trg_mac_addr;
+                        if(!store_trg_mac)
+                        //Not found, then we send an ARP packet.
                         begin
-                            query_port_5 <= query_port_4;
-                            store_trg_mac = trg_mac_addr;
-                            if(!store_trg_mac)
-                            //Not found, then we send an ARP packet.
-                            begin
-                                s5.data[`MAC_SRC] <= my_mac;
-                                s5.data[`MAC_DST] <= TBD;
-                                s5.data[`MAC_TYPE] <= ETHERTYPE_ARP;
-                                s5.data[`HARD_TYPE] <= HARD;
-                                s5.data[`PROT_TYPE] <= PROT;
-                                s5.data[`OP] <= REQUEST;
-                                s5.data[`HARD_LEN] <= HARD_L;
-                                s5.data[`PROT_LEN] <= PROT_L;
-                                s5.data[`SRC_MAC_ADDR] <= my_mac;
-                                s5.data[`SRC_IP_ADDR] <= my_ip;
-                                s5.data[`TRG_IP_ADDR] <= s4.data[`TRG_IP_IP];
-                                s5.data[`TRG_MAC_ADDR] <= TBD;
-                                s5.data[`FINAL] <= 48'h0;
-                            end
-                            else
-                            begin
-                                s5.data[`MAC_SRC] <= my_mac;
-                                s5.data[`MAC_DST] <= trg_mac_addr;
-                            end
+                            s5.data[`MAC_SRC] <= my_mac;
+                            s5.data[`MAC_DST] <= TBD;
+                            s5.data[`MAC_TYPE] <= ETHERTYPE_ARP;
+                            s5.data[`HARD_TYPE] <= HARD;
+                            s5.data[`PROT_TYPE] <= PROT;
+                            s5.data[`OP] <= REQUEST;
+                            s5.data[`HARD_LEN] <= HARD_L;
+                            s5.data[`PROT_LEN] <= PROT_L;
+                            s5.data[`SRC_MAC_ADDR] <= my_mac;
+                            s5.data[`SRC_IP_ADDR] <= my_ip;
+                            s5.data[`TRG_IP_ADDR] <= s4.data[`TRG_IP_IP];
+                            s5.data[`TRG_MAC_ADDR] <= TBD;
+                            s5.data[`FINAL] <= 48'h0;
+                        end
+                        else
+                        begin
+                            s5.data[`MAC_SRC] <= my_mac;
+                            s5.data[`MAC_DST] <= trg_mac_addr;
                         end
                     end
 
@@ -1086,21 +1056,8 @@ end
                 3'b000:
                 begin
                     //TODO: change to prev_5
-                    if (s5.id == 4)
-                    begin
-                        s6.dest <= s5.data[`MAC_SRC];
-                        store_dst <= s5.data[`MAC_SRC];
-                    end
-                    else if(!s5.to_cpu)
-                    begin
-                        s6.dest <= query_port_5;
-                        store_dst <= query_port_5;
-                    end
-                    else
-                    begin
-                        s6.dest <= 4;
-                        store_dst <= 4;
-                    end
+                    s6.dest <= 4;
+                    store_dst <= 4;
                 end
 
                 3'b001:
