@@ -212,19 +212,24 @@ int mainLoop()
   set_ip(addrs[0], addrs[1], addrs[2], addrs[3]);
   set_mac_prefix(0xaabbccdd);
   uint32_t last_time = get_clock();
+  uint32_t sec = 0;
   while (1)
   {
     uint32_t time = get_clock();
-    if (time >= last_time + 500000000)
+    if (time >= last_time + CLOCK_PER_SEC)
+    {
+      sec++;
+      last_time = time;
+    }
+    if (sec >= 5)
     {
       printf("5s Timer\r\n");
       for (int i = 0; i < N_IFACE_ON_BOARD; i++)
       {
         send_all_rip(i, multicastIP, multicastMac);
       }
-      last_time = time;
+      sec = 0;
     }
-
     macaddr_t src_mac;
     macaddr_t dst_mac;
     uint32_t if_index;

@@ -1034,7 +1034,7 @@ end
                             query_port_5 <= query_port_4;
                             store_trg_mac = trg_mac_addr;
                             if(!store_trg_mac)
-                            //Not found, then we send an ARP packet.
+                            //arp Not found, then we send an ARP packet.
                             begin
                                 s5.data[`MAC_SRC] <= my_mac;
                                 s5.data[`MAC_DST] <= TBD;
