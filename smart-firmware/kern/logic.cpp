@@ -209,6 +209,8 @@ int mainLoop()
             .metric = 1};
     insert(entry);
   }
+  set_ip(addrs[0], addrs[1], addrs[2], addrs[3]);
+  set_mac_prefix(0xaabbccdd);
   uint32_t last_time = get_clock();
   while (1)
   {
