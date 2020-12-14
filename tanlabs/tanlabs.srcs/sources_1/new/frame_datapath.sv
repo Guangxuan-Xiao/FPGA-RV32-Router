@@ -308,9 +308,8 @@ module frame_datapath #(
                 else
                 begin
                     //This is rubbish
-                    //TODO: remember to drop.
                     s1.prot_type <= 3'b111;
-                    s1.drop <= 0;
+                    s1.drop <= 1;
                     s1.to_cpu <= 0;
                 end
             end
@@ -896,8 +895,7 @@ end
                             query_port_2 <= rt_o_nexthop.port;
                             if( !rt_o_valid ||!test_packet_valid)
                             begin
-                                // TODO: drop!
-                                s2.drop <= 0;
+                                s2.drop <= 1;
                             end
                             else
                             begin
