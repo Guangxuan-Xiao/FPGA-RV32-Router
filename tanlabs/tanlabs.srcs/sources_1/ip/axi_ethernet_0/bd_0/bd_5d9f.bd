@@ -833,7 +833,7 @@
             "value": "Custom"
           },
           "EXAMPLE_SIMULATION": {
-            "value": "1"
+            "value": "0"
           },
           "EnableAsyncSGMII": {
             "value": "false"
@@ -992,7 +992,7 @@
             "value": "true"
           },
           "Threshold_Value": {
-            "value": "3000"
+            "value": "300000"
           }
         }
       },
@@ -1026,22 +1026,40 @@
       }
     },
     "interface_nets": {
-      "s_axi_1": {
+      "mac_m_axis_rx": {
         "interface_ports": [
-          "s_axi",
-          "mac/s_axi"
-        ]
-      },
-      "mac_rx_statistics": {
-        "interface_ports": [
-          "rx_statistics",
-          "mac/rx_statistics"
+          "m_axis_rx",
+          "mac/m_axis_rx"
         ]
       },
       "s_axis_pause_1": {
         "interface_ports": [
           "s_axis_pause",
           "mac/s_axis_pause"
+        ]
+      },
+      "s_axis_tx_1": {
+        "interface_ports": [
+          "s_axis_tx",
+          "mac/s_axis_tx"
+        ]
+      },
+      "s_axi_1": {
+        "interface_ports": [
+          "s_axi",
+          "mac/s_axi"
+        ]
+      },
+      "mgt_clk_1": {
+        "interface_ports": [
+          "mgt_clk",
+          "pcs_pma/gtrefclk_in"
+        ]
+      },
+      "mac_rx_statistics": {
+        "interface_ports": [
+          "rx_statistics",
+          "mac/rx_statistics"
         ]
       },
       "mac_tx_statistics": {
@@ -1056,28 +1074,10 @@
           "pcs_pma/sfp"
         ]
       },
-      "mac_m_axis_rx": {
-        "interface_ports": [
-          "m_axis_rx",
-          "mac/m_axis_rx"
-        ]
-      },
       "mac_gmii": {
         "interface_ports": [
           "mac/gmii",
           "pcs_pma/gmii_pcs_pma"
-        ]
-      },
-      "s_axis_tx_1": {
-        "interface_ports": [
-          "s_axis_tx",
-          "mac/s_axis_tx"
-        ]
-      },
-      "mgt_clk_1": {
-        "interface_ports": [
-          "mgt_clk",
-          "pcs_pma/gtrefclk_in"
         ]
       }
     },

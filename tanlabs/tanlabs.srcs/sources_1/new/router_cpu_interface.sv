@@ -7,11 +7,11 @@ module router_cpu_interface(
     input wire rst_router,
     input wire rst_cpu,
 
-    input wire [7:0] internal_rx_data,
-    input wire internal_rx_last,
-    input wire internal_rx_user,
-    input wire internal_rx_valid, 
-    output wire internal_rx_ready,
+    (*mark_debug = "true"*)input wire [7:0] internal_rx_data,
+    (*mark_debug = "true"*)input wire internal_rx_last,
+    (*mark_debug = "true"*)input wire internal_rx_user,
+    (*mark_debug = "true"*)input wire internal_rx_valid, 
+    (*mark_debug = "true"*)output wire internal_rx_ready,
 
     output wire [7:0] internal_tx_data,
     output wire internal_tx_last,
@@ -25,12 +25,12 @@ module router_cpu_interface(
     input wire cpu_write_end,
     input wire [`BUFFER_WIDTH - 1:0] cpu_write_end_ptr,
 
-    output wire cpu_read_start,
-    output wire [`BUFFER_WIDTH - 1:0] cpu_read_start_ptr,
-    input wire [`BUFFER_ADDR_WIDTH - 1:0] cpu_read_addrb,
-    output wire [7:0] cpu_read_doutb,
-    input wire cpu_read_end,
-    input wire [`BUFFER_WIDTH - 1:0] cpu_read_end_ptr
+    (*mark_debug = "true"*) output wire cpu_read_start,
+    (*mark_debug = "true"*) output wire [`BUFFER_WIDTH - 1:0] cpu_read_start_ptr,
+    (*mark_debug = "true"*) input wire [`BUFFER_ADDR_WIDTH - 1:0] cpu_read_addrb,
+    (*mark_debug = "true"*) output wire [7:0] cpu_read_doutb,
+    (*mark_debug = "true"*) input wire cpu_read_end,
+    (*mark_debug = "true"*) input wire [`BUFFER_WIDTH - 1:0] cpu_read_end_ptr
 );
 
 typedef enum reg[2:0] { START, ACCESS, END1, END2, END3 } router_write_state_t;
@@ -40,10 +40,10 @@ reg [`BUFFER_WIDTH - 1:0] cpu_ptr1;
 reg [`BUFFER_WIDTH - 1:0] router_ptr1;
 reg [`BUFFER_WIDTH - 1:0] cpu_router_ptr1;
 
-reg [7:0] router_write_dina;
-reg [`BUFFER_ADDR_WIDTH - 1:0] router_write_addra;
+(*mark_debug = "true"*) reg [7:0] router_write_dina;
+(*mark_debug = "true"*) reg [`BUFFER_ADDR_WIDTH - 1:0] router_write_addra;
 reg [`BUFFER_ADDR_WIDTH - 1:0] router_write_addra_tmp;
-reg router_write_wea;
+(*mark_debug = "true"*) reg router_write_wea;
 
 reg internal_rx_ready_i;
 assign internal_rx_ready = internal_rx_ready_i;
@@ -59,7 +59,7 @@ wire [7:0] doutb;
 // Showing the state of router write.
 always @ (posedge clk_router)
 begin
-  /*if (rst_router)
+  if (rst_router)
   begin
     router_write_state    <= START;
     router_ptr1        <= 0;
@@ -143,23 +143,11 @@ begin
     end
 
     default:
-    begind
+    begin
       router_write_state <= START;
       router_write_wea    <= 0;
     end
     endcase
-  end*/
-  if (rst_router)
-  begin
-    router_write_dina  <= 0;
-    router_write_addra <= 0;
-    router_write_wea   <= 0;
-  end
-  else
-  begin
-    router_write_dina  <= router_write_dina + 1;
-    router_write_addra <= router_write_addra + 1;
-    router_write_wea   <= 1;
   end
 end
 

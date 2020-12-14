@@ -179,7 +179,7 @@ module bus(input wire clk,
 
     wire buffer_read  = ram_req && (ram_addr_i >= BUFFER_READ_START) && (ram_addr_i <= BUFFER_READ_END);
     wire buffer_write = ram_req && (ram_addr_i >= BUFFER_WRITE_START) && (ram_addr_i <= BUFFER_WRITE_END);
-    wire buffer_addr  = ram_addr_i[`BUFFER_ADDR_WIDTH - 1:0];
+    wire [`BUFFER_ADDR_WIDTH - 1:0] buffer_addr  = ram_addr_i[`BUFFER_ADDR_WIDTH - 1:0];
 
     wire read_start = ram_req && (ram_addr_i == BUFFER_START_READ);
     wire read_end   = ram_req && (ram_addr_i == BUFFER_END_READ);
