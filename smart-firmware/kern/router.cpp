@@ -170,7 +170,6 @@ void send(uint32_t if_index, const uint8_t *buffer, uint32_t length, uint32_t ds
     buf = ((length & 0xFF) << 24) + ((length & 0xFF00) << 8);
     *ptr = buf;
     WR_END = (uint8_t)(dst | 0x80);*/
-    printf("start writing");
     volatile uint8_t *ptr;
     ptr = (volatile uint8_t*)(write_start + (dst << width));
     uint8_t buf = 0;
@@ -229,7 +228,6 @@ void send(uint32_t if_index, const uint8_t *buffer, uint32_t length, uint32_t ds
     buf = length & 0xFF;
     *ptr = buf;
     WR_END = (uint8_t)(dst | 0x80);
-    printf("finish writing");
 }
 
 void ip_mac_test()
