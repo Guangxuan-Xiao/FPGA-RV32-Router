@@ -449,7 +449,7 @@ module bus(input wire clk,
         end else if (ip3_req & ram_we_i) begin
             ip3_o <= ram_data_cpu;
         end else if (mac_req & ram_we_i) begin
-            mac_o[31:0] <= ram_data_cpu;
+            mac_o <= {ram_data_cpu, 12'ha10};
         end
     end
 endmodule
