@@ -272,6 +272,8 @@ module frame_datapath #(
         else if (s1_ready)
         begin
             s1 <= in;
+            s1.my_ip <= my_ip;
+            s1.my_mac <= my_mac;
             if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
@@ -953,11 +955,11 @@ end
                         src_ip_addr <= s2.data[`SRC_IP_ADDR];
                         src_mac_addr <= s2.data[`SRC_MAC_ADDR];
                         arp_cache_wr_en <= 1'b1;
-                        if (op == REQUEST && s2.data[`TRG_IP_ADDR] == my_ip)
+                        if (op == REQUEST && s2.data[`TRG_IP_ADDR] == s2.my_ip)
                         begin
                             // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
                             s3.data[`SRC_IP_ADDR] <= s2.data[`TRG_IP_ADDR];
-                            s3.data[`SRC_MAC_ADDR] <= my_mac;
+                            s3.data[`SRC_MAC_ADDR] <= s2.my_mac;
                             s3.data[`TRG_IP_ADDR] <= s2.data[`SRC_IP_ADDR];
                             s3.data[`TRG_MAC_ADDR] <= s2.data[`SRC_MAC_ADDR];
                             s3.data[`OP] <= REPLY;
@@ -1036,7 +1038,7 @@ end
                             if(!store_trg_mac)
                             //Not found, then we send an ARP packet.
                             begin
-                                s5.data[`MAC_SRC] <= my_mac;
+                                s5.data[`MAC_SRC] <= s4.my_mac;
                                 s5.data[`MAC_DST] <= TBD;
                                 s5.data[`MAC_TYPE] <= ETHERTYPE_ARP;
                                 s5.data[`HARD_TYPE] <= HARD;
@@ -1044,15 +1046,15 @@ end
                                 s5.data[`OP] <= REQUEST;
                                 s5.data[`HARD_LEN] <= HARD_L;
                                 s5.data[`PROT_LEN] <= PROT_L;
-                                s5.data[`SRC_MAC_ADDR] <= my_mac;
-                                s5.data[`SRC_IP_ADDR] <= my_ip;
+                                s5.data[`SRC_MAC_ADDR] <= s4.my_mac;
+                                s5.data[`SRC_IP_ADDR] <= s4.my_ip;
                                 s5.data[`TRG_IP_ADDR] <= s4.data[`TRG_IP_IP];
                                 s5.data[`TRG_MAC_ADDR] <= TBD;
                                 s5.data[`FINAL] <= 48'h0;
                             end
                             else
                             begin
-                                s5.data[`MAC_SRC] <= my_mac;
+                                s5.data[`MAC_SRC] <= s4.my_mac;
                                 s5.data[`MAC_DST] <= trg_mac_addr;
                             end
                         end
@@ -1061,7 +1063,7 @@ end
                     3'b001:
                     begin
                         s5.data[`MAC_DST] <= s4.data[`MAC_SRC];
-                        s5.data[`MAC_SRC] <= my_mac;
+                        s5.data[`MAC_SRC] <= s4.my_mac;
                     end
                 endcase
             end
