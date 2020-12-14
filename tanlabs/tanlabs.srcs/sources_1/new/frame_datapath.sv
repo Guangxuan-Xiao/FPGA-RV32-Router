@@ -227,25 +227,25 @@ module frame_datapath #(
         case(in.id)
             3'b000:
             begin
-                my_mac <= {mac, dip_sw[15:12]};
+                my_mac <= {dip_sw[15:12], mac};
                 my_ip  <= ip0;
                 ip_val <= {ip0[7:0], ip0[15:8], ip0[23:16], ip0[31:24]};
             end
             3'b001:
             begin
-                my_mac <= {mac, dip_sw[11:8]};
+                my_mac <= {dip_sw[11:8], mac};
                 my_ip  <= ip1;
                 ip_val <= {ip1[7:0], ip1[15:8], ip1[23:16], ip1[31:24]};
             end
             3'b010:
             begin
-                my_mac <= {mac, dip_sw[7:4]};
+                my_mac <= {dip_sw[7:4], mac};
                 my_ip  <= ip2;
                 ip_val <= {ip2[7:0], ip2[15:8], ip2[23:16], ip2[31:24]};
             end
             3'b011:
             begin
-                my_mac <= {mac, dip_sw[3:0]};
+                my_mac <= {dip_sw[3:0], mac};
                 my_ip  <= ip3;
                 ip_val <= {ip3[7:0], ip3[15:8], ip3[23:16], ip3[31:24]};
             end
