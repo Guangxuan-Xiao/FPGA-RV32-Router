@@ -283,7 +283,7 @@ module frame_datapath #(
                     ip_file <= in.data[`TRG_IP_IP];
                     if(in.id != 4)
                     begin
-                        if (in.data [`TRG_IP_IP] == my_ip || ( ip_val <= 32'hEFFFFFFF && ip_val >= 8'hE0000000)
+                        if (in.data [`TRG_IP_IP] == my_ip || ( ip_val <= 32'hEFFFFFFF && ip_val >= 8'hE0000000))
                         begin
                             s1.dest <= 4;
                             s1.to_cpu <= 1;
