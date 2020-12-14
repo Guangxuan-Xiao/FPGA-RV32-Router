@@ -1053,6 +1053,8 @@ end
                                 s5.data[`PROT_LEN] <= PROT_L;
                                 s5.data[`TRG_MAC_ADDR] <= TBD;
                                 s5.data[`FINAL] <= 48'h0;
+                                s5.drop_next    <= 1;
+                                s5.last         <= 1;
 
                                 if (query_nexthop_4 == 0)
                                 begin
@@ -1198,10 +1200,6 @@ end
                     s6.dest <= 0;
                 end
                 endcase
-            end
-            else if (s5.last)
-            begin
-                s6.drop <= 1;
             end
             else if (!s5.is_first)
             begin
