@@ -1098,8 +1098,12 @@ end
                     //TODO: change to prev_5
                     if (s5.id == 4)
                     begin
+                        /*
                         s6.dest <= s5.data[`MAC_SRC];
                         store_dst <= s5.data[`MAC_SRC];
+                        */
+                        s6.dest <= 4;
+                        store_dst <= 4;
                     end
                     else if(!s5.to_cpu)
                     begin
