@@ -1042,7 +1042,7 @@ end
                             query_nexthop_5 <= query_nexthop_4;
                             store_trg_mac = trg_mac_addr;
                             if(!store_trg_mac)
-                            //Not found, then we send an ARP packet.
+                            //arp Not found, then we send an ARP packet.
                             begin
                                 s5.data[`MAC_DST] <= TBD;
                                 s5.data[`MAC_TYPE] <= ETHERTYPE_ARP;
