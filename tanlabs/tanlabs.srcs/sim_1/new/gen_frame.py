@@ -45,7 +45,7 @@ IP_TESTER1 = '10.0.1.2'
 IP_DUT0 = '10.0.0.1'  # Device under test.
 IP_DUT3 = '10.0.3.1'
 IP_DEFAULT_ROUTE = '10.0.3.2'  # The IP address of the default route.
-IP_TEST_DST = '17.17.17.17'  # Forward destination. Route should exist.
+IP_TEST_DST = '224.0.0.9'  # Forward destination. Route should exist.
 IP_TEST_DST_NO_MAC = '10.0.0.100'  # Forward destination. Route should exist. MAC address should not exist.
 IP_TEST_DST_NO_ROUTE = '254.254.254.254'  # Forward destination. Route should not exist.
 IP_RIP = '224.0.0.9'  # RIP multicast group address.
@@ -84,7 +84,7 @@ write_frame(IFACE_DEFAULT_ROUTE, Ether(src=MAC_DEFAULT_ROUTE, dst=MAC_BROADCAST)
             ARP(op='who-has', hwsrc=MAC_DEFAULT_ROUTE, psrc=IP_DEFAULT_ROUTE, hwdst=MAC_BROADCAST, pdst=IP_DUT3))
 
 # Simple IP forwarding test.
-write_frame(0, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
+write_frame(4, Ether(src=MAC_TESTER0, dst=MAC_DUT0) /
             IP(src=IP_TESTER0, dst=IP_TEST_DST) /
             UDP(sport=7, dport=7) / b'hello, 00001')
 
@@ -164,6 +164,14 @@ write_frame(1, Ether(src=MAC_TESTER1) /
             IP(src=IP_TESTER1, dst=IP_RIP, ttl=1) /
             UDP() /
             RIP(version=2) /
+            RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
+            RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
+            RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
+            RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
+            RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
+            RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
+            RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
+            RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
             RIPEntry(addr='192.168.1.0', mask='255.255.255.0') /
             RIPEntry(addr='166.111.0.0', mask='255.255.0.0'))
 

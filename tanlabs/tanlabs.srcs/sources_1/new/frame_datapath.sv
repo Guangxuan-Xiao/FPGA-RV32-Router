@@ -261,6 +261,7 @@ module frame_datapath #(
     frame_data s1;
     wire s1_ready;
     reg [31:0] ip_file;
+    reg store_to_cpu = 0;
     assign in_ready = s1_ready || !in.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -283,7 +284,7 @@ module frame_datapath #(
                     ip_file <= in.data[`TRG_IP_IP];
                     if(in.id != 4)
                     begin
-                        if (in.data [`TRG_IP_IP] == my_ip || ( ip_val <= 32'hEFFFFFFF && ip_val >= 8'hE0000000)
+                        if (in.data [`TRG_IP_IP] == my_ip || ( ip_val <= 32'hEFFFFFFF && ip_val >= 8'hE0000000))
                         begin
                             s1.dest <= 4;
                             s1.to_cpu <= 1;
@@ -294,21 +295,29 @@ module frame_datapath #(
                             s1.to_cpu <= 0;
                         end
                     end
+                    else
+                    begin
+                        s1.to_cpu <= 0;
+                    end
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
                 begin
                     s1.prot_type <= 3'b001;
+                    s1.to_cpu    <= 0;
                 end
                 else
                 begin
-                    //This is rubbish.
+                    //This is rubbish
+                    //TODO: remember to drop.
                     s1.prot_type <= 3'b111;
-                    s1.drop <= 1;
+                    s1.drop <= 0;
+                    s1.to_cpu <= 0;
                 end
             end
             else if (in.valid && !in.is_first && !in.drop && !in.dont_touch)
             begin
                 s1.prot_type <= 3'b110;
+                s1.to_cpu    <= 0;
             end
         end
     end
@@ -1069,6 +1078,7 @@ end
 
     frame_data s6;
     wire s6_ready;
+    reg [47:0] portmac;
     assign s5_ready = s6_ready || !s5.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
