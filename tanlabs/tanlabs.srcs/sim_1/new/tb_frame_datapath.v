@@ -30,9 +30,11 @@ module tb_frame_datapath
     end
 
     wire clk_125M;
+    wire clk_50M;
 
     clock clock_i(
-        .clk_125M(clk_125M)
+        .clk_125M(clk_125M),
+        .clk_50M(clk_50M)
     );
 
     wire [DATA_WIDTH - 1:0] in_data;
@@ -69,6 +71,7 @@ module tb_frame_datapath
     // README: Instantiate your datapath.
     frame_datapath dut(
         .eth_clk(clk_125M),
+        .cpu_clk(clk_50M),
         .reset(reset),
 
         .s_data(in_data),

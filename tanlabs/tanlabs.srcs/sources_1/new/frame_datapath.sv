@@ -227,25 +227,25 @@ module frame_datapath #(
         case(in.id)
             3'b000:
             begin
-                my_mac <= {mac, dip_sw[15:12]};
+                my_mac <= {dip_sw[15:12], mac};
                 my_ip  <= ip0;
                 ip_val <= {ip0[7:0], ip0[15:8], ip0[23:16], ip0[31:24]};
             end
             3'b001:
             begin
-                my_mac <= {mac, dip_sw[11:8]};
+                my_mac <= {dip_sw[11:8], mac};
                 my_ip  <= ip1;
                 ip_val <= {ip1[7:0], ip1[15:8], ip1[23:16], ip1[31:24]};
             end
             3'b010:
             begin
-                my_mac <= {mac, dip_sw[7:4]};
+                my_mac <= {dip_sw[7:4], mac};
                 my_ip  <= ip2;
                 ip_val <= {ip2[7:0], ip2[15:8], ip2[23:16], ip2[31:24]};
             end
             3'b011:
             begin
-                my_mac <= {mac, dip_sw[3:0]};
+                my_mac <= {dip_sw[3:0], mac};
                 my_ip  <= ip3;
                 ip_val <= {ip3[7:0], ip3[15:8], ip3[23:16], ip3[31:24]};
             end
@@ -272,6 +272,8 @@ module frame_datapath #(
         else if (s1_ready)
         begin
             s1 <= in;
+            s1.my_ip <= my_ip;
+            s1.my_mac <= my_mac;
             if (in.valid && in.is_first && !in.drop && !in.dont_touch) 
             begin
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
@@ -284,7 +286,7 @@ module frame_datapath #(
                     ip_file <= in.data[`TRG_IP_IP];
                     if(in.id != 4)
                     begin
-                        if (in.data [`TRG_IP_IP] == my_ip || ( ip_val <= 32'hEFFFFFFF && ip_val >= 8'hE0000000))
+                        if (in.data [`TRG_IP_IP] == my_ip || ( ip_val <= 32'hEFFFFFFF && ip_val >= 32'hE0000000))
                         begin
                             s1.dest <= 4;
                             s1.to_cpu <= 1;
@@ -953,11 +955,11 @@ end
                         src_ip_addr <= s2.data[`SRC_IP_ADDR];
                         src_mac_addr <= s2.data[`SRC_MAC_ADDR];
                         arp_cache_wr_en <= 1'b1;
-                        if (op == REQUEST && s2.data[`TRG_IP_ADDR] == my_ip)
+                        if (op == REQUEST && s2.data[`TRG_IP_ADDR] == s2.my_ip)
                         begin
                             // Swap the corresponding address in ARP. Note that the source MAC address should be updated instead of swapped.
                             s3.data[`SRC_IP_ADDR] <= s2.data[`TRG_IP_ADDR];
-                            s3.data[`SRC_MAC_ADDR] <= my_mac;
+                            s3.data[`SRC_MAC_ADDR] <= s2.my_mac;
                             s3.data[`TRG_IP_ADDR] <= s2.data[`SRC_IP_ADDR];
                             s3.data[`TRG_MAC_ADDR] <= s2.data[`SRC_MAC_ADDR];
                             s3.data[`OP] <= REPLY;
@@ -1036,7 +1038,7 @@ end
                             if(!store_trg_mac)
                             //arp Not found, then we send an ARP packet.
                             begin
-                                s5.data[`MAC_SRC] <= my_mac;
+                                s5.data[`MAC_SRC] <= s4.my_mac;
                                 s5.data[`MAC_DST] <= TBD;
                                 s5.data[`MAC_TYPE] <= ETHERTYPE_ARP;
                                 s5.data[`HARD_TYPE] <= HARD;
@@ -1044,15 +1046,15 @@ end
                                 s5.data[`OP] <= REQUEST;
                                 s5.data[`HARD_LEN] <= HARD_L;
                                 s5.data[`PROT_LEN] <= PROT_L;
-                                s5.data[`SRC_MAC_ADDR] <= my_mac;
-                                s5.data[`SRC_IP_ADDR] <= my_ip;
+                                s5.data[`SRC_MAC_ADDR] <= s4.my_mac;
+                                s5.data[`SRC_IP_ADDR] <= s4.my_ip;
                                 s5.data[`TRG_IP_ADDR] <= s4.data[`TRG_IP_IP];
                                 s5.data[`TRG_MAC_ADDR] <= TBD;
                                 s5.data[`FINAL] <= 48'h0;
                             end
                             else
                             begin
-                                s5.data[`MAC_SRC] <= my_mac;
+                                s5.data[`MAC_SRC] <= s4.my_mac;
                                 s5.data[`MAC_DST] <= trg_mac_addr;
                             end
                         end
@@ -1061,7 +1063,7 @@ end
                     3'b001:
                     begin
                         s5.data[`MAC_DST] <= s4.data[`MAC_SRC];
-                        s5.data[`MAC_SRC] <= my_mac;
+                        s5.data[`MAC_SRC] <= s4.my_mac;
                     end
                 endcase
             end

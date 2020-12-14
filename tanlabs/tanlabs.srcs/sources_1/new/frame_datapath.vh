@@ -36,6 +36,8 @@ logic drop_next;
 //Type
 logic [2:0] prot_type;
 logic to_cpu;
+logic [31:0] my_ip;
+logic [47:0] my_mac;
 //logic [DATAW_WIDTH - 1:0] store_data;
 
 // README: Your code here.

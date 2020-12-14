@@ -8,5 +8,5 @@ with open("rip.txt","w") as F:
                 if k < 24:
                     F.write("\tRIPEntry(addr='"+str(i)+"."+str(j)+"."+str(k)+".0', mask='255.255.255.0') /")
                 else:
-                    F.write("\tRIPEntry(addr='"+str(i)+"."+str(j)+"."+str(k)+".0', mask='255.255.255.0'))")
+                    F.write("\tRIPEntry(addr='"+str(i)+"."+str(j)+"."+str(k)+".0', mask='255.255.255.0'), iface = IFACE)")
             F.write("\n\n")
