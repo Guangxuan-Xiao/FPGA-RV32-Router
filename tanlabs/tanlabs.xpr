@@ -37,13 +37,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="193"/>
-    <Option Name="WTModelSimExportSim" Val="193"/>
-    <Option Name="WTQuestaExportSim" Val="193"/>
-    <Option Name="WTIesExportSim" Val="193"/>
-    <Option Name="WTVcsExportSim" Val="193"/>
-    <Option Name="WTRivieraExportSim" Val="193"/>
-    <Option Name="WTActivehdlExportSim" Val="193"/>
+    <Option Name="WTXSimExportSim" Val="206"/>
+    <Option Name="WTModelSimExportSim" Val="206"/>
+    <Option Name="WTQuestaExportSim" Val="206"/>
+    <Option Name="WTIesExportSim" Val="206"/>
+    <Option Name="WTVcsExportSim" Val="206"/>
+    <Option Name="WTRivieraExportSim" Val="206"/>
+    <Option Name="WTActivehdlExportSim" Val="206"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -137,6 +137,13 @@
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/ip/axis_interconnect_ingress/axis_interconnect_ingress.xci">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/ip/axi_ethernet_0/axi_ethernet_0.xci">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
