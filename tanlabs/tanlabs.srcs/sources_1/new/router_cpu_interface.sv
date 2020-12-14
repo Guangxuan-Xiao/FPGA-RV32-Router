@@ -7,11 +7,11 @@ module router_cpu_interface(
     input wire rst_router,
     input wire rst_cpu,
 
-    input wire [7:0] internal_rx_data,
-    input wire internal_rx_last,
-    input wire internal_rx_user,
-    input wire internal_rx_valid, 
-    output wire internal_rx_ready,
+    (*mark_debug = "true"*)input wire [7:0] internal_rx_data,
+    (*mark_debug = "true"*)input wire internal_rx_last,
+    (*mark_debug = "true"*)input wire internal_rx_user,
+    (*mark_debug = "true"*)input wire internal_rx_valid, 
+    (*mark_debug = "true"*)output wire internal_rx_ready,
 
     output wire [7:0] internal_tx_data,
     output wire internal_tx_last,
@@ -25,12 +25,12 @@ module router_cpu_interface(
     input wire cpu_write_end,
     input wire [`BUFFER_WIDTH - 1:0] cpu_write_end_ptr,
 
-    output wire cpu_read_start,
-    output wire [`BUFFER_WIDTH - 1:0] cpu_read_start_ptr,
-    input wire [`BUFFER_ADDR_WIDTH - 1:0] cpu_read_addrb,
-    output wire [7:0] cpu_read_doutb,
-    input wire cpu_read_end,
-    input wire [`BUFFER_WIDTH - 1:0] cpu_read_end_ptr
+    (*mark_debug = "true"*) output wire cpu_read_start,
+    (*mark_debug = "true"*) output wire [`BUFFER_WIDTH - 1:0] cpu_read_start_ptr,
+    (*mark_debug = "true"*) input wire [`BUFFER_ADDR_WIDTH - 1:0] cpu_read_addrb,
+    (*mark_debug = "true"*) output wire [7:0] cpu_read_doutb,
+    (*mark_debug = "true"*) input wire cpu_read_end,
+    (*mark_debug = "true"*) input wire [`BUFFER_WIDTH - 1:0] cpu_read_end_ptr
 );
 
 typedef enum reg [2:0] { START, ACCESS, END1, END2, END3 } router_write_state_t;

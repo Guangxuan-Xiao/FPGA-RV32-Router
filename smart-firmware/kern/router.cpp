@@ -108,32 +108,43 @@ uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, int *if_in
 void send(int if_index, const uint8_t *buffer, uint32_t length, uint32_t dst, const uint8_t *dst_mac)
 {
     volatile uint32_t* ptr;
+    printf("before ptr\r\n");
     ptr = (volatile uint32_t*)(write_start + (dst << width));
+    printf("end ptr\r\n");
     uint32_t buf = 0;
+    printf("b1\r\n");
     buf = dst_mac[0] + (dst_mac[1] << 8) + (dst_mac[2] << 16) + (dst_mac[3] << 24);
+    printf("b1\r\n");
     *ptr = buf;
+    printf("b1\r\n");
     ptr = ptr + 1;
+    printf("b2\r\n");
     buf = dst_mac[0] + (dst_mac[1] << 8) + ((if_index & 0xFF) << 16);
     *ptr = buf;
     ptr = ptr + 1;
     buf = 0;
     *ptr = buf;
     ptr = ptr + 1;
+    printf("b3\r\n");
     buf = 0x0800 + (buffer[0] << 16) + (buffer[1] << 24);
     *ptr = buf;
     ptr = ptr + 1;
     length = length - 14;
+    printf("before lopo\r\n");
     for (uint32_t i = 2; i < length; i = i + 4)
     {
         buf = buffer[i] + (buffer[i + 1] << 8) + (buffer[i + 2] << 16) + (buffer[i + 3] << 24);
         *ptr = buf;
         ptr = ptr + 1;
     }
+    printf("end loop\r\n");
     length = length + 14;
     ptr = (volatile uint32_t*)(read_start + (dst << width) + size_addr1);
     buf = ((length & 0xFF) << 24) + ((length & 0xFF00) << 8);
     *ptr = buf;
+    printf("before wrend\r\n");
     WR_END = (uint8_t)(dst | 0x80);
+    printf("end wrend\r\n");
 }
 
 void ip_mac_test()
