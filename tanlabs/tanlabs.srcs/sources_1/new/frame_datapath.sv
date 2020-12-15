@@ -220,7 +220,7 @@ module frame_datapath #(
                            // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
    );
    
-   reg [31:0] ip_val;
+    reg [31:0] ip_val;
     always@(*)
     begin
         // This block aims at getting my MAC and IP according to in.id.
@@ -229,25 +229,25 @@ module frame_datapath #(
             begin
                 my_mac <= {dip_sw[15:12], mac};
                 my_ip  <= ip0;
-                ip_val <= {ip0[7:0], ip0[15:8], ip0[23:16], ip0[31:24]};
+                ip_val <= in.data[`TRG_IP_IP];
             end
             3'b001:
             begin
                 my_mac <= {dip_sw[11:8], mac};
                 my_ip  <= ip1;
-                ip_val <= {ip1[7:0], ip1[15:8], ip1[23:16], ip1[31:24]};
+                ip_val <= in.data[`TRG_IP_IP];
             end
             3'b010:
             begin
                 my_mac <= {dip_sw[7:4], mac};
                 my_ip  <= ip2;
-                ip_val <= {ip2[7:0], ip2[15:8], ip2[23:16], ip2[31:24]};
+                ip_val <= in.data[`TRG_IP_IP];
             end
             3'b011:
             begin
                 my_mac <= {dip_sw[3:0], mac};
                 my_ip  <= ip3;
-                ip_val <= {ip3[7:0], ip3[15:8], ip3[23:16], ip3[31:24]};
+                ip_val <= in.data[`TRG_IP_IP];
             end
             default:
             begin
@@ -286,7 +286,7 @@ module frame_datapath #(
                     ip_file <= in.data[`TRG_IP_IP];
                     if(in.id != 4)
                     begin
-                        if (in.data [`TRG_IP_IP] == my_ip || ( ip_val <= 32'hEFFFFFFF && ip_val >= 32'hE0000000))
+                        if (in.data [`TRG_IP_IP] == my_ip || ( ip_val[7:0] <= 32'hEF && ip_val[7:0] >= 32'hE0))
                         begin
                             s1.dest <= 4;
                             s1.to_cpu <= 1;
