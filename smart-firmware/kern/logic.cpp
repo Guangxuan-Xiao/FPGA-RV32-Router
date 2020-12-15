@@ -57,7 +57,7 @@ struct RawRip
     uint32_t metric; // [1, 16]
   } entries[0];
 };
-#define ROUTER_R0
+// #define ROUTER_R2
 #ifdef ROUTER_R0
 const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0202ff0a, 0x0100ff0a, 0x0102000a, 0x0103000a};
 const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
@@ -77,7 +77,7 @@ const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
 const int router_id = 3;
 #else
 const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0100000a, 0x0101000a, 0x0102000a, 0x0103000a};
-const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
+const uint32_t lens[N_IFACE_ON_BOARD] = {24, 24, 24, 24};
 const int router_id = 4;
 #endif
 const in_addr_t multicastIP = 0x090000e0;
@@ -119,7 +119,9 @@ uint16_t get_checksum(uint16_t *hdr, const size_t bytes)
 void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac)
 {
   uint32_t router_len;
+  //printf("before traverse\r\n");
   traverse(cache, &router_len);
+  //printf("end traverse\r\n");
   //printf("end traverse with router_len: %d\r\n", router_len);
   uint32_t rest_ripentry = router_len;
   while (rest_ripentry > 25)
@@ -135,7 +137,7 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
       resp.entries[i - start].metric = BE32(cache[i].metric);
       resp.entries[i - start].nexthop = 0; // 网络字节序
     }
-    printf("end first loop.\r\n");
+    // printf("end first loop.\r\n");
     struct ip *ip_header = (struct ip *)output;
     ip_header->ip_hl = 5;
     uint32_t totlen = ip_header->ip_hl * 4 + 8 + 4 + resp.numEntries * 20;
@@ -158,8 +160,9 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
     ip_header->ip_sum = checksum;
     //printf("before send\r\n");
     send(if_index, output, totlen, bram_addr_dst, dst_mac);
+    //sleep(50);
     //printf("end send\r\n");
-    bram_addr_dst = (bram_addr_dst + 1) & 0x7F;
+    bram_addr_dst = (bram_addr_dst + 1) & 0x1F;
     rest_ripentry -= 25;
   }
   if (rest_ripentry > 0)
@@ -194,9 +197,10 @@ void send_all_rip(int if_index, const uint32_t dst_addr, const macaddr_t dst_mac
     udpHeader->uh_sum = 0;
     uint16_t checksum = calculate_checksum(ip_header);
     ip_header->ip_sum = checksum;
-    //printf("before send\r\n");
+    // printf("before send %x %d %x %x\r\n", output, totlen, bram_addr_dst, dst_mac);
     send(if_index, output, totlen, bram_addr_dst, dst_mac);
-    //printf("end send\r\n");
+    sleep(50);
+    // printf("end send\r\n");
     bram_addr_dst = (bram_addr_dst + 1) & 0x1F;
   }
 }
@@ -205,7 +209,8 @@ int mainLoop()
 {
   for (uint32_t i = 0; i < N_IFACE_ON_BOARD; i++)
   {
-    uint32_t mask = (1 << lens[i]) - 1;
+    uint32_t mask = BE32(~((1 << (32 - lens[i])) - 1));
+    // printf("%08x\r\n", mask);
     RoutingTableEntry entry =
         {
             .ip = addrs[i] & mask,
@@ -234,6 +239,7 @@ int mainLoop()
       {
         send_all_rip(i, multicastIP, multicastMac);
       }
+      // printf("finish sending rip\r\n");
       sec = 0;
     }
     macaddr_t src_mac;
@@ -250,11 +256,9 @@ int mainLoop()
     }
     else if (res >= sizeof(packet))
     {
-      printf("truncated!\r\n");
+      // printf("truncated!\r\n");
       continue;
     }
-
-    printf("Received!\r\n");
 
     in_addr_t src_addr, dst_addr;
     ipheader *ip_header = (ipheader *)packet;
@@ -274,73 +278,91 @@ int mainLoop()
       dst_is_me = true;
     if (dst_is_me)
     {
-      printf("dst is me.\r\n");
+      //printf("dst is me.\r\n");
       RipPacket rip;
       if (disassemble(packet, res, &rip))
       {
-        printf("Rip disassemble successful\r\n");
+        //printf("Rip disassemble successful\r\n");
+        // printf("===Lookup Table===\r\n");
+        // RoutingTableEntry buffer[20];
+        // uint32_t len = 0;
+        // traverse(buffer, &len);
+        // printf("Routing Table Size: %u\r\n", len);
+        // for (uint32_t i = 0; i < len; ++i)
+        //   buffer[i].print();
+        // printf("==================\r\n");
+        // printf("\r\n");
         if (rip.command == 1)
         {
+          //printf("rip command is 1\r\n");
           send_all_rip(if_index, src_addr, src_mac);
         }
         else
         {
+          //printf("rip command is 2\r\n");
           int rip_entry_cnt = (res - (ip_header->ihl * 4 + 8) - 4) / 20;
           for (int i = 0; i < rip_entry_cnt; i++)
           {
-            uint32_t *nexthop;
-            uint32_t *port;
-            uint32_t *metric;
+            uint32_t nexthop;
+            uint32_t port;
+            uint32_t metric;
             uint32_t addr = rip.entries[i].addr;
             uint32_t mask = rip.entries[i].mask;
             uint32_t old_metric = rip.entries[i].metric;
+            uint32_t addr_masked = addr & mask;
+            // printf("addr : %x  mask: %x , addr_mask: %x \r\n", addr, mask, addr_masked);
             uint32_t preLen = CNT1(BE32(mask));
-            bool is_search = search(addr, nexthop, port, metric);
+            bool is_search = search(addr, &nexthop, &port, &metric);
             uint32_t new_metric = (BE32(old_metric) + 1 <= 16) ? BE32(old_metric) + 1 : 16;
-
             if (is_search)
             {
-              if (*nexthop == src_addr || *nexthop == 0)
+              // printf("searched src addr: %08x \r\n", src_addr);
+              //printf("search complete!\r\n");
+              if (nexthop == src_addr)
               {
                 if (new_metric == 16u)
                 {
-                  remove(addr, preLen);
+                  remove(addr_masked, preLen);
                 }
               }
-              else if (new_metric < *metric)
+              else if (new_metric < metric)
               {
                 RoutingTableEntry rte =
                     {
-                        .ip = addr,
+                        .ip = addr_masked,
                         .prefix_len = preLen,
                         .port = if_index,
-                        .nexthop_ip = rip.entries[i].nexthop,
+                        .nexthop_ip = src_addr,
                         .metric = new_metric};
                 insert(rte);
               }
             }
             else
             {
+              // printf("not src addr: %08x \r\n", src_addr);
               RoutingTableEntry rte =
                   {
-                      .ip = addr,
+                      .ip = addr_masked,
                       .prefix_len = preLen,
                       .port = if_index,
-                      .nexthop_ip = rip.entries[i].nexthop,
+                      .nexthop_ip = src_addr,
                       .metric = new_metric};
+              //printf("Not search complete!\r\n");
+              //printf("before insert\r\n");
               insert(rte);
+              //printf("After insert\r\n");
             }
           }
         }
       }
       else
       {
-        printf("Not a RIP packet.\r\n");
+        // printf("Not a RIP packet.\r\n");
       }
     }
     else
     {
-      printf("This is not my RIP packet.\r\n");
+      // printf("This is not my RIP packet.\r\n");
     }
   }
   return 0;

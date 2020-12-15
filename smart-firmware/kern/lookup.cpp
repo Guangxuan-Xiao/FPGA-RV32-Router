@@ -3,7 +3,7 @@
 #include "allocator.h"
 #include <stdio.h>
 // static int layer_size[32] = {0};
-const uint32_t ROUTING_TRIE_SIZE = 0x20000;
+const uint32_t ROUTING_TRIE_SIZE = 0x40000;
 static Allocator<uint16_t, TRIE_LAYER_CAPACITY> allocators[32];
 static Allocator<uint32_t, ROUTING_TRIE_SIZE> routingTrieAllocator;
 static int nexthop_size = 0;
@@ -32,6 +32,15 @@ void init()
     route_node_num = 1;
     nexthop_size = 0;
     routingTrieAllocator.get();
+    for (uint32_t i = 0; i <= 32; ++i)
+    {
+        printf("Initializing Layer: %u\r\n", i);
+        for (uint32_t j = 1; j < TRIE_LAYER_CAPACITY; ++j)
+        {
+            // printf("Clearing node %u\r\n", j);
+            *get_node_addr(i, j) = 0;
+        }
+    }
 }
 
 void insert(RoutingTableEntry entry)
@@ -211,7 +220,7 @@ void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s
         buffer[*len].nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
         buffer[*len].port = *get_nexthop_port_addr(nexthop_idx);
         buffer[*len].prefix_len = depth;
-        
+
         *len = (*len) + 1;
     }
     traverse_node(ip, depth + 1, node_h.lc_ptr, route_nodes[addr_s].lc, buffer, len);

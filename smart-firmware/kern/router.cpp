@@ -47,7 +47,7 @@ uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, uint32_t *
     {
         return 0;
     }
-    printf("start reading, status = %x\r\n", status);
+    //printf("start reading, status = %x\r\n", status);
     uint8_t src = status & 0x7F;
     volatile uint8_t *ptr;
     uint8_t buf = 0;
@@ -137,7 +137,7 @@ uint32_t receive(uint8_t *buffer, uint8_t *src_mac, uint8_t *dst_mac, uint32_t *
     }
     length = length + 14;
     RD_END = status;
-    printf("finish reading, status = %x\r\n", status);
+    //printf("finish reading, status = %x\r\n", status);
     return length;
 }
 
@@ -214,12 +214,15 @@ void send(uint32_t if_index, const uint8_t *buffer, uint32_t length, uint32_t ds
     ptr = ptr + 1;
     buf = 0;
     *ptr = buf;
-    for (uint8_t i = 0; i < length; i++)
+    //printf("before loop\r\n");
+    for (uint32_t i = 0; i < length; i++)
     {
+        //printf("%d\r\n", i);
         ptr = ptr + 1;
         buf = buffer[i];
         *ptr = buf;
     }
+    //printf("after loop\r\n");
     length = length + 14;
     ptr = (volatile uint8_t*)(write_start + (dst << width) + size_addr);
     buf = (length & 0xFF00) >> 8;
