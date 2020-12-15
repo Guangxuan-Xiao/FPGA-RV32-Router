@@ -299,6 +299,7 @@ module frame_datapath #(
                     end
                     else
                     begin
+                        s1.data[`SRC_MAC_ADDR] <= my_mac;
                         s1.to_cpu <= 0;
                     end
                 end
