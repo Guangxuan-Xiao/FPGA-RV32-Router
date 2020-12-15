@@ -946,9 +946,16 @@ end
                         if(!s2.to_cpu && s2.id != 4)
                         begin
                             arp_cache_wr_en <= 1'b0;
-                            trg_ip_addr <= query_nexthop_2; 
                             query_port_3 <= query_port_2;
                             query_nexthop_3 <= query_nexthop_2;
+                            if(query_nexthop_2 == 0)
+                            begin
+                                trg_ip_addr <= s2.data[`TRG_IP_IP]; 
+                            end
+                            else
+                            begin
+                                trg_ip_addr <= query_nexthop_2; 
+                            end
                         end
                     end
 

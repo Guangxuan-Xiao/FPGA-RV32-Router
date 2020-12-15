@@ -291,7 +291,7 @@ int mainLoop()
 
             if (is_search)
             {
-              if (*nexthop == src_addr)
+              if (*nexthop == src_addr || *nexthop == 0)
               {
                 if (new_metric == 16u)
                 {
