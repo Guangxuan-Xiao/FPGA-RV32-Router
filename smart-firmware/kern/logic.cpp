@@ -57,22 +57,27 @@ struct RawRip
     uint32_t metric; // [1, 16]
   } entries[0];
 };
-
-#ifdef ROUTER_R1
-const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0101a8c0, 0x0103a8c0, 0x0106a8c0,
-                                           0x0107a8c0};
+#define ROUTER_R2
+#ifdef ROUTER_R0
+const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0202ff0a, 0x0100ff0a, 0x0102000a, 0x0103000a};
+const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
+const int router_id = 0;
+#elif defined(ROUTER_R1)
+const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0200ff0a, 0x0101ff0a, 0x0102010a, 0x0103010a};
+const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
 const int router_id = 1;
 #elif defined(ROUTER_R2)
-const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0203a8c0, 0x0104a8c0, 0x0108a8c0,
-                                           0x0109a8c0};
+const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0201ff0a, 0x0102ff0a, 0x0102020a, 0x0103020a};
+const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
 const int router_id = 2;
 #elif defined(ROUTER_R3)
 const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0204a8c0, 0x0205a8c0, 0x010aa8c0,
                                            0x010ba8c0};
+const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
 const int router_id = 3;
 #else
-
 const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0100000a, 0x0101000a, 0x0102000a, 0x0103000a};
+const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
 const int router_id = 4;
 #endif
 const in_addr_t multicastIP = 0x090000e0;
@@ -200,10 +205,11 @@ int mainLoop()
 {
   for (uint32_t i = 0; i < N_IFACE_ON_BOARD; i++)
   {
+    uint32_t mask = (1 << lens[i]) - 1;
     RoutingTableEntry entry =
         {
-            .ip = addrs[i] & 0x00FFFFFF,
-            .prefix_len = 24,
+            .ip = addrs[i] & mask,
+            .prefix_len = lens[i],
             .port = i,
             .nexthop_ip = 0,
             .metric = 1};
@@ -270,6 +276,7 @@ int mainLoop()
       RipPacket rip;
       if (disassemble(packet, res, &rip))
       {
+        printf("Rip disassemble successful\r\n");
         if (rip.command == 1)
         {
           send_all_rip(if_index, src_addr, src_mac);
