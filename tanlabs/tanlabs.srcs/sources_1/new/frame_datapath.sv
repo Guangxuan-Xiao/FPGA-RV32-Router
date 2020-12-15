@@ -220,9 +220,11 @@ module frame_datapath #(
                            // losslessly across the two clock domains, use the XPM_CDC_GRAY macro instead.
    );
    
+    reg [2:0] cpu_port;
     reg [31:0] ip_val;
     always@(*)
     begin
+        cpu_port <= in.data[`SRC_MAC_ADDR];
         // This block aims at getting my MAC and IP according to in.id.
         case(in.id)
             3'b000:
@@ -257,6 +259,7 @@ module frame_datapath #(
             end
         endcase
     end
+
 
     frame_data s1;
     wire s1_ready;
@@ -299,7 +302,18 @@ module frame_datapath #(
                     end
                     else
                     begin
-                        s1.data[`SRC_MAC_ADDR] <= my_mac;
+                        case (cpu_port)
+                            3'b000:
+                                s1.data[`SRC_MAC_ADDR] <= {dip_sw[15:12], mac};
+                            3'b001:
+                                s1.data[`SRC_MAC_ADDR] <= {dip_sw[11:8], mac};
+                            3'b010:
+                                s1.data[`SRC_MAC_ADDR] <= {dip_sw[7:4], mac};
+                            3'b011:
+                                s1.data[`SRC_MAC_ADDR] <= {dip_sw[3:0], mac};
+                            default:
+                                s1.data[`SRC_MAC_ADDR] <= 0;
+                        endcase 
                         s1.to_cpu <= 0;
                     end
                 end
