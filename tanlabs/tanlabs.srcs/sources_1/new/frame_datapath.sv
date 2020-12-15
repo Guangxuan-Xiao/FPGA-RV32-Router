@@ -224,7 +224,7 @@ module frame_datapath #(
     reg [31:0] ip_val;
     always@(*)
     begin
-        cpu_port <= in.data[`SRC_MAC_ADDR];
+        cpu_port <= in.data[`MAC_SRC];
         // This block aims at getting my MAC and IP according to in.id.
         case(in.id)
             3'b000:
