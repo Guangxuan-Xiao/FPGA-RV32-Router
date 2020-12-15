@@ -57,7 +57,7 @@ struct RawRip
     uint32_t metric; // [1, 16]
   } entries[0];
 };
-#define ROUTER_R2
+#define ROUTER_R0
 #ifdef ROUTER_R0
 const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0202ff0a, 0x0100ff0a, 0x0102000a, 0x0103000a};
 const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
@@ -253,6 +253,8 @@ int mainLoop()
       printf("truncated!\r\n");
       continue;
     }
+
+    printf("Received!\r\n");
 
     in_addr_t src_addr, dst_addr;
     ipheader *ip_header = (ipheader *)packet;
