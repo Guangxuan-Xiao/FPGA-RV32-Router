@@ -65,7 +65,7 @@ module checksum_upd
             ip_head_copy[CHECKSUM_START + BYTE_LEN +: BYTE_LEN] = ip_head_copy[CHECKSUM_START + BYTE_LEN +: BYTE_LEN] + 1;
         else
             ip_head_copy = ip_head_copy;
-        output_data[IP_HEAD_END : IP_HEAD_START] = ip_head_copy;
+        output_data[IP_HEAD_END - 1:IP_HEAD_START] = ip_head_copy;
         packet_valid = checksum_valid & ttl_valid & len_valid;
         if (reset) begin
             output_data = 0;
