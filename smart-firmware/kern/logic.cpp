@@ -203,14 +203,14 @@ int mainLoop()
 	while (1)
 	{
 		uint32_t time = get_clock();
-		if (time >= last_time + CLOCK_PER_SEC)
+		if ((time > CLOCK_PER_SEC && time - CLOCK_PER_SEC > last_time) || (time <= CLOCK_PER_SEC && time > last_time + CLOCK_PER_SEC))
 		{
 			sec++;
 			last_time = time;
 		}
 		if (sec >= 5)
 		{
-			printf("5s Timer\r\n");
+			printf("5s Timer at time %u\r\n", time);
 			uint32_t router_len = traverse(cache);
 			for (uint32_t i = 0; i < N_IFACE_ON_BOARD; ++i)
 				send_all_rip(router_len, i, multicastIP, multicastMac);
