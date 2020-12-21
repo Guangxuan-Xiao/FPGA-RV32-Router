@@ -147,35 +147,27 @@ void send_rip(const RipPacket &resp, const uint32_t if_index, const uint32_t dst
 
 void send_all_rip(uint32_t router_len, int if_index, const uint32_t dst_addr, const macaddr_t dst_mac)
 {
-	uint32_t rest_ripentry = router_len;
-	while (rest_ripentry > 25)
+	uint32_t start = 0;
+	while (start < router_len)
 	{
-		int start = rest_ripentry - 25;
+		uint32_t num = 0;
 		RipPacket resp;
 		resp.command = 2;
-		resp.numEntries = 25;
-		for (uint32_t i = start; i < rest_ripentry; ++i)
+		while (num < 25 && start < router_len)
 		{
-			resp.entries[i - start].addr = cache[i].ip;									   //网络字节序
-			resp.entries[i - start].mask = BE32(~((1 << (32 - cache[i].prefix_len)) - 1)); //网络字节序
-			resp.entries[i - start].metric = BE32(cache[i].metric);
-			resp.entries[i - start].nexthop = 0; // 网络字节序
+			if (cache[start].port == if_index)
+			{
+				++start;
+				continue;
+			}
+			resp.entries[num].addr = cache[start].ip;									 //网络字节序
+			resp.entries[num].mask = BE32(~((1 << (32 - cache[start].prefix_len)) - 1)); //网络字节序
+			resp.entries[num].metric = BE32(cache[start].metric);
+			resp.entries[num].nexthop = 0; // 网络字节序
+			++num;
+			++start;
 		}
-		send_rip(resp, if_index, dst_addr, dst_mac);
-		rest_ripentry -= 25;
-	}
-	if (rest_ripentry > 0)
-	{
-		RipPacket resp;
-		resp.command = 2;
-		resp.numEntries = rest_ripentry;
-		for (uint32_t i = 0; i < rest_ripentry; ++i)
-		{
-			resp.entries[i].addr = cache[i].ip;									   //网络字节序
-			resp.entries[i].mask = BE32(~((1 << (32 - cache[i].prefix_len)) - 1)); //网络字节序
-			resp.entries[i].metric = BE32(cache[i].metric);
-			resp.entries[i].nexthop = 0; // 网络字节序
-		}
+		resp.numEntries = num;
 		send_rip(resp, if_index, dst_addr, dst_mac);
 	}
 }

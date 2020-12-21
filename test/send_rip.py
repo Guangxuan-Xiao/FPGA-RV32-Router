@@ -12,21 +12,21 @@ for i in range(1):
     send(IP(dst=IP_RIP, ttl=64) /
          UDP() /
          RIP(cmd=2, version=2) /
-         #     RIPEntry(addr='140.140.1.0', mask='255.255.255.0') /
-         #     RIPEntry(addr='140.140.2.0', mask='255.255.255.0') /
-         #     RIPEntry(addr='140.140.3.0', mask='255.255.255.0') /
-         #     RIPEntry(addr='140.140.4.0', mask='255.255.255.0') /
-         #     RIPEntry(addr='140.140.5.0', mask='255.255.255.0') /
-         #     RIPEntry(addr='140.140.6.0', mask='255.255.255.0') /
-         #     RIPEntry(addr='140.140.7.0', mask='255.255.255.0') /
-         #     RIPEntry(addr='140.140.0.0', mask='255.255.0.0') /
-         #     RIPEntry(addr='140.141.0.0', mask='255.255.0.0') /
-         #     RIPEntry(addr='140.142.0.0', mask='255.255.0.0') /
-         #     RIPEntry(addr='140.143.0.0', mask='255.255.0.0') /
-         #     RIPEntry(addr='140.144.0.0', mask='255.255.0.0') /
-         #     RIPEntry(addr='140.145.0.0', mask='255.255.0.0') /
-         #     RIPEntry(addr='140.146.0.0', mask='255.255.0.0') /
-         #     RIPEntry(addr='140.147.0.0', mask='255.255.0.0') /
+         RIPEntry(addr='140.140.1.0', mask='255.255.255.0') /
+         RIPEntry(addr='140.140.2.0', mask='255.255.255.0') /
+         RIPEntry(addr='140.140.3.0', mask='255.255.255.0') /
+         RIPEntry(addr='140.140.4.0', mask='255.255.255.0') /
+         RIPEntry(addr='140.140.5.0', mask='255.255.255.0') /
+         RIPEntry(addr='140.140.6.0', mask='255.255.255.0') /
+         RIPEntry(addr='140.140.7.0', mask='255.255.255.0') /
+         RIPEntry(addr='140.140.0.0', mask='255.255.0.0') /
+         RIPEntry(addr='140.141.0.0', mask='255.255.0.0') /
+         RIPEntry(addr='140.142.0.0', mask='255.255.0.0') /
+         RIPEntry(addr='140.143.0.0', mask='255.255.0.0') /
+         RIPEntry(addr='140.144.0.0', mask='255.255.0.0') /
+         RIPEntry(addr='140.145.0.0', mask='255.255.0.0') /
+         RIPEntry(addr='140.146.0.0', mask='255.255.0.0') /
+         RIPEntry(addr='140.147.0.0', mask='255.255.0.0') /
          RIPEntry(addr='140.0.0.0', mask='255.0.0.0') /
          RIPEntry(addr='141.0.0.0', mask='255.0.0.0') /
          RIPEntry(addr='142.0.0.0', mask='255.0.0.0') /
