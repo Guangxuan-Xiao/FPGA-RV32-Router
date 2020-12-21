@@ -224,7 +224,7 @@ module frame_datapath #(
     reg [31:0] ip_val;
     always@(*)
     begin
-        cpu_port <= in.data[`MAC_SRC];
+        //cpu_port <= in.data[`MAC_SRC];
         // This block aims at getting my MAC and IP according to in.id.
         case(in.id)
             3'b000:
@@ -302,18 +302,6 @@ module frame_datapath #(
                     end
                     else
                     begin
-                        case (cpu_port)
-                            3'b000:
-                                s1.data[`MAC_SRC] <= {dip_sw[15:12], mac};
-                            3'b001:
-                                s1.data[`MAC_SRC] <= {dip_sw[11:8], mac};
-                            3'b010:
-                                s1.data[`MAC_SRC] <= {dip_sw[7:4], mac};
-                            3'b011:
-                                s1.data[`MAC_SRC] <= {dip_sw[3:0], mac};
-                            default:
-                                s1.data[`MAC_SRC] <= 0;
-                        endcase 
                         s1.to_cpu <= 0;
                     end
                 end
