@@ -293,7 +293,7 @@ module frame_datapath #(
                         begin
                             s1.dest <= 4;
                             s1.to_cpu <= 1;
-                            s1.data[`MAC_DST] <= in.id;
+                            s1.data[`MAC_DST] <= my_mac;
                         end
                         else
                         begin
