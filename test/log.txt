@@ -1,0 +1,119 @@
+[18:46:48:907] RIP ENTRY COUNT = 18␍␊
+[18:46:48:924] Dealing with RIP ENTRY[0]␍␊
+[18:46:48:958] IP: 0000008c␍␊
+[18:46:48:966] Prefix Length: 8␍␊
+[18:46:48:991] Port: 0␍␊
+[18:46:48:999] Next-hop IP: 0200000a␍␊
+[18:46:49:024] Metric: 2␍␊
+[18:46:49:033] Inserting routing table entry␍␊
+[18:46:49:066] Dealing with RIP ENTRY[1]␍␊
+[18:46:49:091] IP: 0000008d␍␊
+[18:46:49:108] Prefix Length: 8␍␊
+[18:46:49:124] Port: 0␍␊
+[18:46:49:133] Next-hop IP: 0200000a␍␊
+[18:46:49:157] Metric: 2␍␊
+[18:46:49:174] Inserting routing table entry␍␊
+[18:46:49:208] Dealing with RIP ENTRY[2]␍␊
+[18:46:49:233] IP: 0000008e␍␊
+[18:46:49:249] Prefix Length: 8␍␊
+[18:46:49:266] Port: 0␍␊
+[18:46:49:274] Next-hop IP: 0200000a␍␊
+[18:46:49:299] Metric: 2␍␊
+[18:46:49:308] Inserting routing table entry␍␊
+[18:46:49:341] Dealing with RIP ENTRY[3]␍␊
+[18:46:49:374] IP: 0000008f␍␊
+[18:46:49:383] Prefix Length: 8␍␊
+[18:46:49:408] Port: 0␍␊
+[18:46:49:416] Next-hop IP: 0200000a␍␊
+[18:46:49:441] Metric: 2␍␊
+[18:46:49:449] Inserting routing table entry␍␊
+[18:46:49:483] Dealing with RIP ENTRY[4]␍␊
+[18:46:49:508] IP: 00000090␍␊
+[18:46:49:525] Prefix Length: 8␍␊
+[18:46:49:541] Port: 0␍␊
+[18:46:49:550] Next-hop IP: 0200000a␍␊
+[18:46:49:575] Metric: 2␍␊
+[18:46:49:591] Inserting routing table entry␍␊
+[18:46:49:616] Dealing with RIP ENTRY[5]␍␊
+[18:46:49:650] IP: 00000091␍␊
+[18:46:49:666] Prefix Length: 8␍␊
+[18:46:49:683] Port: 0␍␊
+[18:46:49:691] Next-hop IP: 0200000a␍␊
+[18:46:49:717] Metric: 2␍␊
+[18:46:49:725] Inserting routing table entry␍␊
+[18:46:49:758] Dealing with RIP ENTRY[6]␍␊
+[18:46:49:783] IP: 00000092␍␊
+[18:46:49:800] Prefix Length: 8␍␊
+[18:46:49:817] Port: 0␍␊
+[18:46:49:834] Next-hop IP: 0200000a␍␊
+[18:46:49:850] Metric: 2␍␊
+[18:46:49:867] Inserting routing table entry␍␊
+[18:46:49:900] Dealing with RIP ENTRY[7]␍␊
+[18:46:49:925] IP: 00000093␍␊
+[18:46:49:942] Prefix Length: 8␍␊
+[18:46:49:959] Port: 0␍␊
+[18:46:49:967] Next-hop IP: 0200000a␍␊
+[18:46:49:992] Metric: 2␍␊
+[18:46:50:000] Inserting routing table entry␍␊
+[18:46:50:034] Dealing with RIP ENTRY[8]␍␊
+[18:46:50:067] IP: 00000094␍␊
+[18:46:50:075] Prefix Length: 8␍␊
+[18:46:50:100] Port: 0␍␊
+[18:46:50:109] Next-hop IP: 0200000a␍␊
+[18:46:50:134] Metric: 2␍␊
+[18:46:50:142] Inserting routing table entry␍␊
+[18:46:50:175] Dealing with RIP ENTRY[9]␍␊
+[18:46:50:200] IP: 00000095␍␊
+[18:46:50:217] Prefix Length: 8␍␊
+[18:46:50:234] Port: 0␍␊
+[18:46:50:242] Next-hop IP: 0200000a␍␊
+[18:46:50:267] Metric: 2␍␊
+[18:46:50:284] Inserting routing table entry␍␊
+[18:46:50:317] Dealing with RIP ENTRY[10]␍␊
+[18:46:50:342] IP: 00008c8c␍␊
+[18:46:50:359] Prefix Length: 16␍␊
+[18:46:50:375] Port: 0␍␊
+[18:46:50:384] Next-hop IP: 0200000a␍␊
+[18:46:50:409] Metric: 2␍␊
+[18:46:50:425] Dealing with RIP ENTRY[11]␍␊
+[18:46:50:451] IP: 00008d8c␍␊
+[18:46:50:467] Prefix Length: 16␍␊
+[18:46:50:484] Port: 0␍␊
+[18:46:50:493] Next-hop IP: 0200000a␍␊
+[18:46:50:517] Metric: 2␍␊
+[18:46:50:534] Dealing with RIP ENTRY[12]␍␊
+[18:46:50:559] IP: 00008e8c␍␊
+[18:46:50:576] Prefix Length: 16␍␊
+[18:46:50:592] Port: 0␍␊
+[18:46:50:601] Next-hop IP: 0200000a␍␊
+[18:46:50:626] Metric: 2␍␊
+[18:46:50:643] Dealing with RIP ENTRY[13]␍␊
+[18:46:50:667] IP: 00008f8c␍␊
+[18:46:50:684] Prefix Length: 16␍␊
+[18:46:50:701] Port: 0␍␊
+[18:46:50:709] Next-hop IP: 0200000a␍␊
+[18:46:50:734] Metric: 2␍␊
+[18:46:50:751] Dealing with RIP ENTRY[14]␍␊
+[18:46:50:776] IP: 0000908c␍␊
+[18:46:50:793] Prefix Length: 16␍␊
+[18:46:50:809] Port: 0␍␊
+[18:46:50:818] Next-hop IP: 0200000a␍␊
+[18:46:50:843] Metric: 2␍␊
+[18:46:50:859] Dealing with RIP ENTRY[15]␍␊
+[18:46:50:884] IP: 0000918c␍␊
+[18:46:50:901] Prefix Length: 16␍␊
+[18:46:50:918] Port: 0␍␊
+[18:46:50:926] Next-hop IP: 0200000a␍␊
+[18:46:50:951] Metric: 2␍␊
+[18:46:50:968] Dealing with RIP ENTRY[16]␍␊
+[18:46:50:993] IP: 0000928c␍␊
+[18:46:51:010] Prefix Length: 16␍␊
+[18:46:51:026] Port: 0␍␊
+[18:46:51:035] Next-hop IP: 0200000a␍␊
+[18:46:51:060] Metric: 2␍␊
+[18:46:51:076] Dealing with RIP ENTRY[17]␍␊
+[18:46:51:101] IP: 0000938c␍␊
+[18:46:51:118] Prefix Length: 16␍␊
+[18:46:51:135] Port: 0␍␊
+[18:46:51:143] Next-hop IP: 0200000a␍␊
+[18:46:51:168] Metric: 2␍␊

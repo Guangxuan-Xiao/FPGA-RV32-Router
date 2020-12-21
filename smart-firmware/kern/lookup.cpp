@@ -162,7 +162,7 @@ void remove(uint32_t ip, uint32_t prefix_len)
     }
 }
 
-uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *metric)
+uint32_t search(uint32_t ip, uint32_t prefix_len, uint32_t *nexthop_ip, uint32_t *port, uint32_t *metric)
 {
     trie_node_t parent;
     uint32_t nexthop_idx = 0;
@@ -170,7 +170,7 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
     uint32_t current_node_s = route_node_t::root;
     parse_node(current_node, &parent);
     *metric = 0xffffffff;
-    for (int i = 0; i < 32; ++i)
+    for (uint32_t i = 0; i < prefix_len; ++i)
     {
         int bit = (ip >> i) & 1;
         if (bit)
@@ -181,7 +181,7 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
                 current_node_s = route_nodes[current_node_s].rc;
             }
             else
-                break;
+                return 0;
         }
         else
         {
@@ -191,18 +191,20 @@ uint32_t search(uint32_t ip, uint32_t *nexthop_ip, uint32_t *port, uint32_t *met
                 current_node_s = route_nodes[current_node_s].lc;
             }
             else
-                break;
+                return 0;
         }
         parse_node(current_node, &parent);
-        if (parent.nexthop_idx)
-        {
-            nexthop_idx = parent.nexthop_idx;
-            *metric = route_nodes[current_node_s].metric;
-        }
     }
-    *nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
-    *port = *get_nexthop_port_addr(nexthop_idx);
-    return nexthop_idx;
+    if (parent.nexthop_idx)
+    {
+        nexthop_idx = parent.nexthop_idx;
+        *metric = route_nodes[current_node_s].metric;
+        *nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
+        *port = *get_nexthop_port_addr(nexthop_idx);
+        return nexthop_idx;
+    }
+    else
+        return 0;
 }
 
 void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s, RoutingTableEntry *buffer, uint32_t *len)
@@ -266,37 +268,37 @@ void lookup_test()
     for (uint32_t i = 0; i < len; ++i)
         buffer[i].print();
     printf("\r\n");
-    uint32_t nexthop_ip, port, metric;
-    search(0x04030201, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
-    search(0x01030201, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
-    search(0x00000000, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
-    remove(0x04030201, 32);
-    len = traverse(buffer);
-    printf("Routing Table Size: %u\r\n", len);
-    for (uint32_t i = 0; i < len; ++i)
-        buffer[i].print();
-    printf("\r\n");
-    search(0x04030201, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
-    search(0x01030201, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
-    search(0x00000000, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
-    remove(0x00030201, 24);
-    search(0x0b0a0103, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
-    len = traverse(buffer);
-    printf("Routing Table Size: %u\r\n", len);
-    for (uint32_t i = 0; i < len; ++i)
-        buffer[i].print();
-    printf("\r\n");
-    search(0x04030201, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
-    search(0x01030201, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
-    search(0x00000000, &nexthop_ip, &port, &metric);
-    printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // uint32_t nexthop_ip, port, metric;
+    // search(0x04030201, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // search(0x01030201, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // search(0x00000000, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // remove(0x04030201, 32);
+    // len = traverse(buffer);
+    // printf("Routing Table Size: %u\r\n", len);
+    // for (uint32_t i = 0; i < len; ++i)
+    //     buffer[i].print();
+    // printf("\r\n");
+    // search(0x04030201, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // search(0x01030201, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // search(0x00000000, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // remove(0x00030201, 24);
+    // search(0x0b0a0103, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // len = traverse(buffer);
+    // printf("Routing Table Size: %u\r\n", len);
+    // for (uint32_t i = 0; i < len; ++i)
+    //     buffer[i].print();
+    // printf("\r\n");
+    // search(0x04030201, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // search(0x01030201, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
+    // search(0x00000000, &nexthop_ip, &port, &metric);
+    // printf("Nexthop: 0x%08x\r\nPort: %d\r\nMetric: %d\r\n", nexthop_ip, port, metric);
 }

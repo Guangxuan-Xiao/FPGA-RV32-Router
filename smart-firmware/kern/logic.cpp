@@ -140,15 +140,13 @@ void send_rip(const RipPacket &resp, const uint32_t if_index, const uint32_t dst
 	ip_header->ip_sum = checksum;
 	//printf("before send\r\n");
 	send(if_index, output, totlen, bram_addr_dst, dst_mac);
-	//sleep(50);
+	sleep(200);
 	//printf("end send\r\n");
 	bram_addr_dst = (bram_addr_dst + 1) & 0x1F;
 }
 
 void send_all_rip(uint32_t router_len, int if_index, const uint32_t dst_addr, const macaddr_t dst_mac)
 {
-	//printf("end traverse\r\n");
-	//printf("end traverse with router_len: %d\r\n", router_len);
 	uint32_t rest_ripentry = router_len;
 	while (rest_ripentry > 25)
 	{
@@ -212,6 +210,12 @@ int mainLoop()
 		{
 			printf("5s Timer at time %u\r\n", time);
 			uint32_t router_len = traverse(cache);
+			printf("\r\n===Lookup Table===\r\n");
+			printf("Routing Table Size: %u\r\n", router_len);
+			for (uint32_t i = 0; i < router_len; ++i)
+				cache[i].print();
+			printf("==================\r\n");
+			printf("\r\n");
 			for (uint32_t i = 0; i < N_IFACE_ON_BOARD; ++i)
 				send_all_rip(router_len, i, multicastIP, multicastMac);
 			sec = 0;
@@ -274,8 +278,10 @@ int mainLoop()
 				else
 				{
 					int rip_entry_cnt = (res - (ip_header->ihl * 4 + 8) - 4) / 20;
+					printf("RIP ENTRY COUNT = %d\r\n", rip_entry_cnt);
 					for (int i = 0; i < rip_entry_cnt; i++)
 					{
+						printf("Dealing with RIP ENTRY[%d]\r\n", i);
 						uint32_t nexthop;
 						uint32_t port;
 						uint32_t metric;
@@ -284,8 +290,16 @@ int mainLoop()
 						uint32_t old_metric = rip.entries[i].metric;
 						uint32_t addr_masked = addr & mask;
 						uint32_t preLen = CNT1(BE32(mask));
-						bool is_search = search(addr, &nexthop, &port, &metric);
+						bool is_search = search(addr, preLen, &nexthop, &port, &metric);
 						uint32_t new_metric = (BE32(old_metric) + 1 <= 16) ? BE32(old_metric) + 1 : 16;
+						RoutingTableEntry rte =
+							{
+								.ip = addr_masked,
+								.prefix_len = preLen,
+								.port = if_index,
+								.nexthop_ip = src_addr,
+								.metric = new_metric};
+						rte.print();
 						if (is_search)
 						{
 							if (nexthop == src_addr)
@@ -305,6 +319,7 @@ int mainLoop()
 										.nexthop_ip = src_addr,
 										.metric = new_metric};
 								insert(rte);
+								printf("Inserting routing table entry\r\n");
 							}
 						}
 						else
@@ -317,6 +332,7 @@ int mainLoop()
 									.nexthop_ip = src_addr,
 									.metric = new_metric};
 							insert(rte);
+							printf("Inserting routing table entry\r\n");
 						}
 					}
 				}
