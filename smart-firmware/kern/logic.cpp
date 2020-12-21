@@ -140,7 +140,7 @@ void send_rip(const RipPacket &resp, const uint32_t if_index, const uint32_t dst
 	ip_header->ip_sum = checksum;
 	//printf("before send\r\n");
 	send(if_index, output, totlen, bram_addr_dst, dst_mac);
-	sleep(200);
+	// sleep(200);
 	//printf("end send\r\n");
 	bram_addr_dst = (bram_addr_dst + 1) & 0x1F;
 }
@@ -277,14 +277,13 @@ int mainLoop()
 					for (int i = 0; i < rip_entry_cnt; i++)
 					{
 						// printf("Dealing with RIP ENTRY[%d]\r\n", i);
-						uint32_t nexthop;
-						uint32_t port;
-						uint32_t metric;
+						uint32_t nexthop, port, metric;
 						uint32_t addr = rip.entries[i].addr;
 						uint32_t mask = rip.entries[i].mask;
 						uint32_t old_metric = rip.entries[i].metric;
 						uint32_t addr_masked = addr & mask;
 						uint32_t preLen = CNT1(BE32(mask));
+						bool is_search = search(addr, preLen, &nexthop, &port, &metric);
 						uint32_t new_metric = (BE32(old_metric) + 1 <= 16) ? BE32(old_metric) + 1 : 16;
 						RoutingTableEntry rte =
 							{
@@ -293,7 +292,17 @@ int mainLoop()
 								.port = if_index,
 								.nexthop_ip = src_addr,
 								.metric = new_metric};
-						insert(rte);
+						if (is_search)
+						{
+							if (nexthop == src_addr)
+								insert(rte);
+							else if (new_metric < metric)
+								insert(rte);
+						}
+						else
+						{
+							insert(rte);
+						}
 					}
 				}
 			}
