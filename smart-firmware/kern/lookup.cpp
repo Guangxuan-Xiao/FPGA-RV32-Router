@@ -13,8 +13,9 @@ class route_node_t
 public:
     uint32_t lc;
     uint32_t rc;
-    uint32_t metric;
-    route_node_t() : lc(0), rc(0), metric(0xffffffff) {}
+    uint16_t metric;
+    uint16_t time;
+    route_node_t() : lc(0), rc(0), metric(0xffff), time(0) {}
     static const uint32_t root = 1;
 };
 static route_node_t route_nodes[ROUTING_TRIE_SIZE];
@@ -97,6 +98,7 @@ void insert(RoutingTableEntry entry)
     }
     set_nexthop(current_node, nexthop_idx);
     route_nodes[current_node_s].metric = entry.metric;
+    route_nodes[current_node_s].time = 0;
 }
 
 void remove(uint32_t ip, uint32_t prefix_len)
@@ -135,6 +137,7 @@ void remove(uint32_t ip, uint32_t prefix_len)
     }
     set_nexthop(current_node, 0);
     route_nodes[current_node_s].metric = -1;
+    route_nodes[current_node_s].time = 0;
     // Trace back
     uint16_t idx;
     for (int i = prefix_len - 1; i >= 0; --i)
@@ -235,6 +238,36 @@ uint32_t traverse(RoutingTableEntry *buffer)
     uint32_t len = 0;
     traverse_node(0, 0, (uint32_t *)ROOT_ADDR, route_node_t::root, buffer, &len);
     return len;
+}
+
+void step_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s)
+{
+    if (!addr_h || !addr_s)
+        return;
+    trie_node_t node_h;
+    parse_node(addr_h, &node_h);
+    uint32_t nexthop_idx = node_h.nexthop_idx;
+    if (nexthop_idx)
+    {
+        uint32_t nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
+        if (nexthop_ip)
+            ++route_nodes[addr_s].time;
+        if (route_nodes[addr_s].time >= GARBAGE)
+        {
+            remove(ip, depth);
+        }
+        else if (route_nodes[addr_s].time >= TIMEOUT)
+        {
+            route_nodes[addr_s].metric = 16;
+        }
+    }
+    step_node(ip, depth + 1, node_h.lc_ptr, route_nodes[addr_s].lc);
+    step_node(ip | (1 << depth), depth + 1, node_h.rc_ptr, route_nodes[addr_s].rc);
+}
+
+void step()
+{
+    step_node(0, 0, (uint32_t *)ROOT_ADDR, route_node_t::root);
 }
 
 void lookup_test()
