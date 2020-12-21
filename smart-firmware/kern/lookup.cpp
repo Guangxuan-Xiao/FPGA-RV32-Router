@@ -3,7 +3,7 @@
 #include "allocator.h"
 #include <stdio.h>
 // static int layer_size[32] = {0};
-const uint32_t ROUTING_TRIE_SIZE = 0x40000;
+const uint32_t ROUTING_TRIE_SIZE = 0x20000;
 static Allocator<uint16_t, TRIE_LAYER_CAPACITY> allocators[32];
 static Allocator<uint32_t, ROUTING_TRIE_SIZE> routingTrieAllocator;
 static int nexthop_size = 0;
