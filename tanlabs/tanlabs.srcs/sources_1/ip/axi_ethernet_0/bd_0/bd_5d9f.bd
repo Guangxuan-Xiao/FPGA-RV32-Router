@@ -1026,22 +1026,17 @@
       }
     },
     "interface_nets": {
+<<<<<<< HEAD
       "mgt_clk_1": {
         "interface_ports": [
           "mgt_clk",
           "pcs_pma/gtrefclk_in"
-        ]
-      },
-      "mac_gmii": {
+=======
+      "s_axis_pause_1": {
         "interface_ports": [
-          "mac/gmii",
-          "pcs_pma/gmii_pcs_pma"
-        ]
-      },
-      "pcs_pma_sfp": {
-        "interface_ports": [
-          "sfp",
-          "pcs_pma/sfp"
+          "s_axis_pause",
+          "mac/s_axis_pause"
+>>>>>>> 72b91d2133fd990f6df4ce43a9627c78a8b6fb6f
         ]
       },
       "mac_tx_statistics": {
@@ -1050,18 +1045,41 @@
           "mac/tx_statistics"
         ]
       },
+      "pcs_pma_sfp": {
+        "interface_ports": [
+          "sfp",
+          "pcs_pma/sfp"
+        ]
+      },
       "mac_rx_statistics": {
         "interface_ports": [
           "rx_statistics",
           "mac/rx_statistics"
         ]
       },
-      "s_axis_pause_1": {
+<<<<<<< HEAD
+      "mac_rx_statistics": {
+=======
+      "mac_gmii": {
         "interface_ports": [
-          "s_axis_pause",
-          "mac/s_axis_pause"
+          "mac/gmii",
+          "pcs_pma/gmii_pcs_pma"
         ]
       },
+      "mgt_clk_1": {
+>>>>>>> 72b91d2133fd990f6df4ce43a9627c78a8b6fb6f
+        "interface_ports": [
+          "mgt_clk",
+          "pcs_pma/gtrefclk_in"
+        ]
+      },
+      "pcs_pma_sfp": {
+        "interface_ports": [
+          "sfp",
+          "pcs_pma/sfp"
+        ]
+      },
+<<<<<<< HEAD
       "s_axi_1": {
         "interface_ports": [
           "s_axi",
@@ -1069,15 +1087,25 @@
         ]
       },
       "mac_m_axis_rx": {
+=======
+      "s_axis_tx_1": {
+>>>>>>> 72b91d2133fd990f6df4ce43a9627c78a8b6fb6f
         "interface_ports": [
-          "m_axis_rx",
-          "mac/m_axis_rx"
+          "s_axis_tx",
+          "mac/s_axis_tx"
         ]
       },
+<<<<<<< HEAD
       "s_axis_tx_1": {
         "interface_ports": [
           "s_axis_tx",
           "mac/s_axis_tx"
+=======
+      "mac_m_axis_rx": {
+        "interface_ports": [
+          "m_axis_rx",
+          "mac/m_axis_rx"
+>>>>>>> 72b91d2133fd990f6df4ce43a9627c78a8b6fb6f
         ]
       }
     },

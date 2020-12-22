@@ -6,9 +6,9 @@ module sim_axis2sfp
     parameter ID_WIDTH = 3
 )
 (
-    input wire reset,
+    input reset,
 
-    input wire clk_125M,
+    input clk_125M,
 
     input [DATA_WIDTH - 1:0] s_data,
     input [DATA_WIDTH / 8 - 1:0] s_keep,
