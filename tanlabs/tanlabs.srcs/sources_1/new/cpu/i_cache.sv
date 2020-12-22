@@ -4,7 +4,7 @@ logic valid;
 logic[19:0] phy_addr;
 logic[31:0] inst;
 } i_entry;
-module i_cache #(parameter CACHE_ADDR_WIDTH = 4)
+module i_cache #(parameter CACHE_ADDR_WIDTH = 5)
                 (input wire clk,
                  input wire rst,
                  input wire[31:0] pc_addr,
