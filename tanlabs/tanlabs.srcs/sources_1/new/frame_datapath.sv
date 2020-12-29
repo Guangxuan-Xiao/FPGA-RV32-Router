@@ -268,6 +268,7 @@ module frame_datapath #(
                     else
                     begin
                         s1.to_cpu <= 0;
+                        s1.dest   <= in.data[`MAC_SRC];
                         case (cpu_port)
                         3'b000:
                         begin
@@ -1167,8 +1168,8 @@ end
                     //TODO: change to prev_5
                     if (s5.id == 4)
                     begin
-                        s6.dest <= s5.data[`MAC_SRC];
-                        store_dst <= s5.data[`MAC_SRC];
+                        //s6.dest <= s5.data[`MAC_SRC];
+                        store_dst <= s5.dest;
                     end
                     else if(!s5.to_cpu)
                     begin
