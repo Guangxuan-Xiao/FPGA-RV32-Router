@@ -232,10 +232,6 @@ module frame_datapath #(
 
     frame_data s1;
     wire s1_ready;
-    reg [31:0] ip_file;
-    reg [15:0] typecheck;
-    reg store_to_cpu = 0;
-    reg mark = 0;
     assign in_ready = s1_ready || !in.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -258,7 +254,6 @@ module frame_datapath #(
                     data_input_content <= in.data;
                     rt_i_ip <= in.data[`TRG_IP_IP];   
                     rt_i_ready <= 1;
-                    ip_file <= in.data[`TRG_IP_IP];
                     if(in.id != 4)
                     begin
                         if (in.data [`TRG_IP_IP] == my_ip || ( ip_val[7:0] <= 32'hEF && ip_val[7:0] >= 32'hE0))
