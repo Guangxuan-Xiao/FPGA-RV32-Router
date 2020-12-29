@@ -200,23 +200,17 @@ module bus(input wire clk,
 
     assign nexthop_data_cpu = nexthop_data_reg;
 
-    reg[1:0] sram_state;
-    reg sram_we;
-    wire sram_ready = ram_req & (sram_state == 2);
+    // SRAM State Machine
+    reg sram_state;
+    wire sram_we = ram_we_i & ~(sram_state ^ clk);
+    wire sram_ready = ram_req & sram_state;
     
     always_ff @(posedge clk, posedge rst) begin
         if (rst || !sram_req) begin
             sram_state <= 0;
-            sram_we  <= 0;
         end
         else begin
-            if (sram_state < 2) begin
-                sram_state <= sram_state + 1;
-            end
-            else begin
-                sram_state <= 0;
-            end
-            sram_we  <= ram_we_i & (sram_state == 0);
+            sram_state <= sram_state + 1;
         end
     end
 
