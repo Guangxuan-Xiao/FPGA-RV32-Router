@@ -2,7 +2,7 @@
 `include "frame_datapath.vh"
 
 // Example Frame Data Path.
-module frame_datapath #(
+module final_frame_datapath #(
     parameter ID_WIDTH = 3,
     parameter DATA_WIDTH = 64
 )
