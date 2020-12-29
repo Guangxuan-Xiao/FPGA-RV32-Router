@@ -4,22 +4,24 @@
 #include <stdio.h>
 #include <netinet/ip.h>
 // static int layer_size[32] = {0};
-const uint32_t ROUTING_TRIE_SIZE = 0x20000;
+// const uint32_t ROUTING_TRIE_SIZE = 0x20000;
 static Allocator<uint16_t, TRIE_LAYER_CAPACITY> allocators[32];
-static Allocator<uint32_t, ROUTING_TRIE_SIZE> routingTrieAllocator;
+// static Allocator<uint32_t, ROUTING_TRIE_SIZE> routingTrieAllocator;
 static int nexthop_size = 0;
-static int route_node_num = 1;
-class route_node_t
-{
-public:
-    uint32_t lc;
-    uint32_t rc;
-    uint16_t metric;
-    uint16_t time;
-    route_node_t() : lc(0), rc(0), metric(0xffff), time(0) {}
-    static const uint32_t root = 1;
-};
-static route_node_t route_nodes[ROUTING_TRIE_SIZE];
+// static int route_node_num = 1;
+// class route_node_t
+// {
+// public:
+//     uint32_t lc;
+//     uint32_t rc;
+//     uint16_t metric;
+//     uint16_t time;
+//     route_node_t() : lc(0), rc(0), metric(0xffff), time(0) {}
+//     static const uint32_t root = 1;
+// };
+// static route_node_t route_nodes[ROUTING_TRIE_SIZE];
+
+static uint8_t metrics[32][TRIE_LAYER_CAPACITY], times[32][TRIE_LAYER_CAPACITY];
 void RoutingTableEntry::print()
 {
     printf("IP: %08x\r\n", ip);
@@ -31,9 +33,9 @@ void RoutingTableEntry::print()
 
 void init()
 {
-    route_node_num = 1;
+    // route_node_num = 1;
     nexthop_size = 0;
-    routingTrieAllocator.get();
+    // routingTrieAllocator.get();
     for (uint32_t i = 0; i <= 32; ++i)
     {
         printf("Initializing Layer: %u\r\n", i);
@@ -49,7 +51,6 @@ void insert(RoutingTableEntry entry)
 {
     trie_node_t parent;
     uint32_t *current_node = (uint32_t *)ROOT_ADDR;
-    uint32_t current_node_s = route_node_t::root;
     uint16_t idx;
     uint32_t ip = ntohl(entry.ip);
     for (uint32_t i = 0; i < entry.prefix_len; ++i)
@@ -61,29 +62,21 @@ void insert(RoutingTableEntry entry)
         {
             if (!parent.rc_ptr)
             {
-                // layer_size[i]++;
                 idx = allocators[i].get();
                 parent.rc_ptr = get_node_addr(i + 1, idx);
                 set_rc(current_node, idx);
             }
-            if (!route_nodes[current_node_s].rc)
-                route_nodes[current_node_s].rc = routingTrieAllocator.get();
             current_node = parent.rc_ptr;
-            current_node_s = route_nodes[current_node_s].rc;
         }
         else
         {
             if (!parent.lc_ptr)
             {
-                // layer_size[i]++;
                 idx = allocators[i].get();
                 parent.lc_ptr = get_node_addr(i + 1, idx);
                 set_lc(current_node, idx);
             }
-            if (!route_nodes[current_node_s].lc)
-                route_nodes[current_node_s].lc = routingTrieAllocator.get();
             current_node = parent.lc_ptr;
-            current_node_s = route_nodes[current_node_s].lc;
         }
     }
     int nexthop_idx;
@@ -99,8 +92,9 @@ void insert(RoutingTableEntry entry)
         *get_nexthop_port_addr(nexthop_idx) = entry.port;
     }
     set_nexthop(current_node, nexthop_idx);
-    route_nodes[current_node_s].metric = entry.metric;
-    route_nodes[current_node_s].time = 0;
+    uint32_t current_idx = get_idx(current_node);
+    metrics[entry.prefix_len - 1][current_idx] = entry.metric;
+    times[entry.prefix_len - 1][current_idx] = 0;
 }
 
 void remove(uint32_t ip, uint32_t prefix_len)
@@ -108,8 +102,6 @@ void remove(uint32_t ip, uint32_t prefix_len)
     trie_node_t parent;
     uint32_t *current_node = (uint32_t *)ROOT_ADDR;
     uint32_t *path[33] = {current_node, 0};
-    uint32_t current_node_s = route_node_t::root;
-    uint32_t path_s[33] = {current_node_s, 0};
     ip = ntohl(ip);
     for (uint32_t i = 0; i < prefix_len; ++i)
     {
@@ -120,7 +112,6 @@ void remove(uint32_t ip, uint32_t prefix_len)
             if (parent.rc_ptr)
             {
                 current_node = parent.rc_ptr;
-                current_node_s = route_nodes[current_node_s].rc;
             }
             else
                 return;
@@ -130,17 +121,16 @@ void remove(uint32_t ip, uint32_t prefix_len)
             if (parent.lc_ptr)
             {
                 current_node = parent.lc_ptr;
-                current_node_s = route_nodes[current_node_s].lc;
             }
             else
                 return;
         }
         path[i + 1] = current_node;
-        path_s[i + 1] = current_node_s;
     }
     set_nexthop(current_node, 0);
-    route_nodes[current_node_s].metric = -1;
-    route_nodes[current_node_s].time = 0;
+    uint32_t current_idx = get_idx(current_node);
+    metrics[prefix_len - 1][current_idx] = -1;
+    times[prefix_len - 1][current_idx] = 0;
     // Trace back
     uint16_t idx;
     for (int i = prefix_len - 1; i >= 0; --i)
@@ -151,16 +141,13 @@ void remove(uint32_t ip, uint32_t prefix_len)
             // --layer_size[i];
             idx = get_idx(path[i + 1]);
             allocators[i].put(idx);
-            routingTrieAllocator.put(path_s[i + 1]);
             if (bit)
             {
                 set_rc(path[i], 0);
-                route_nodes[path_s[i]].rc = 0;
             }
             else
             {
                 set_lc(path[i], 0);
-                route_nodes[path_s[i]].lc = 0;
             }
         }
         else
@@ -173,7 +160,6 @@ uint32_t search(uint32_t ip, uint32_t prefix_len, uint32_t *nexthop_ip, uint32_t
     trie_node_t parent;
     uint32_t nexthop_idx = 0;
     uint32_t *current_node = (uint32_t *)ROOT_ADDR;
-    uint32_t current_node_s = route_node_t::root;
     parse_node(current_node, &parent);
     *metric = 0xffffffff;
     ip = ntohl(ip);
@@ -185,7 +171,6 @@ uint32_t search(uint32_t ip, uint32_t prefix_len, uint32_t *nexthop_ip, uint32_t
             if (parent.rc_ptr)
             {
                 current_node = parent.rc_ptr;
-                current_node_s = route_nodes[current_node_s].rc;
             }
             else
                 return 0;
@@ -195,7 +180,6 @@ uint32_t search(uint32_t ip, uint32_t prefix_len, uint32_t *nexthop_ip, uint32_t
             if (parent.lc_ptr)
             {
                 current_node = parent.lc_ptr;
-                current_node_s = route_nodes[current_node_s].lc;
             }
             else
                 return 0;
@@ -205,7 +189,7 @@ uint32_t search(uint32_t ip, uint32_t prefix_len, uint32_t *nexthop_ip, uint32_t
     if (parent.nexthop_idx)
     {
         nexthop_idx = parent.nexthop_idx;
-        *metric = route_nodes[current_node_s].metric;
+        *metric = metrics[prefix_len - 1][get_idx(current_node)];
         *nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
         *port = *get_nexthop_port_addr(nexthop_idx);
         return nexthop_idx;
@@ -214,10 +198,10 @@ uint32_t search(uint32_t ip, uint32_t prefix_len, uint32_t *nexthop_ip, uint32_t
         return 0;
 }
 
-void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s, RoutingTableEntry *buffer, uint32_t *len)
+void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, RoutingTableEntry *buffer, uint32_t *len)
 {
     //printf("Node Addr: %u %x\r\n", addr_s, addr_h);
-    if (!addr_h || !addr_s)
+    if (!addr_h)
         return;
     trie_node_t node_h;
     parse_node(addr_h, &node_h);
@@ -225,27 +209,27 @@ void traverse_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s
     if (nexthop_idx)
     {
         buffer[*len].ip = htonl(ip);
-        buffer[*len].metric = route_nodes[addr_s].metric;
+        buffer[*len].metric = metrics[depth - 1][get_idx(addr_h)];
         buffer[*len].nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
         buffer[*len].port = *get_nexthop_port_addr(nexthop_idx);
         buffer[*len].prefix_len = depth;
         *len = (*len) + 1;
     }
-    traverse_node(ip, depth + 1, node_h.lc_ptr, route_nodes[addr_s].lc, buffer, len);
-    traverse_node(ip | (1 << (31 - depth)), depth + 1, node_h.rc_ptr, route_nodes[addr_s].rc, buffer, len);
+    traverse_node(ip, depth + 1, node_h.lc_ptr, buffer, len);
+    traverse_node(ip | (1 << (31 - depth)), depth + 1, node_h.rc_ptr, buffer, len);
 }
 
 uint32_t traverse(RoutingTableEntry *buffer)
 {
     //printf("start traverse.\r\n");
     uint32_t len = 0;
-    traverse_node(0, 0, (uint32_t *)ROOT_ADDR, route_node_t::root, buffer, &len);
+    traverse_node(0, 0, (uint32_t *)ROOT_ADDR, buffer, &len);
     return len;
 }
 
-void step_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s)
+void step_node(uint32_t ip, uint8_t depth, uint32_t *addr_h)
 {
-    if (!addr_h || !addr_s)
+    if (!addr_h)
         return;
     trie_node_t node_h;
     parse_node(addr_h, &node_h);
@@ -254,23 +238,23 @@ void step_node(uint32_t ip, uint8_t depth, uint32_t *addr_h, uint32_t addr_s)
     {
         uint32_t nexthop_ip = *get_nexthop_ip_addr(nexthop_idx);
         if (nexthop_ip)
-            ++route_nodes[addr_s].time;
-        if (route_nodes[addr_s].time >= GARBAGE)
+            ++times[depth - 1][get_idx(addr_h)];
+        if (times[depth - 1][get_idx(addr_h)] >= GARBAGE)
         {
             remove(htonl(ip), depth);
         }
-        else if (route_nodes[addr_s].time >= TIMEOUT)
+        else if (times[depth - 1][get_idx(addr_h)] >= TIMEOUT)
         {
-            route_nodes[addr_s].metric = 16;
+            metrics[depth - 1][get_idx(addr_h)] = 16;
         }
     }
-    step_node(ip, depth + 1, node_h.lc_ptr, route_nodes[addr_s].lc);
-    step_node(ip | (1 << (31 - depth)), depth + 1, node_h.rc_ptr, route_nodes[addr_s].rc);
+    step_node(ip, depth + 1, node_h.lc_ptr);
+    step_node(ip | (1 << (31 - depth)), depth + 1, node_h.rc_ptr);
 }
 
 void step()
 {
-    step_node(0, 0, (uint32_t *)ROOT_ADDR, route_node_t::root);
+    step_node(0, 0, (uint32_t *)ROOT_ADDR);
 }
 
 void lookup_test()

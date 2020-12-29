@@ -18,7 +18,7 @@ typedef struct
     uint32_t nexthop_idx;
 } trie_node_t;
 
-uint16_t get_idx(uint32_t *addr)
+inline uint16_t get_idx(uint32_t *addr)
 {
     return ((uint32_t)addr >> 2) & 0x1FFF;
 }
