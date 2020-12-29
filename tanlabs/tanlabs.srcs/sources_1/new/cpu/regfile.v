@@ -16,7 +16,6 @@ module regfile(
 );
 
 reg[31:0] regs[31:0];
-reg[7:0] csr[31:0];
 
 // write
 always @(posedge clk) begin

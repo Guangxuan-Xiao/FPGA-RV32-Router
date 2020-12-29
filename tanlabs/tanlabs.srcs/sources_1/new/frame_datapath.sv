@@ -102,7 +102,6 @@ module frame_datapath #(
     reg [383:0] data_input_content;
     reg [383:0] data_output_content;
     reg packet_valid;
-    reg [7:0] ttl;
 
     checksum_upd checksum
     (
@@ -123,33 +122,6 @@ module frame_datapath #(
         .q_nexthop(query_nexthop),
         .q_port(query_port),
         .q_valid(query_valid)
-    );
-
-    reg rl_wq_en;
-    reg rl_ins_en;
-    reg [31:0] rl_w_ip;
-    reg [31:0] rl_w_mask;
-    reg [31:0] rl_w_nexthop;
-    reg [31:0] rl_q_ip;
-    reg [31:0] rl_q_nexthop; 
-    reg [2:0] rl_w_port;
-    reg [2:0] rl_q_port;
-    reg rl_q_found;
-
-    route_linear route_linear_table
-    (
-        .clk(eth_clk),
-        .rst(reset),
-        .wq_en(rl_wq_en),
-        .ins_en(rl_ins_en),
-        .w_ip(rl_w_ip),
-        .w_mask(rl_w_mask),
-        .w_port(rl_w_port),
-        .w_nexthop(rl_w_nexthop),
-        .q_ip(rl_q_ip),
-        .q_nexthop(rl_q_nexthop),
-        .q_port(rl_q_port),
-        .q_found(rl_q_found)
     );
 
     reg rt_i_ready;
@@ -195,10 +167,6 @@ module frame_datapath #(
 
     // README: Your code here.
     // See the guide to figure out what you need to do with frames.
-
-    //THIS IS ONLY FOR TEST.
-    reg test_packet_valid;
-    assign test_packet_valid = 1;
     
     reg[43:0] mac;
     reg[31:0] ip0, ip1, ip2, ip3;
@@ -226,36 +194,37 @@ module frame_datapath #(
     begin
         //cpu_port <= in.data[`MAC_SRC];
         // This block aims at getting my MAC and IP according to in.id.
+        cpu_port = in.data[`MAC_SRC];
         case(in.id)
             3'b000:
             begin
-                my_mac <= {dip_sw[15:12], mac};
-                my_ip  <= ip0;
-                ip_val <= in.data[`TRG_IP_IP];
+                my_mac = {dip_sw[15:12], mac};
+                my_ip  = ip0;
+                ip_val = in.data[`TRG_IP_IP];
             end
             3'b001:
             begin
-                my_mac <= {dip_sw[11:8], mac};
-                my_ip  <= ip1;
-                ip_val <= in.data[`TRG_IP_IP];
+                my_mac = {dip_sw[11:8], mac};
+                my_ip  = ip1;
+                ip_val = in.data[`TRG_IP_IP];
             end
             3'b010:
             begin
-                my_mac <= {dip_sw[7:4], mac};
-                my_ip  <= ip2;
-                ip_val <= in.data[`TRG_IP_IP];
+                my_mac = {dip_sw[7:4], mac};
+                my_ip  = ip2;
+                ip_val = in.data[`TRG_IP_IP];
             end
             3'b011:
             begin
-                my_mac <= {dip_sw[3:0], mac};
-                my_ip  <= ip3;
-                ip_val <= in.data[`TRG_IP_IP];
+                my_mac = {dip_sw[3:0], mac};
+                my_ip  = ip3;
+                ip_val = in.data[`TRG_IP_IP];
             end
             default:
             begin
-                my_mac <= 48'h0;
-                my_ip  <= 32'h0;
-                ip_val <= 0;
+                my_mac = 48'h0;
+                my_ip  = 32'h0;
+                ip_val = 0;
             end
         endcase
     end
@@ -263,8 +232,6 @@ module frame_datapath #(
 
     frame_data s1;
     wire s1_ready;
-    reg [31:0] ip_file;
-    reg store_to_cpu = 0;
     assign in_ready = s1_ready || !in.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
@@ -281,12 +248,12 @@ module frame_datapath #(
             begin
                 if(in.data[`MAC_TYPE] == ETHERTYPE_IP4)
                 begin
+                    
                     //Start checkcum and query table if this is IP packet.
                     s1.prot_type <= 3'b000;
                     data_input_content <= in.data;
                     rt_i_ip <= in.data[`TRG_IP_IP];   
                     rt_i_ready <= 1;
-                    ip_file <= in.data[`TRG_IP_IP];
                     if(in.id != 4)
                     begin
                         if (in.data [`TRG_IP_IP] == my_ip || ( ip_val[7:0] <= 32'hEF && ip_val[7:0] >= 32'hE0))
@@ -303,6 +270,28 @@ module frame_datapath #(
                     else
                     begin
                         s1.to_cpu <= 0;
+                        case (cpu_port)
+                        3'b000:
+                        begin
+                            s1.data[`MAC_SRC] <= {dip_sw[15:12], mac};
+                        end
+                        3'b001:
+                        begin
+                            s1.data[`MAC_SRC] <= {dip_sw[11:8], mac};
+                        end
+                        3'b010:
+                        begin
+                            s1.data[`MAC_SRC] <= {dip_sw[7:4], mac};
+                        end
+                        3'b011:
+                        begin
+                            s1.data[`MAC_SRC] <= {dip_sw[3:0], mac};
+                        end
+                        default:
+                        begin
+
+                        end
+                        endcase
                     end
                 end
                 else if (in.data[`MAC_TYPE] == ETHERTYPE_ARP) 
@@ -873,7 +862,6 @@ begin
 	end
 end
 
-    reg liushui = 0;
     reg [31:0] query_nexthop_2;      
     reg [2:0] query_port_2;  
     frame_data s2;
@@ -895,10 +883,9 @@ end
                     begin
                         if(!query_trie_34.to_cpu && query_trie_34.id != 4)
                         begin
-                            liushui <= rt_o_ready;
                             query_nexthop_2 <= rt_o_nexthop.ip; 
                             query_port_2 <= rt_o_nexthop.port;
-                            if( !rt_o_valid ||!test_packet_valid)
+                            if( !rt_o_valid )
                             begin
                                 s2.drop <= 1;
                             end
