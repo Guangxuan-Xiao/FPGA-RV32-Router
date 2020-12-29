@@ -77,8 +77,6 @@ module frame_datapath #(
 
     reg [31:0] src_ip_addr;
     reg [31:0] trg_ip_addr;
-    reg [31:0] src_ip_addr_conv;
-    reg [31:0] src_ip_addr_conv;
     reg [47:0] src_mac_addr;
     reg [47:0] trg_mac_addr;
     reg arp_cache_wr_en = 0;
@@ -315,7 +313,6 @@ module frame_datapath #(
         end
     end
 
-    reg [383:0] manage;
     frame_data query_trie_1;
     wire query_trie_1_ready;
     assign s1_ready = query_trie_1_ready || !s1.valid;
@@ -330,7 +327,6 @@ module frame_datapath #(
             query_trie_1 <= s1;
             if(s1.prot_type == 3'b000 && !s1.to_cpu && s1.id != 4)
             begin
-                manage <= data_output_content;
                 query_trie_1.data <= data_output_content;
             end
         end
@@ -1152,7 +1148,6 @@ end
 
     frame_data s6;
     wire s6_ready;
-    reg [47:0] portmac;
     assign s5_ready = s6_ready || !s5.valid;
     always @ (posedge eth_clk or posedge reset)
     begin
