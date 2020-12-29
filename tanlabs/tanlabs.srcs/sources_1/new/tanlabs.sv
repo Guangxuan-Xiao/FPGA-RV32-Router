@@ -7,7 +7,7 @@ module tanlabs
     parameter SIM = 0
 )
 (
-    input RST,
+    input wire RST,
 
     input wire gtrefclk_p,
     input wire gtrefclk_n,
