@@ -6,7 +6,7 @@ import sys
 import struct
 import time
 import socket
-ENTRY_NUM = 8000
+ENTRY_NUM = 9000
 IPs = ['10.0.0.1', '10.0.1.1', '10.0.2.1', '10.0.3.1']
 PORT = 0
 with open("fib_shuffled.txt") as f:
@@ -18,15 +18,16 @@ def prefixlen_to_netmask(prefix_len):
     netmask = socket.inet_ntoa(struct.pack('!I', (1 << 32) - (1 << host_bits)))
     return netmask
 
-
+port = 0
 for i in range(0, ENTRY_NUM//25):
     rip_entries = Packet()
     for j in range(i*25, (i+1)*25):
-        ip, prefix_len, _, port = lines[j].split(" ")
+        ip, prefix_len, _, _ = lines[j].split(" ")
         rip_entries /= RIPEntry(addr=ip, mask=prefixlen_to_netmask(prefix_len))
-    for port in range(0, 4):
-        send(IP(dst=IPs[port], ttl=64) /
-             UDP() /
-             RIP(cmd=2, version=2) /
-             rip_entries)
-    # time.sleep(1)
+
+    send(IP(dst=IPs[port], ttl=64) /
+            UDP() /
+            RIP(cmd=2, version=2) /
+            rip_entries)
+    port = port + 1 if port < 3 else 0
+    time.sleep(0.01)

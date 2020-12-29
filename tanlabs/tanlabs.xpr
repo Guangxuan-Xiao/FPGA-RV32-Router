@@ -37,13 +37,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="185"/>
-    <Option Name="WTModelSimExportSim" Val="185"/>
-    <Option Name="WTQuestaExportSim" Val="185"/>
-    <Option Name="WTIesExportSim" Val="185"/>
-    <Option Name="WTVcsExportSim" Val="185"/>
-    <Option Name="WTRivieraExportSim" Val="185"/>
-    <Option Name="WTActivehdlExportSim" Val="185"/>
+    <Option Name="WTXSimExportSim" Val="186"/>
+    <Option Name="WTModelSimExportSim" Val="186"/>
+    <Option Name="WTQuestaExportSim" Val="186"/>
+    <Option Name="WTIesExportSim" Val="186"/>
+    <Option Name="WTVcsExportSim" Val="186"/>
+    <Option Name="WTRivieraExportSim" Val="186"/>
+    <Option Name="WTActivehdlExportSim" Val="186"/>
     <Option Name="GenerateIPUpgradeLog" Val="TRUE"/>
     <Option Name="XSimRadix" Val="hex"/>
     <Option Name="XSimTimeUnit" Val="ns"/>
@@ -573,7 +573,7 @@
       <File Path="$PSRCDIR/utils_1/imports/impl_1/tanlabs_routed.dcp">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PRUNDIR/impl_1/tanlabs_routed.dcp"/>
-          <Attr Name="ImportTime" Val="1609255556"/>
+          <Attr Name="ImportTime" Val="1609257708"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedInSteps" Val="impl_1"/>
