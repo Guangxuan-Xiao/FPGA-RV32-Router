@@ -24,8 +24,9 @@ for i in range(0, ENTRY_NUM//25):
     for j in range(i*25, (i+1)*25):
         ip, prefix_len, _, port = lines[j].split(" ")
         rip_entries /= RIPEntry(addr=ip, mask=prefixlen_to_netmask(prefix_len))
-    send(IP(dst=IPs[PORT], ttl=64) /
-         UDP() /
-         RIP(cmd=2, version=2) /
-         rip_entries)
+    for port in range(0, 4):
+        send(IP(dst=IPs[port], ttl=64) /
+             UDP() /
+             RIP(cmd=2, version=2) /
+             rip_entries)
     # time.sleep(1)
