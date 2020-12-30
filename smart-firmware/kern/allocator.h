@@ -26,7 +26,7 @@ public:
     }
     T get()
     {
-        if (allocated >= SIZE)
+        if (allocated >= SIZE - 1)
             return -1;
         ++allocated;
         T idx = nodes[nodes[0].succ].idx;

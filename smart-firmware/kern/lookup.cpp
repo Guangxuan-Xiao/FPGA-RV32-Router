@@ -3,7 +3,7 @@
 #include "allocator.h"
 #include <stdio.h>
 #include <netinet/ip.h>
-static Allocator<uint16_t, TRIE_LAYER_CAPACITY + 20> allocators[32];
+static Allocator<uint16_t, TRIE_LAYER_CAPACITY> allocators[32];
 static int nexthop_size = 0;
 
 static uint8_t metrics[32][TRIE_LAYER_CAPACITY + 20], times[32][TRIE_LAYER_CAPACITY + 20];
