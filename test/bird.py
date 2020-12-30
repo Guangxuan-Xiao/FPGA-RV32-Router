@@ -6,10 +6,10 @@ import sys
 import struct
 import time
 import socket
-ENTRY_NUM = 9000
+ENTRY_NUM = 9100
 IPs = ['10.0.0.1', '10.0.1.1', '10.0.2.1', '10.0.3.1']
 PORT = 0
-with open("fib_shuffled.txt") as f:
+with open("fib12000.txt") as f:
     lines = f.readlines()
 
 
@@ -30,4 +30,7 @@ for i in range(0, ENTRY_NUM//25):
             RIP(cmd=2, version=2) /
             rip_entries)
     port = port + 1 if port < 3 else 0
-    time.sleep(0.01)
+
+
+    # time.sleep(0.1)
+time.sleep(3)

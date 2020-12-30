@@ -20,8 +20,8 @@
 
 #define CNT1(x) __builtin_popcount(x)
 
-RoutingTableEntry cache[8200];
-
+RoutingTableEntry cache[12000];
+// uint32_t CACHE_START = 0x11514;
 uint8_t packet[2048];
 uint8_t output[2048];
 uint32_t bram_addr_dst = 0;
@@ -140,7 +140,7 @@ void send_rip(const RipPacket &resp, const uint32_t if_index, const uint32_t dst
 	ip_header->ip_sum = checksum;
 	//printf("before send\r\n");
 	send(if_index, output, totlen, bram_addr_dst, dst_mac);
-	// sleep(200);
+	sleep(200);
 	//printf("end send\r\n");
 	bram_addr_dst = (bram_addr_dst + 1) & 0x1F;
 }
@@ -148,6 +148,9 @@ void send_rip(const RipPacket &resp, const uint32_t if_index, const uint32_t dst
 void send_all_rip(uint32_t router_len, uint32_t if_index, const uint32_t dst_addr, const macaddr_t dst_mac)
 {
 	uint32_t start = 0;
+	// CACHE_START++;
+	// if (CACHE_START >= router_len)
+	// 	CACHE_START = 0;
 	while (start < router_len)
 	{
 		uint32_t num = 0;
@@ -155,16 +158,19 @@ void send_all_rip(uint32_t router_len, uint32_t if_index, const uint32_t dst_add
 		resp.command = 2;
 		while (num < 25 && start < router_len)
 		{
-			if (cache[start].port == if_index)
+			uint32_t idx = start;
+			// if (idx >= router_len)
+			// 	idx -= router_len;
+			if (cache[idx].port == if_index)
 			{
 				resp.entries[num].metric = BE32((uint32_t)16);
 			}
 			else
 			{
-				resp.entries[num].metric = BE32(cache[start].metric);
+				resp.entries[num].metric = BE32(cache[idx].metric);
 			}
-			resp.entries[num].addr = cache[start].ip;									 //网络字节序
-			resp.entries[num].mask = BE32(~((1 << (32 - cache[start].prefix_len)) - 1)); //网络字节序
+			resp.entries[num].addr = cache[idx].ip;									 //网络字节序
+			resp.entries[num].mask = BE32(~((1 << (32 - cache[idx].prefix_len)) - 1)); //网络字节序
 			resp.entries[num].nexthop = 0;												 // 网络字节序
 			++num;
 			++start;
