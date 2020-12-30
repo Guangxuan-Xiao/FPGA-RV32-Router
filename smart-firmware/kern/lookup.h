@@ -17,8 +17,8 @@
   当 nexthop 为零时这是一条直连路由。
   你可以在全局变量中把路由表以一定的数据结构格式保存下来。
 */
-const uint32_t TIMEOUT = 120;
-const uint32_t GARBAGE = 300;
+const uint32_t TIMEOUT = 128;
+const uint32_t GARBAGE = 255;
 struct RoutingTableEntry
 {
 	uint32_t ip;

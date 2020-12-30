@@ -21,6 +21,7 @@
 #define CNT1(x) __builtin_popcount(x)
 
 RoutingTableEntry cache[12000];
+uint32_t rip_received = 0;
 // uint32_t CACHE_START = 0x11514;
 uint8_t packet[2048];
 uint8_t output[2048];
@@ -140,7 +141,7 @@ void send_rip(const RipPacket &resp, const uint32_t if_index, const uint32_t dst
 	ip_header->ip_sum = checksum;
 	//printf("before send\r\n");
 	send(if_index, output, totlen, bram_addr_dst, dst_mac);
-	sleep(200);
+	// sleep(200);
 	//printf("end send\r\n");
 	bram_addr_dst = (bram_addr_dst + 1) & 0x1F;
 }
@@ -169,9 +170,9 @@ void send_all_rip(uint32_t router_len, uint32_t if_index, const uint32_t dst_add
 			{
 				resp.entries[num].metric = BE32(cache[idx].metric);
 			}
-			resp.entries[num].addr = cache[idx].ip;									 //网络字节序
+			resp.entries[num].addr = cache[idx].ip;									   //网络字节序
 			resp.entries[num].mask = BE32(~((1 << (32 - cache[idx].prefix_len)) - 1)); //网络字节序
-			resp.entries[num].nexthop = 0;												 // 网络字节序
+			resp.entries[num].nexthop = 0;											   // 网络字节序
 			++num;
 			++start;
 		}
@@ -212,6 +213,7 @@ int mainLoop()
 			printf("3s Timer at time %u\r\n", time);
 			uint32_t router_len = traverse(cache);
 			printf("Routing Table Size: %u\r\n", router_len);
+			printf("RIP packets received: %u\r\n", rip_received);
 			// printf("\r\n===Lookup Table===\r\n");
 			// for (uint32_t i = 0; i < router_len; ++i)
 			// 	cache[i].print();
@@ -278,9 +280,7 @@ int mainLoop()
 				}
 				else
 				{
-					int rip_entry_cnt = (res - (ip_header->ihl * 4 + 8) - 4) / 20;
-					// printf("RIP ENTRY COUNT = %d\r\n", rip_entry_cnt);
-					for (int i = 0; i < rip_entry_cnt; i++)
+					for (uint32_t i = 0; i < rip.numEntries; i++)
 					{
 						// printf("Dealing with RIP ENTRY[%d]\r\n", i);
 						uint32_t nexthop, port, metric;
@@ -310,6 +310,7 @@ int mainLoop()
 							insert(rte);
 						}
 					}
+					rip_received++;
 				}
 			}
 			else

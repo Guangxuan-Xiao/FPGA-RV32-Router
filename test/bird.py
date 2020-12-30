@@ -6,7 +6,7 @@ import sys
 import struct
 import time
 import socket
-ENTRY_NUM = 9100
+ENTRY_NUM = 11000
 IPs = ['10.0.0.1', '10.0.1.1', '10.0.2.1', '10.0.3.1']
 PORT = 0
 with open("fib12000.txt") as f:

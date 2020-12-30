@@ -3,25 +3,10 @@
 #include "allocator.h"
 #include <stdio.h>
 #include <netinet/ip.h>
-// static int layer_size[32] = {0};
-// const uint32_t ROUTING_TRIE_SIZE = 0x20000;
-static Allocator<uint16_t, TRIE_LAYER_CAPACITY> allocators[32];
-// static Allocator<uint32_t, ROUTING_TRIE_SIZE> routingTrieAllocator;
+static Allocator<uint16_t, TRIE_LAYER_CAPACITY + 20> allocators[32];
 static int nexthop_size = 0;
-// static int route_node_num = 1;
-// class route_node_t
-// {
-// public:
-//     uint32_t lc;
-//     uint32_t rc;
-//     uint16_t metric;
-//     uint16_t time;
-//     route_node_t() : lc(0), rc(0), metric(0xffff), time(0) {}
-//     static const uint32_t root = 1;
-// };
-// static route_node_t route_nodes[ROUTING_TRIE_SIZE];
 
-static uint8_t metrics[32][TRIE_LAYER_CAPACITY], times[32][TRIE_LAYER_CAPACITY];
+static uint8_t metrics[32][TRIE_LAYER_CAPACITY + 20], times[32][TRIE_LAYER_CAPACITY + 20];
 void RoutingTableEntry::print()
 {
     printf("IP: %08x\r\n", ip);
@@ -33,9 +18,7 @@ void RoutingTableEntry::print()
 
 void init()
 {
-    // route_node_num = 1;
     nexthop_size = 0;
-    // routingTrieAllocator.get();
     for (uint32_t i = 0; i <= 32; ++i)
     {
         printf("Initializing Layer: %u\r\n", i);
@@ -63,6 +46,8 @@ void insert(RoutingTableEntry entry)
             if (!parent.rc_ptr)
             {
                 idx = allocators[i].get();
+                if (idx == 0xFFFF)
+                    return;
                 parent.rc_ptr = get_node_addr(i + 1, idx);
                 set_rc(current_node, idx);
             }
@@ -73,6 +58,8 @@ void insert(RoutingTableEntry entry)
             if (!parent.lc_ptr)
             {
                 idx = allocators[i].get();
+                if (idx == 0xFFFF)
+                    return;
                 parent.lc_ptr = get_node_addr(i + 1, idx);
                 set_lc(current_node, idx);
             }
@@ -161,7 +148,7 @@ uint32_t search(uint32_t ip, uint32_t prefix_len, uint32_t *nexthop_ip, uint32_t
     uint32_t nexthop_idx = 0;
     uint32_t *current_node = (uint32_t *)ROOT_ADDR;
     parse_node(current_node, &parent);
-    *metric = 0xffffffff;
+    *metric = 0x10;
     ip = ntohl(ip);
     for (uint32_t i = 0; i < prefix_len; ++i)
     {
