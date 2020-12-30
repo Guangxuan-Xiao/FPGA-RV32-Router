@@ -6,7 +6,7 @@ PC_IP_0=10.0.0.2
 PC_IP_1=10.2.1.2
 sudo ip addr add ${PC_IP_1}/24 dev ${PORT0}
 sudo ip route add 10.0.0.0/8 via ${BOARD_IP_1} dev ${PORT0}
-sudo arping -I ${PORT1} ${BOARD_IP_1} -c 2
+sudo arping -I ${PORT0} ${BOARD_IP_1} -c 2
 # iperf3 -s
 # sudo ip addr add 10.0.0.2/24 dev enx00e04c680f4e
 # sudo ip route add 10.0.0.0/8 via 10.0.0.1 dev enx00e04c680f4e

@@ -58,18 +58,18 @@ struct RawRip
 		uint32_t metric; // [1, 16]
 	} entries[0];
 };
-#define ROUTER_R2
+#define ROUTER_R0
 #ifdef ROUTER_R0
-const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0100000a, 0x0100ff0a, 0x0102000a, 0x0103000a};
-const uint32_t lens[N_IFACE_ON_BOARD] = {24, 30, 24, 24};
+const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0202ff0a, 0x0100ff0a, 0x0102000a, 0x0103000a};
+const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
 const int router_id = 0;
 #elif defined(ROUTER_R1)
 const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0200ff0a, 0x0101ff0a, 0x0102010a, 0x0103010a};
 const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
 const int router_id = 1;
 #elif defined(ROUTER_R2)
-const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0201ff0a, 0x0101020a, 0x0102020a, 0x0103020a};
-const uint32_t lens[N_IFACE_ON_BOARD] = {30, 24, 24, 24};
+const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0201ff0a, 0x0102ff0a, 0x0102020a, 0x0103020a};
+const uint32_t lens[N_IFACE_ON_BOARD] = {30, 30, 24, 24};
 const int router_id = 2;
 #elif defined(ROUTER_R3)
 const in_addr_t addrs[N_IFACE_ON_BOARD] = {0x0204a8c0, 0x0205a8c0, 0x010aa8c0,
